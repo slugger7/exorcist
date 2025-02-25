@@ -52,6 +52,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	s.withLibraryPathCreate(authenticated, libraryPathRoute).
 		withLibraryPathGetAll(authenticated, libraryPathRoute)
 
+	// Register image controller routes
+	s.withImageGetById(authenticated, imageRoute)
+
 	s.WithJobRoutes(authenticated)
 
 	r.GET("/health", s.HealthHandler)
