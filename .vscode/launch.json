@@ -5,11 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Process",
-      "type": "go",
-      "request": "attach",
-      "mode": "local",
-      "processId": 0
+      "type": "firefox",
+      "request": "launch",
+      "name": "Launch firefox",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
+      "command": "npm run dev",
+      "name": "Run web",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/web"
     },
     {
       "name": "Run server",
