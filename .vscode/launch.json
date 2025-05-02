@@ -12,6 +12,13 @@
       "webRoot": "${workspaceFolder}/web"
     },
     {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch chrome",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/web"
+    },
+    {
       "command": "npm run dev",
       "name": "Run web",
       "request": "launch",
