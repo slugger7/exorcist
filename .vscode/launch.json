@@ -8,14 +8,14 @@
       "type": "firefox",
       "request": "launch",
       "name": "Launch firefox",
-      "url": "http://localhost:5173",
+      "url": "https://localhost:5173",
       "webRoot": "${workspaceFolder}/web"
     },
     {
       "type": "chrome",
       "request": "launch",
       "name": "Launch chrome",
-      "url": "http://localhost:5173",
+      "url": "https://localhost:5173",
       "webRoot": "${workspaceFolder}/web"
     },
     {
