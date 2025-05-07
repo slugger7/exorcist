@@ -6,6 +6,12 @@
             "port": "8181",
             "username": "admin",
             "password": "admin"
+        },
+        "mocked": {
+            "host": "http://localhost",
+            "port": "8182",
+            "username": "admin",
+            "password": "admin"
         }
     }
 }

@@ -32,6 +32,13 @@
       "mode": "auto",
       "program": "${workspaceFolder}/server/cmd/exorcist",
       "cwd": "${workspaceFolder}/server"
-    }
+    },
+    {
+      "command": "npm run stub",
+      "name": "Run stub webserver",
+      "request": "launch",
+      "type": "node-terminal",
+      "cwd": "${workspaceFolder}/web"
+    },
   ]
 }
