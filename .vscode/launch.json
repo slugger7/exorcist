@@ -9,7 +9,8 @@
       "request": "launch",
       "name": "Launch firefox",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/web"
+      "webRoot": "${workspaceFolder}/web",
+      "tmpDir": "~/.mozilla/firefox"
     },
     {
       "type": "chrome",
