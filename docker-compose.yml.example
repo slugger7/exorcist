@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres
+    container_name: exorcist-db
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DATABASE_USER}
+    ports:
+      - ${DATABASE_PORT}:5432
+
+  exorcist:
+    build:
+      dockerfile: ./Dockerfile
+    ports:
+      - "${EXTERNAL_PORT}:${PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - /mnt/some-media:/media

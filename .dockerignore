@@ -1,0 +1,8 @@
+.env
+server/.temp
+server/diagrams
+server/vscode
+server/.github
+server/playground
+server/rest
+server/scripts
