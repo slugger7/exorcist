@@ -20,7 +20,7 @@ RUN go mod download
 
 COPY ./server .
 
-COPY --from=build_web /home/node/app/dist /dist
+COPY --from=build_web /home/node/app/dist /web
 
 RUN go build -o /exorcist ./cmd/exorcist
 
