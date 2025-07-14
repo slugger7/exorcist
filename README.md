@@ -2,12 +2,15 @@
 
 This project is a linking or a workflow project for the the exorcist project.
 
-In the [gitignore](./.gitignore) you will see that there are two folders that have been ignored `web` and `server`.
-The idea being that you can pull [exorcist-server](https://github.com/slugger7/exorcist-server) into the [server](./server) and the [exorcist-web](https://github.com/slugger7/exorcist-web) into the [web](./web) folder
+It makes use of git submodules for the [server](https://github.com/slugger7/exorcist-server) and [web](https://github.com/slugger7/exorcist-web).
 
 In VS code you can then manage all three projects git individually but have common things living in this repository like [vscode folder](./.vscode)
 
 ## Getting started
 
-- `git clone git@github.com:slugger7/exorcist-server.git server`
-- `git clone git@github.com:slugger7/exorcist-web.git web`
+- `git clone --recurse-submodules git@github.com:slugger7/exorcist.git`
+- `git clone --recurse-submodules https://github.com/slugger7/exorcist.git`
+
+If the project has been cloned without the `--recurse-submodules` option simply run
+`git submodule update --init --recursive` to initialise the submodules
+
