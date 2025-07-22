@@ -14,6 +14,7 @@ FROM golang:1.24-alpine AS build_server
 
 WORKDIR /app
 
+RUN apk update && apk add ffmpeg
 COPY ./server/go.mod .
 COPY ./server/go.sum .
 RUN go mod download
