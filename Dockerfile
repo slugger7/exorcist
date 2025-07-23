@@ -21,9 +21,14 @@ RUN go mod download
 
 COPY ./server .
 
+RUN go build -o /exorcist ./cmd/exorcist
+
+
+FROM golang:1.24-alpine AS exorcist
+
 COPY --from=build_web /home/node/app/dist /web
 
-RUN go build -o /exorcist ./cmd/exorcist
+COPY --from=build_server /exorcist /exorcist
 
 EXPOSE ${PORT}
 
