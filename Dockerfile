@@ -14,7 +14,6 @@ FROM golang:1.24-alpine AS build_server
 
 WORKDIR /app
 
-RUN apk update && apk add ffmpeg
 COPY ./server/go.mod .
 COPY ./server/go.sum .
 RUN go mod download
@@ -25,6 +24,8 @@ RUN go build -o /exorcist ./cmd/exorcist
 
 
 FROM golang:1.24-alpine AS exorcist
+
+RUN apk update && apk add ffmpeg
 
 COPY --from=build_web /home/node/app/dist /web
 
