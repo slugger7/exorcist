@@ -29,6 +29,7 @@ RUN apk update && apk add ffmpeg
 
 COPY --from=build_web /home/node/app/dist /web
 
+COPY --from=build_server /app/migrations /migrations
 COPY --from=build_server /exorcist /exorcist
 
 EXPOSE ${PORT}
