@@ -1,0 +1,47 @@
+{
+    "request": {
+        "method": "GET",
+        "url": "/api/videos?skip=0&limit=48",
+        "queryParameters": {
+            "limit": { "equalTo": "48" },
+            "skip": { "equalTo": "0" }
+        }
+    },
+    "response": {
+        "status": 200,
+        "jsonBody": {
+           "total": 420,
+           "limit": 48,
+           "skip": 0,
+           "data": [
+            {
+              "id": "00000000-0000-0000-0000-000000000001",
+              "title": "big_buck_bunny_480p_h264",
+              "path": "./.temp/big_buck_bunny_480p_h264.mov",
+              "thumbnailId": "4926f315-e66b-4b80-bb5b-cc3a4144840f"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000002",
+              "title": "working_video",
+              "path": "./internal/ffmpeg/test_data/working_video.mp4",
+              "thumbnailId": "bd29a985-77ca-4c0f-a151-ae9a9e6818a8"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000003",
+              "title": "big_buck_bunny_480p_h264",
+              "path": "./.temp/big_buck_bunny_480p_h264.mov",
+              "thumbnailId": "4926f315-e66b-4b80-bb5b-cc3a4144840f"
+            },
+            {
+              "id": "00000000-0000-0000-0000-000000000004",
+              "title": "working_video",
+              "path": "./internal/ffmpeg/test_data/working_video.mp4",
+              "thumbnailId": "bd29a985-77ca-4c0f-a151-ae9a9e6818a8"
+            }
+          ]
+        },
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+}

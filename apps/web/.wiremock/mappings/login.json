@@ -1,0 +1,17 @@
+{
+    "request": {
+        "method": "POST",
+        "url": "/api/login"
+    },
+    "response": {
+        "status": 201,
+        "jsonBody": {
+            "userId": "131a8a26-f711-462b-a5ad-5d2966653caa",
+            "username": "admin"
+        },
+        "headers": {
+            "Content-Type": "application/json",
+            "Set-Cookie": "exorcist=MTc0NjYxNTQwMnxEWDhFQVFMX2dBQUJFQUVRQUFCRV80QUFBUVp6ZEhKcGJtY01DQUFHZFhObGNrbGtCbk4wY21sdVp3d21BQ1F4TXpGaE9HRXlOaTFtTnpFeExUUTJNbUl0WVRWaFpDMDFaREk1TmpZMk5UTmpZV0U9fCzaKI7FKxTMlnXeAdUqNW8ISph_PYrwxnxocOMarnVs; Path=/; Expires=Fri, 06 Jun 2100 10:56:42 GMT; Max-Age=2592000"
+        }
+    }
+}
