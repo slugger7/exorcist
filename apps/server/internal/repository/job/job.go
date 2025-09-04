@@ -1,0 +1,177 @@
+package jobRepository
+
+import (
+	"context"
+	"database/sql"
+	"time"
+
+	"github.com/go-jet/jet/v2/postgres"
+	"github.com/google/uuid"
+	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/internal/db/exorcist/public/table"
+	"github.com/slugger7/exorcist/internal/dto"
+	"github.com/slugger7/exorcist/internal/environment"
+	errs "github.com/slugger7/exorcist/internal/errors"
+	"github.com/slugger7/exorcist/internal/repository/util"
+)
+
+type JobStatement struct {
+	postgres.Statement
+	db  *sql.DB
+	ctx context.Context
+}
+
+type JobRepository interface {
+	CreateAll(jobs []model.Job) ([]model.Job, error)
+	GetNextJob() (*model.Job, error)
+	UpdateJobStatus(model *model.Job) error
+	GetAll(dto.JobSearchDTO) (*dto.PageDTO[model.Job], error)
+	CancelInprogress() error
+}
+
+type jobRepository struct {
+	db  *sql.DB
+	env *environment.EnvironmentVariables
+	ctx context.Context
+}
+
+// CancelInprogress implements JobRepository.
+func (j *jobRepository) CancelInprogress() error {
+	mod := time.Now()
+	outcome := "cancelled at startup"
+	statement := table.Job.UPDATE(table.Job.Status, table.Job.Modified, table.Job.Outcome).
+		MODEL(model.Job{
+			Status:   model.JobStatusEnum_Cancelled,
+			Modified: mod,
+			Outcome:  &outcome,
+		}).
+		WHERE(table.Job.Status.EQ(postgres.NewEnumValue(string(model.JobStatusEnum_InProgress))))
+
+	util.DebugCheck(j.env, statement)
+
+	if _, err := statement.ExecContext(j.ctx, j.db); err != nil {
+		return errs.BuildError(err, "updating in progress jobs to cancelled")
+	}
+
+	return nil
+}
+
+var jobRepoInstance *jobRepository
+
+func New(db *sql.DB, env *environment.EnvironmentVariables, context context.Context) JobRepository {
+	if jobRepoInstance != nil {
+		return jobRepoInstance
+	}
+	jobRepoInstance = &jobRepository{
+		db:  db,
+		env: env,
+		ctx: context,
+	}
+	return jobRepoInstance
+}
+
+func (j *jobRepository) CreateAll(jobs []model.Job) ([]model.Job, error) {
+	if len(jobs) == 0 {
+		return jobs, nil
+	}
+	var newJobs []struct{ model.Job }
+	if err := j.createAllStatement(jobs).Query(&newJobs); err != nil {
+		return nil, errs.BuildError(err, "error when creating jobs")
+	}
+
+	jobModels := []model.Job{}
+	for _, j := range newJobs {
+		jobModels = append(jobModels, j.Job)
+	}
+
+	return jobModels, nil
+}
+
+func (j *jobRepository) GetNextJob() (*model.Job, error) {
+	var job []struct{ model.Job }
+	if err := j.getNextJobStatement().Query(&job); err != nil {
+		return nil, errs.BuildError(err, "could not get next job")
+	}
+	if len(job) == 1 {
+		return &job[len(job)-1].Job, nil
+	}
+
+	return nil, nil
+}
+
+func (j *jobRepository) UpdateJobStatus(model *model.Job) error {
+	model.Modified = time.Now()
+	if _, err := j.updateJobStatusStatement(model).Exec(); err != nil {
+		return errs.BuildError(err, "could not update job %v status to %v", model.ID, model.Status)
+	}
+
+	return nil
+}
+
+func (r *jobRepository) GetAll(m dto.JobSearchDTO) (*dto.PageDTO[model.Job], error) {
+	if m.Limit == 0 {
+		m.Limit = 100
+	}
+
+	statement := table.Job.SELECT(table.Job.AllColumns).
+		FROM(table.Job).
+		ORDER_BY(m.OrderBy.ToColumn().DESC()).
+		LIMIT(int64(m.Limit)).
+		OFFSET(int64(m.Skip))
+
+	countStatement := table.Job.SELECT(postgres.COUNT(table.Job.ID).AS("total")).FROM(table.Job)
+
+	var whereExpression postgres.BoolExpression
+	if m.Parent == nil {
+		whereExpression = table.Job.Parent.IS_NULL()
+	} else {
+		id, _ := uuid.Parse(*m.Parent)
+		whereExpression = table.Job.Parent.EQ(postgres.UUID(id))
+	}
+
+	statusExpressions := make([]postgres.Expression, len(m.Statuses))
+	for i, s := range m.Statuses {
+		statusExpressions[i] = postgres.NewEnumValue(string(s))
+	}
+	if len(statusExpressions) > 0 {
+		whereExpression = whereExpression.AND(table.Job.Status.IN(statusExpressions...))
+	}
+
+	jobTypeExpression := make([]postgres.Expression, len(m.JobTypes))
+	for i, t := range m.JobTypes {
+		jobTypeExpression[i] = postgres.NewEnumValue(string(t))
+	}
+	if len(jobTypeExpression) > 0 {
+		whereExpression = whereExpression.AND(table.Job.JobType.IN(jobTypeExpression...))
+	}
+
+	statement = statement.WHERE(whereExpression)
+	countStatement = countStatement.WHERE(whereExpression)
+
+	util.DebugCheck(r.env, statement)
+	util.DebugCheck(r.env, countStatement)
+
+	var totalStruct struct {
+		Total int
+	}
+	if err := countStatement.QueryContext(r.ctx, r.db, &totalStruct); err != nil {
+		return nil, errs.BuildError(err, "could not query jobs for total")
+	}
+
+	var jobsStruct []struct{ model.Job }
+	if err := statement.QueryContext(r.ctx, r.db, &jobsStruct); err != nil {
+		return nil, errs.BuildError(err, "could not get jobs with %v", m)
+	}
+
+	var jobs = make([]model.Job, len(jobsStruct))
+	for i, j := range jobsStruct {
+		jobs[i] = j.Job
+	}
+
+	return &dto.PageDTO[model.Job]{
+		Total: totalStruct.Total,
+		Limit: m.Limit,
+		Skip:  m.Skip,
+		Data:  jobs,
+	}, nil
+}

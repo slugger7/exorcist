@@ -1,0 +1,13 @@
+### Get All Tags
+GET {{host}}:{{port}}/api/tags?search=tag
+
+### Create Tags
+POST {{host}}:{{port}}/api/tags
+Content-Type: application/json
+
+[
+  "new tag"
+]
+
+### Get Media for tag
+GET {{host}}:{{port}}/api/tags/fbcbb87b-0791-4c35-a654-078f7be0f1c8/media
