@@ -14,7 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-      with:
-        submodules: recursive
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag exorcist:$(date +%s)
+      run: docker build . --file Dockerfile --tag exorcist:$(date +%s)  

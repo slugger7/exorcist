@@ -19,7 +19,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.23.4'
+        go-version: '1.24.0'
 
     - name: Build
       run: go build -v ./cmd/exorcist
@@ -42,7 +42,7 @@ jobs:
         tar -xf ${RELEASE_NAME}.tar.xz
         mv ${RELEASE_NAME}/ffmpeg ${RELEASE_NAME}/ffprobe /usr/local/bin/
         rm -rf ${RELEASE_NAME}
-      
+    
     - name: Test
       run: go test -v ./...
 
