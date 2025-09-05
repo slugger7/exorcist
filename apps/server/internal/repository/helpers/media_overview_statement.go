@@ -90,8 +90,8 @@ func mediaOverviewStatement(userId uuid.UUID, search dto.MediaSearchDTO, relatio
 	selectStatement = OrderByDirectionColumn(search.Asc, search.OrderBy.ToColumn(), selectStatement)
 
 	whr := media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Primary.String())).
-		AND(media.Deleted.IS_FALSE()).
-		AND(media.Exists.IS_TRUE())
+		AND(media.Deleted.EQ(postgres.Bool(*search.Deleted))).
+		AND(media.Exists.EQ(postgres.Bool(*search.Exists)))
 
 	if search.Favourites {
 		whr = whr.AND(table.FavouriteMedia.UserID.IS_NOT_NULL())
