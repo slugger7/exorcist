@@ -94,7 +94,7 @@ func RefreshEnvironmentVariables() {
 		DisableJobs:                toJobTypes(strings.Split(os.Getenv(DISABLE_JOBS), ";")),
 		CorsOrigins:                strings.Split(os.Getenv(CORS_ORIGINS), ";"),
 		WebsocketHeartbeatInterval: getIntValue(WEBSOCKET_HEARTBEAT_INTERVAL),
-		MigrationPath:              getValueOrDefault(MIGRATIONS_PATH, "./migrations"),
+		MigrationPath:              getValueOrDefault(MIGRATIONS_PATH, "./apps/server/migrations"),
 	}
 }
 
@@ -126,7 +126,8 @@ func getValueOrDefault(key OsEnv, value string) string {
 }
 
 func getIntValue(key OsEnv) int {
-	value, err := strconv.Atoi(os.Getenv(key))
+	e := os.Getenv(key)
+	value, err := strconv.Atoi(e)
 	errs.PanicError(err)
 
 	return value
