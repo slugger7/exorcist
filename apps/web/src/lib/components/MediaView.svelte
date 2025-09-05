@@ -62,18 +62,23 @@
     getArrayOfStringsSearchParamOrDefault("people", []),
   );
   let expanded = $state(getBoolParamOrDefault("expanded", false));
+  let selecting = $state(getBoolParamOrDefault("selecting", false));
+  let selectedMedia = $state(
+    getArrayOfStringsSearchParamOrDefault("selected", []),
+  );
+  let favourites = $state(getBoolParamOrDefault("favourites", false));
+  let deleted = $state(getBoolParamOrDefault("deleted", false));
+  let exists = $state(getBoolParamOrDefault("exists", true));
   let loading = $state(false);
   let error = $state();
   /** @type {PageDTO<MediaOverviewDTO>}*/
   let mediaPage = $state();
   /** @type {MediaOverviewDTO[]}*/
   let newMedia = $state([]);
-  let selecting = $state(getBoolParamOrDefault("selecting", false));
-  let selectedMedia = $state(
-    getArrayOfStringsSearchParamOrDefault("selected", []),
-  );
+
   let editingTitle = $state(false);
-  let favourites = $state(getBoolParamOrDefault("favourites", false));
+
+  $inspect(deleted, exists);
 
   onMount(async () => {
     window.addEventListener("popstate", onPopState);
@@ -98,6 +103,8 @@
     selecting = getBoolParamOrDefault("selecting", false);
     favourites = getBoolParamOrDefault("favourites", false);
     expanded = getBoolParamOrDefault("expanded", false);
+    deleted = getBoolParamOrDefault("deleted", false);
+    exists = getBoolParamOrDefault("exists", true);
   };
 
   const fetchPage = async () => {
@@ -107,6 +114,8 @@
     params.set("asc", ascending.toString());
     params.set("orderBy", orderBy);
     params.set("favourites", favourites.toString());
+    params.set("deleted", deleted.toString());
+    params.set("exists", exists.toString());
 
     if (selectedTags.length > 0) {
       selectedTags.forEach((tag) => {
@@ -191,6 +200,18 @@
     setValueAndNavigate("expanded", expanded, route, {
       replace: true,
       preserveScroll: true,
+    });
+  });
+
+  $effect(() => {
+    setValueAndNavigate("deleted", deleted, route, {
+      replace: true,
+    });
+  });
+
+  $effect(() => {
+    setValueAndNavigate("exists", exists, route, {
+      replace: true,
     });
   });
 
@@ -311,6 +332,8 @@
       clearSelection={() => (selectedMedia = [])}
       selection={selectedMedia}
       bind:favourites
+      bind:exists
+      bind:deleted
     />
   </div>
 

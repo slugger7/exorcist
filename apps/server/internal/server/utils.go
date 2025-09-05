@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/slugger7/exorcist/internal/dto"
 )
 
 type ApiError = string
@@ -21,4 +22,15 @@ func (s *server) getUserId(c *gin.Context) (*uuid.UUID, error) {
 		return nil, err
 	}
 	return &userId, err
+}
+
+var TRUE bool = true
+var FALSE bool = false
+
+var MEDIA_SEARCH_DEFAULT dto.MediaSearchDTO = dto.MediaSearchDTO{
+	Deleted: &FALSE,
+	Exists:  &TRUE,
+	PageRequestDTO: dto.PageRequestDTO{
+		Limit: 50,
+	},
 }

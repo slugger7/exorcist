@@ -82,6 +82,25 @@ type MediaSearchDTO struct {
 	People        []string      `form:"people" json:"people"`
 	WatchStatuses []WatchStatus `form:"watchStatuses" json:"watchStatus"`
 	Favourites    bool          `form:"favourites" json:"favourites"`
+	Deleted       *bool         `form:"deleted" json:"deleted"`
+	Exists        *bool         `form:"exists" json:"exists"`
+}
+
+// Will check if some fields are nil or in their zero state and apply
+// the supplied defaults to them
+func (ms *MediaSearchDTO) Defaults(d MediaSearchDTO) *MediaSearchDTO {
+	ms.PageRequestDTO.Defaults(d.PageRequestDTO)
+	if ms.Deleted == nil {
+		d := false
+		ms.Deleted = &d
+	}
+
+	if ms.Exists == nil {
+		e := true
+		ms.Exists = &e
+	}
+
+	return ms
 }
 
 type MediaOverviewDTO struct {

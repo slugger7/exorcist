@@ -10,20 +10,25 @@
   import { Link } from "svelte-routing";
   import routes from "../../routes/routes";
   import { updateProgress } from "../controllers/media";
+  import {
+    WatchStatus_Watched,
+    WatchStatus_InProgress,
+    WatchStatus_Unwatched,
+  } from "@exorcist-dto";
   import { bind } from "ramda";
 
   /** @type {Item[]}*/
   const watchStatuses = [
     {
-      id: "watched",
+      id: WatchStatus_Watched,
       name: "Watched",
     },
     {
-      id: "unwatched",
+      id: WatchStatus_Unwatched,
       name: "Unwatched",
     },
     {
-      id: "in_progress",
+      id: WatchStatus_InProgress,
       name: "In Progress",
     },
   ];
@@ -47,6 +52,8 @@
    * @property {string[]} [selection]
    * @property {boolean} [favourites]
    * @property {boolean} [expanded]
+   * @property {boolean} [deleted]
+   * @property {boolean} [exists]
    */
 
   /** @type {props} */
@@ -67,6 +74,8 @@
     selection = [],
     favourites = $bindable(false),
     expanded = $bindable(false),
+    deleted = $bindable(false),
+    exists = $bindable(true),
   } = $props();
   /** @type {Item[]}*/
   let tags = $state([]);
@@ -190,7 +199,7 @@
     }
   };
   const handleUnwatchClick = async () => {
-    let loadingWatchStatus = true;
+    loadingWatchStatus = true;
     try {
       await Promise.all(
         selection.map(async (s) => {
@@ -370,6 +379,18 @@
         {/each}
       </div>
     {/if}
+    <div class="field">
+      <div class="checkboxes">
+        <label class="checkbox">
+          <input type="checkbox" bind:checked={deleted} />
+          Deleted
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" bind:checked={exists} />
+          Exists
+        </label>
+      </div>
+    </div>
     <div class="field is-grouped">
       <button
         class={`button ${selecting ? "is-primary" : ""}`}
@@ -415,6 +436,5 @@
         </div>
       {/if}
     </div>
-    {#if selection.length > 0}{/if}
   </div>
 {/if}

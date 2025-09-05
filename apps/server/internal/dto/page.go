@@ -21,3 +21,11 @@ type PageRequestDTO struct {
 	Limit int  `form:"limit" json:"limit"`
 	Asc   bool `form:"asc" json:"asc"`
 }
+
+func (p *PageRequestDTO) Defaults(d PageRequestDTO) *PageRequestDTO {
+	if p.Limit == 0 {
+		p.Limit = d.Limit
+	}
+
+	return p
+}
