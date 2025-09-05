@@ -22,6 +22,7 @@ jobs:
         go-version: '1.24.0'
 
     - name: Build
+      working-directory: ./apps/server
       run: go build -v ./cmd/exorcist
 
     - name: Load cached FFmpeg
@@ -44,10 +45,13 @@ jobs:
         rm -rf ${RELEASE_NAME}
     
     - name: Test
+      working-directory: ./apps/server
       run: go test -v ./...
 
     - name: Install tygo
+      working-directory: ./apps/server
       run: go install github.com/gzuidhof/tygo@v0.2.18
 
     - name: Generate FE Types
+      working-directory: ./apps/server
       run: make dtos
