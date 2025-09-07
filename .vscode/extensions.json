@@ -1,6 +1,10 @@
 {
   "recommendations": [
     "firefox-devtools.vscode-firefox-debug",
+    "ms-ossdata.vscode-pgsql",
+    "golang.go",
+    "editorconfig.editorconfig",
+    "terrastruct.d2",
     "ms-ossdata.vscode-pgsql"
   ]
 }

@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch firefox",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/web",
+      "webRoot": "${workspaceFolder}/apps/web",
       "tmpDir": "~/.mozilla/firefox"
     },
     {
@@ -17,29 +17,35 @@
       "request": "launch",
       "name": "Launch chrome",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/web"
-    },
-    {
-      "command": "npm run dev",
-      "name": "Run web",
-      "request": "launch",
-      "type": "node-terminal",
-      "cwd": "${workspaceFolder}/web"
+      "webRoot": "${workspaceFolder}/apps/web"
     },
     {
       "name": "Run server",
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/server/cmd/exorcist",
-      "cwd": "${workspaceFolder}/server"
+      "program": "${workspaceFolder}/apps/server/cmd/exorcist",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "name": "Run web",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "/home/slugger/.nvm/versions/node/v20.10.0/bin/npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "envFile": "${workspaceFolder}/.env",
+      "console": "internalConsole",
+      "cwd": "${workspaceFolder}/apps/web"
     },
     {
       "command": "npm run stub",
       "name": "Run stub webserver",
       "request": "launch",
       "type": "node-terminal",
-      "cwd": "${workspaceFolder}/web"
+      "cwd": "${workspaceFolder}/apps/web"
     },
   ]
 }

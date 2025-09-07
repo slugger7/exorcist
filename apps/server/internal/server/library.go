@@ -84,9 +84,7 @@ func (s *server) getMediaByLibrary(c *gin.Context) {
 		return
 	}
 
-	if search.Limit == 0 {
-		search.Limit = 100
-	}
+	search.Defaults(MEDIA_SEARCH_DEFAULT)
 
 	userId, err := s.getUserId(c)
 	if err != nil {

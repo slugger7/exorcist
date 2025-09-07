@@ -101,9 +101,7 @@ func (s *server) getMediaByPlaylist(c *gin.Context) {
 		return
 	}
 
-	if search.Limit == 0 {
-		search.Limit = 50
-	}
+	search.Defaults(MEDIA_SEARCH_DEFAULT)
 
 	userId, err := s.getUserId(c)
 	if err != nil {
