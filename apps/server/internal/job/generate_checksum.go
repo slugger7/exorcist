@@ -14,7 +14,7 @@ type GenerateChecksumData struct {
 	MediaId uuid.UUID `json:"mediaId"`
 }
 
-func CreateGenerateChecksumJob(mediaId, jobId uuid.UUID) (*model.Job, error) {
+func CreateGenerateChecksumJob(mediaId uuid.UUID, jobId *uuid.UUID) (*model.Job, error) {
 	d := GenerateChecksumData{
 		MediaId: mediaId,
 	}
@@ -27,7 +27,7 @@ func CreateGenerateChecksumJob(mediaId, jobId uuid.UUID) (*model.Job, error) {
 		JobType:  model.JobTypeEnum_GenerateChecksum,
 		Status:   model.JobStatusEnum_NotStarted,
 		Data:     &data,
-		Parent:   &jobId,
+		Parent:   jobId,
 		Priority: dto.JobPriority_Low,
 	}
 

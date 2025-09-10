@@ -29,6 +29,7 @@ type MediaRepository interface {
 	GetByLibraryId(libraryId uuid.UUID, pageRequest *dto.PageRequestDTO, columns postgres.ColumnList) (*dto.PageDTO[model.Media], error)
 	GetById(id uuid.UUID) (*models.Media, error)
 	GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error)
+	GetByPath(p string) (*model.Media, error)
 	Relate(model.MediaRelation) (*model.MediaRelation, error)
 	Delete(m model.Media) error
 	GetAssetsFor(id uuid.UUID) ([]model.Media, error)
@@ -43,6 +44,20 @@ type mediaRepository struct {
 	env    *environment.EnvironmentVariables
 	logger logger.Logger
 	ctx    context.Context
+}
+
+// GetByPath implements MediaRepository.
+func (r *mediaRepository) GetByPath(p string) (*model.Media, error) {
+	statement := table.Media.SELECT(media.ID, media.Exists).
+		WHERE(media.Path.EQ(postgres.String(p)))
+
+		// TODO: there could be multiple results need to find an active one
+	var m *model.Media
+	if err := statement.QueryContext(r.ctx, r.db, &m); err != nil {
+		return nil, errs.BuildError(err, "could not find media by path: %v", p)
+	}
+
+	return m, nil
 }
 
 // RemoveRelation implements MediaRepository.

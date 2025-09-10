@@ -22,10 +22,21 @@ func main() {
 					return
 				}
 
-				log.Println("event:", event)
+				log.Println("event:", event, event.Op.String())
 
 				if event.Has(fsnotify.Write) {
 					log.Println("modified file:", event.Name)
+				}
+				if event.Has(fsnotify.Rename) {
+					log.Println("renamed file:", event.Name)
+				}
+				if event.Has(fsnotify.Create) {
+					log.Println("created file:", event.Name)
+					//log.Println(event.renamedFrom)
+				}
+
+				if event.Has(fsnotify.Rename) && event.Has(fsnotify.Create) {
+					log.Println("Eureka")
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
