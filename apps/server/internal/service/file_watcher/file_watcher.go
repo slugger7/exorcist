@@ -50,6 +50,7 @@ func New(
 			ctx:       ctx,
 			wg:        wg,
 		}
+		watcherServiceInstance.logger.Info("created file watcher instance")
 	}
 
 	return watcherServiceInstance
@@ -65,6 +66,7 @@ func findLibPathByFilePath(p string, libPaths []model.LibraryPath) *model.Librar
 }
 
 func (s *watcherService) WithDirectoryWatcher() {
+	s.logger.Info("starting directory watcher")
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		s.logger.Errorf("could not set up file watcher: %v", err.Error())
@@ -78,6 +80,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 	}
 
 	for _, lp := range libPaths {
+		s.logger.Infof("watching %v", lp.Path)
 		watcher.Add(lp.Path)
 	}
 
@@ -94,6 +97,8 @@ func (s *watcherService) WithDirectoryWatcher() {
 				if event.Has(fsnotify.Create) {
 					ext := filepath.Ext(event.Name)
 					if slices.Contains(constants.VideoExtensions[:], ext) {
+						s.logger.Infof("new file created: %v", event.Name)
+
 						libPath := findLibPathByFilePath(event.Name, libPaths)
 
 						if libPath == nil {
@@ -130,6 +135,8 @@ func (s *watcherService) WithDirectoryWatcher() {
 						continue
 					}
 
+					s.logger.Infof("file removed or renamed: %v", event.Name)
+
 					m.Exists = false
 
 					if err := s.repo.Media().UpdateExists(*m); err != nil {
@@ -146,6 +153,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 
 				s.logger.Errorf("error in fsnotify watcher: %v", err.Error())
 			case <-s.ctx.Done():
+				s.logger.Info("shutting down file watcher service due to shutdown")
 				return
 			}
 		}
