@@ -119,7 +119,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 					}
 				}
 
-				if event.Has(fsnotify.Remove) {
+				if event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
 					m, err := s.repo.Media().GetByPath(event.Name)
 					if err != nil {
 						s.logger.Errorf("remove event triggered but could not find media by path: %v", event.Name)
