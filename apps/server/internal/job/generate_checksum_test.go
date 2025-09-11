@@ -14,7 +14,7 @@ func Test_CreateGenerateChecksumJob(t *testing.T) {
 	jobId, _ := uuid.NewRandom()
 	id, _ := uuid.NewRandom()
 
-	actual, err := CreateGenerateChecksumJob(id, jobId)
+	actual, err := CreateGenerateChecksumJob(id, &jobId)
 	assert.Nil(t, err)
 
 	actualData := *actual.Data

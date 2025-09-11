@@ -187,7 +187,7 @@ func CreateNewMedia(
 
 	jobs := []model.Job{*checksumJob, *thumbnailJob}
 
-	jobs, err = repo.Job().CreateAll(jobs)
+	_, err = repo.Job().CreateAll(jobs)
 	if err != nil {
 		return errs.BuildError(err, "could not create checksum and thumbnail job for video: %v", createdVideos[0].ID)
 	}
