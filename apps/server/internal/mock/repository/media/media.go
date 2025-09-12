@@ -163,6 +163,21 @@ func (mr *MockMediaRepositoryMockRecorder) GetByLibraryPathId(id any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByLibraryPathId", reflect.TypeOf((*MockMediaRepository)(nil).GetByLibraryPathId), id)
 }
 
+// GetByPath mocks base method.
+func (m *MockMediaRepository) GetByPath(p string) (*model.Media, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByPath", p)
+	ret0, _ := ret[0].(*model.Media)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByPath indicates an expected call of GetByPath.
+func (mr *MockMediaRepositoryMockRecorder) GetByPath(p any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPath", reflect.TypeOf((*MockMediaRepository)(nil).GetByPath), p)
+}
+
 // GetProgressForUser mocks base method.
 func (m *MockMediaRepository) GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error) {
 	m.ctrl.T.Helper()
