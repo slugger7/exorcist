@@ -58,7 +58,7 @@ func New(env *environment.EnvironmentVariables, wg *sync.WaitGroup) *http.Server
 	}
 	newServer.service = service.New(repo, env, newServer.jobCh, shutdownCtx)
 
-	newServer.directoryWatcher = filewatcher.New(*env, shutdownCtx, wg, repo, newServer.wsService)
+	newServer.directoryWatcher = filewatcher.New(*env, shutdownCtx, wg, repo, newServer.wsService, newServer.service)
 	newServer.directoryWatcher.WithDirectoryWatcher()
 
 	server := &http.Server{

@@ -16,6 +16,7 @@ import (
 	"github.com/slugger7/exorcist/internal/logger"
 	"github.com/slugger7/exorcist/internal/media"
 	"github.com/slugger7/exorcist/internal/repository"
+	"github.com/slugger7/exorcist/internal/service"
 	"github.com/slugger7/exorcist/internal/websockets"
 )
 
@@ -23,6 +24,7 @@ type watcherService struct {
 	logger    logger.Logger
 	repo      repository.Repository
 	wsService websockets.Websockets
+	service   service.Service
 	env       *environment.EnvironmentVariables
 	ctx       context.Context
 	wg        *sync.WaitGroup
@@ -44,6 +46,7 @@ func New(
 	wg *sync.WaitGroup,
 	repo repository.Repository,
 	wsService websockets.Websockets,
+	service service.Service,
 ) WatcherService {
 	if watcherServiceInstance == nil {
 		logger := logger.New(&env)
@@ -61,6 +64,7 @@ func New(
 			ctx:       ctx,
 			wg:        wg,
 			watcher:   watcher,
+			service:   service,
 		}
 		watcherServiceInstance.logger.Info("created file watcher instance")
 
@@ -137,6 +141,8 @@ func (s *watcherService) WithDirectoryWatcher() {
 							s.logger.Errorf("could not create new media from watcher: %v", err.Error())
 							continue
 						}
+
+						s.service.Job().StartJobRunner()
 
 						continue
 					}
