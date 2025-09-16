@@ -50,7 +50,8 @@ func Test_CreateLibraryPath_ErrFromService(t *testing.T) {
 
 func Test_CreateLibraryPath_Success(t *testing.T) {
 	s := setupServer(t).
-		withLibraryPathService()
+		withLibraryPathService().
+		withDirectoryWatcher()
 
 	libId, _ := uuid.NewRandom()
 	id, _ := uuid.NewRandom()
@@ -65,6 +66,11 @@ func Test_CreateLibraryPath_Success(t *testing.T) {
 			model.ID = id
 			return model, nil
 		}).
+		Times(1)
+
+	s.mockDirectoryWatcherService.EXPECT().
+		Add(gomock.Any()).
+		DoAndReturn(func(m model.LibraryPath) {}).
 		Times(1)
 
 	s.server.withLibraryPathCreate(&s.engine.RouterGroup, "/")

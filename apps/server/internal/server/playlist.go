@@ -130,7 +130,7 @@ func (s *server) createPlaylists(c *gin.Context) {
 		c.AbortWithError(http.StatusUnprocessableEntity, err)
 	}
 
-	if playlists == nil || len(playlists) == 0 {
+	if len(playlists) == 0 {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}

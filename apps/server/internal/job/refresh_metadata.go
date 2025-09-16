@@ -14,12 +14,14 @@ import (
 )
 
 func CreateRefreshMetadataJob(media model.Media, jobId *uuid.UUID, refreshFields *dto.RefreshFields) (*model.Job, error) {
-	localRefreshFields := *refreshFields
+	var localRefreshFields dto.RefreshFields
 	if refreshFields == nil {
 		localRefreshFields = dto.RefreshFields{
 			Size:     true,
 			Checksum: false,
 		}
+	} else {
+		localRefreshFields = *refreshFields
 	}
 
 	d := dto.RefreshMetadata{

@@ -2,3 +2,5 @@
 !.env.example
 docker-compose.yml
 !docker-compose.yml.example
+
+assets

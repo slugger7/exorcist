@@ -17,6 +17,7 @@ import (
 	"github.com/slugger7/exorcist/internal/environment"
 	"github.com/slugger7/exorcist/internal/logger"
 	mock_service "github.com/slugger7/exorcist/internal/mock/service"
+	mock_filewatcher "github.com/slugger7/exorcist/internal/mock/service/file_watcher"
 	mock_libraryService "github.com/slugger7/exorcist/internal/mock/service/library"
 	mock_libraryPathService "github.com/slugger7/exorcist/internal/mock/service/library_path"
 	mock_userService "github.com/slugger7/exorcist/internal/mock/service/user"
@@ -35,15 +36,16 @@ type TestCookie struct {
 }
 
 type TestServer struct {
-	server                 *server
-	mockService            *mock_service.MockService
-	mockUserService        *mock_userService.MockUserService
-	mockLibraryService     *mock_libraryService.MockLibraryService
-	mockLibraryPathService *mock_libraryPathService.MockLibraryPathService
-	ctrl                   *gomock.Controller
-	engine                 *gin.Engine
-	authGroup              *gin.RouterGroup
-	request                *http.Request
+	server                      *server
+	mockService                 *mock_service.MockService
+	mockUserService             *mock_userService.MockUserService
+	mockLibraryService          *mock_libraryService.MockLibraryService
+	mockLibraryPathService      *mock_libraryPathService.MockLibraryPathService
+	mockDirectoryWatcherService *mock_filewatcher.MockWatcherService
+	ctrl                        *gomock.Controller
+	engine                      *gin.Engine
+	authGroup                   *gin.RouterGroup
+	request                     *http.Request
 }
 
 func setupServer(t *testing.T) *TestServer {
@@ -96,6 +98,15 @@ func (s *TestServer) withLibraryPathService() *TestServer {
 		AnyTimes()
 
 	s.mockLibraryPathService = ls
+
+	return s
+}
+
+func (s *TestServer) withDirectoryWatcher() *TestServer {
+	dirWatch := mock_filewatcher.NewMockWatcherService(s.ctrl)
+
+	s.server.directoryWatcher = dirWatch
+	s.mockDirectoryWatcherService = dirWatch
 
 	return s
 }

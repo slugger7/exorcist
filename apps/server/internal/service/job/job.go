@@ -16,6 +16,7 @@ import (
 
 type JobService interface {
 	Create(dto.CreateJobDTO) (*model.Job, error)
+	StartJobRunner()
 }
 
 type jobService struct {
@@ -89,7 +90,7 @@ func (s *jobService) Create(m dto.CreateJobDTO) (*model.Job, error) {
 		return nil, fmt.Errorf("no jobs were returned after creating a job")
 	}
 
-	go s.startJobRunner()
+	go s.StartJobRunner()
 
 	return &jobs[0], nil
 }
@@ -244,7 +245,7 @@ func (i *jobService) scanPath(data string, priority int16) (*model.Job, error) {
 }
 
 // We do this at the moment to stack a signal to the job runner if it is already running
-func (i *jobService) startJobRunner() {
+func (i *jobService) StartJobRunner() {
 	i.logger.Debug("Starting a job runner")
 	select {
 	case <-i.ctx.Done():

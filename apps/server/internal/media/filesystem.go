@@ -3,6 +3,7 @@ package media
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"io"
 	"io/fs"
 	"math"
@@ -71,18 +72,12 @@ func GetFilesByExtensions(root string, extensions []string) (ret []File, reterr 
 
 		if !d.IsDir() {
 			if slices.Contains(extensions, filepath.Ext(d.Name())) {
-				fileSize, err := GetFileSize(path)
+				file, err := GetFileInformation(path)
 				if err != nil {
-					return err
-				}
-				file := File{
-					Name:     GetTitleOfFile(d.Name()),
-					FileName: filepath.Base(d.Name()),
-					Path:     path,
-					Size:     fileSize,
+					return errors.Join(reterr, errs.BuildError(err, "GetFilesByExtensions"))
 				}
 
-				ret = append(ret, file)
+				ret = append(ret, *file)
 			}
 		}
 
@@ -102,4 +97,19 @@ func FindNonExistentMedia(existingVideos []model.Media, files []File) []model.Me
 		}
 	}
 	return nonExsistentVideos
+}
+
+func GetFileInformation(p string) (*File, error) {
+	fileSize, err := GetFileSize(p)
+	if err != nil {
+		return nil, errs.BuildError(err, "could not determine file size for: %v", p)
+	}
+	base := filepath.Base(p)
+	file := File{
+		Name:     GetTitleOfFile(base),
+		FileName: base,
+		Path:     p,
+		Size:     fileSize,
+	}
+	return &file, nil
 }
