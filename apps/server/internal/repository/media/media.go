@@ -49,15 +49,21 @@ type mediaRepository struct {
 // GetByPath implements MediaRepository.
 func (r *mediaRepository) GetByPath(p string) (*model.Media, error) {
 	statement := table.Media.SELECT(media.ID, media.Exists).
-		WHERE(media.Path.EQ(postgres.String(p)))
+		WHERE(media.Path.EQ(postgres.String(p)).
+			AND(media.Deleted.IS_FALSE()).
+			AND(media.Exists.IS_TRUE()))
 
 		// TODO: there could be multiple results need to find an active one
-	var m *model.Media
+	var m []model.Media
 	if err := statement.QueryContext(r.ctx, r.db, &m); err != nil {
 		return nil, errs.BuildError(err, "could not find media by path: %v", p)
 	}
 
-	return m, nil
+	if len(m) == 0 {
+		return nil, nil
+	}
+
+	return &m[0], nil
 }
 
 // RemoveRelation implements MediaRepository.

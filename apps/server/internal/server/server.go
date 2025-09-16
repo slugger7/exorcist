@@ -17,12 +17,13 @@ import (
 )
 
 type server struct {
-	env       *environment.EnvironmentVariables
-	repo      repository.Repository
-	service   service.Service
-	logger    logger.Logger
-	jobCh     chan bool
-	wsService websockets.Websockets
+	env              *environment.EnvironmentVariables
+	repo             repository.Repository
+	service          service.Service
+	logger           logger.Logger
+	jobCh            chan bool
+	wsService        websockets.Websockets
+	directoryWatcher filewatcher.WatcherService
 }
 
 func (s *server) withJobRunner(ctx context.Context, wg *sync.WaitGroup, ws websockets.Websockets) *server {
@@ -57,8 +58,8 @@ func New(env *environment.EnvironmentVariables, wg *sync.WaitGroup) *http.Server
 	}
 	newServer.service = service.New(repo, env, newServer.jobCh, shutdownCtx)
 
-	filewatcher.New(*env, shutdownCtx, wg, repo, newServer.wsService).
-		WithDirectoryWatcher()
+	newServer.directoryWatcher = filewatcher.New(*env, shutdownCtx, wg, repo, newServer.wsService)
+	newServer.directoryWatcher.WithDirectoryWatcher()
 
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", env.Port),
@@ -70,6 +71,7 @@ func New(env *environment.EnvironmentVariables, wg *sync.WaitGroup) *http.Server
 
 	server.RegisterOnShutdown(func() {
 		newServer.logger.Info("Shutting down server. Stopping job runner.")
+		newServer.directoryWatcher.Close()
 		cancel()
 		close(newServer.jobCh)
 

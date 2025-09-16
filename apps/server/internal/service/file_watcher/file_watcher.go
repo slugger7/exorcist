@@ -26,10 +26,14 @@ type watcherService struct {
 	env       *environment.EnvironmentVariables
 	ctx       context.Context
 	wg        *sync.WaitGroup
+	watcher   *fsnotify.Watcher
+	libPaths  []model.LibraryPath
 }
 
 type WatcherService interface {
 	WithDirectoryWatcher()
+	Add(libPath model.LibraryPath)
+	Close()
 }
 
 var watcherServiceInstance *watcherService
@@ -42,15 +46,35 @@ func New(
 	wsService websockets.Websockets,
 ) WatcherService {
 	if watcherServiceInstance == nil {
+		logger := logger.New(&env)
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			logger.Errorf("could not set up file watcher: %v", err.Error())
+			return nil
+		}
+
 		watcherServiceInstance = &watcherService{
-			logger:    logger.New(&env),
+			logger:    logger,
 			env:       &env,
 			repo:      repo,
 			wsService: wsService,
 			ctx:       ctx,
 			wg:        wg,
+			watcher:   watcher,
 		}
 		watcherServiceInstance.logger.Info("created file watcher instance")
+
+		libPaths, err := watcherServiceInstance.repo.LibraryPath().GetAll()
+		if err != nil {
+			logger.Errorf("could not get all library paths to add to watcher: %v", err.Error())
+		}
+
+		watcherServiceInstance.libPaths = libPaths
+
+		for _, lp := range libPaths {
+			logger.Infof("watching %v", lp.Path)
+			watcher.Add(lp.Path)
+		}
 	}
 
 	return watcherServiceInstance
@@ -67,42 +91,40 @@ func findLibPathByFilePath(p string, libPaths []model.LibraryPath) *model.Librar
 
 func (s *watcherService) WithDirectoryWatcher() {
 	s.logger.Info("starting directory watcher")
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		s.logger.Errorf("could not set up file watcher: %v", err.Error())
-		return
-	}
-	defer watcher.Close()
-
-	libPaths, err := s.repo.LibraryPath().GetAll()
-	if err != nil {
-		s.logger.Errorf("could not get all library paths to add to watcher: %v", err.Error())
-	}
-
-	for _, lp := range libPaths {
-		s.logger.Infof("watching %v", lp.Path)
-		watcher.Add(lp.Path)
-	}
 
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
 		for {
 			select {
-			case event, ok := <-watcher.Events:
+			case event, ok := <-s.watcher.Events:
 				if !ok {
 					return
 				}
+
+				s.logger.Debug("Got a file event in watched directory")
 
 				if event.Has(fsnotify.Create) {
 					ext := filepath.Ext(event.Name)
 					if slices.Contains(constants.VideoExtensions[:], ext) {
 						s.logger.Infof("new file created: %v", event.Name)
 
-						libPath := findLibPathByFilePath(event.Name, libPaths)
+						libPath := findLibPathByFilePath(event.Name, s.libPaths)
 
 						if libPath == nil {
 							continue
+						}
+
+						m, err := s.repo.Media().GetByPath(event.Name)
+						if err != nil {
+							s.logger.Errorf("could not get media by path(%v): %v", event.Name, err.Error())
+							continue
+						}
+
+						if m != nil {
+							if !m.Deleted && m.Exists {
+								continue
+							}
 						}
 
 						f, err := media.GetFileInformation(event.Name)
@@ -144,9 +166,11 @@ func (s *watcherService) WithDirectoryWatcher() {
 						continue
 					}
 
+					s.logger.Infof("media has been marked as not exsisting any more: %v", event.Name)
+
 					s.wsService.MediaDelete(dto.MediaOverviewDTO{Id: m.ID, Deleted: true})
 				}
-			case err, ok := <-watcher.Errors:
+			case err, ok := <-s.watcher.Errors:
 				if !ok {
 					return
 				}
@@ -158,4 +182,13 @@ func (s *watcherService) WithDirectoryWatcher() {
 			}
 		}
 	}()
+}
+
+func (s *watcherService) Add(libPath model.LibraryPath) {
+	s.libPaths = append(s.libPaths, libPath)
+	s.watcher.Add(libPath.Path)
+}
+
+func (s *watcherService) Close() {
+	s.watcher.Close()
 }
