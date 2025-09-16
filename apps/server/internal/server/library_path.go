@@ -63,6 +63,8 @@ func (s *server) CreateLibraryPath(c *gin.Context) {
 		return
 	}
 
+	s.directoryWatcher.Add(*libPath)
+
 	result := (&dto.LibraryPathDTO{}).FromModel(*libPath)
 
 	c.JSON(http.StatusCreated, result)
