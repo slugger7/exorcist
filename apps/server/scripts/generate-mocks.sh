@@ -63,4 +63,7 @@ mockgen -source=${SERVICE_DIR}/person/person.go > ${MOCK_SERVICE_DIR}/person/per
 mkdir -p ${MOCK_SERVICE_DIR}/tag
 mockgen -source=${SERVICE_DIR}/tag/tag.go > ${MOCK_SERVICE_DIR}/tag/tag.go
 
+mkdir -p ${MOCK_SERVICE_DIR}/file_watcher
+mockgen -source=${SERVICE_DIR}/file_watcher/file_watcher.go > ${MOCK_SERVICE_DIR}/file_watcher/file_watcher.go
+
 echo "Mocks generated"
