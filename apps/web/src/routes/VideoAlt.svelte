@@ -48,7 +48,7 @@
   let sideOpen = $state(false);
 
   let watchedPercentage = $derived(
-    mediaEntity.progress / mediaEntity.video.runtime,
+    mediaEntity.progress / mediaEntity.video.runtime
   );
 
   const fetchMedia = async () => {
@@ -75,6 +75,7 @@
 
   $effect(() => {
     if (wsState.active) {
+      wsState.connection.removeEventListener("message", onWsMessage);
       wsState.connection.addEventListener("message", onWsMessage);
     }
   });
@@ -343,7 +344,7 @@
                     aria-label="refresh metadata"
                     to={routes.refreshMetadataFn(
                       id,
-                      routes.videoFunc(id, mediaEntity.title),
+                      routes.videoFunc(id, mediaEntity.title)
                     )}
                   >
                     <span class="icon"
@@ -357,7 +358,7 @@
                     aria-label="generate chapters"
                     to={routes.generateChaptersFn(
                       id,
-                      routes.videoFunc(id, mediaEntity.title),
+                      routes.videoFunc(id, mediaEntity.title)
                     )}
                     replace={true}
                   >

@@ -56,15 +56,15 @@
   let ascending = $state(getBoolParamOrDefault("ascending", false));
   let selectedTags = $state(getArrayOfStringsSearchParamOrDefault("tags", []));
   let selectedWatchStatuses = $state(
-    getArrayOfStringsSearchParamOrDefault("watchStatuses", []),
+    getArrayOfStringsSearchParamOrDefault("watchStatuses", [])
   );
   let selectedPeople = $state(
-    getArrayOfStringsSearchParamOrDefault("people", []),
+    getArrayOfStringsSearchParamOrDefault("people", [])
   );
   let expanded = $state(getBoolParamOrDefault("expanded", false));
   let selecting = $state(getBoolParamOrDefault("selecting", false));
   let selectedMedia = $state(
-    getArrayOfStringsSearchParamOrDefault("selected", []),
+    getArrayOfStringsSearchParamOrDefault("selected", [])
   );
   let favourites = $state(getBoolParamOrDefault("favourites", false));
   let deleted = $state(getBoolParamOrDefault("deleted", false));
@@ -77,8 +77,6 @@
   let newMedia = $state([]);
 
   let editingTitle = $state(false);
-
-  $inspect(deleted, exists);
 
   onMount(async () => {
     window.addEventListener("popstate", onPopState);
@@ -225,6 +223,7 @@
 
   $effect(() => {
     if (wsState.active) {
+      wsState.connection.removeEventListener("message", onWsMessage);
       wsState.connection.addEventListener("message", onWsMessage);
     }
   });
@@ -241,7 +240,7 @@
       const [updatedMediaPage, updatedNewMedia] = topic(
         mediaPage,
         newMedia,
-        data.data,
+        data.data
       );
       mediaPage = updatedMediaPage;
       newMedia = updatedNewMedia;
