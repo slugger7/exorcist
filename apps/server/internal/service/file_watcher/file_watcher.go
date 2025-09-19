@@ -123,13 +123,8 @@ func (s *watcherService) WithDirectoryWatcher() {
 				if !ok {
 					return
 				}
+				s.logger.Debugf(event.String())
 
-				s.logger.Debug("Got a file event in watched directory")
-				d, err := os.Stat(event.Name)
-				if err != nil {
-					s.logger.Errorf("colud not stat event path in watcher: %v", err.Error)
-					continue
-				}
 				libPath := findLibPathByFilePath(event.Name, s.libPaths)
 
 				if libPath == nil {
@@ -137,7 +132,11 @@ func (s *watcherService) WithDirectoryWatcher() {
 				}
 
 				if event.Has(fsnotify.Create) {
-
+					d, err := os.Stat(event.Name)
+					if err != nil {
+						s.logger.Errorf("colud not stat event path in watcher: %v", err.Error)
+						continue
+					}
 					if d.IsDir() {
 						s.addPath(event.Name)
 						videos, err := media.GetFilesByExtensions(event.Name, constants.VideoExtensions[:])
@@ -195,25 +194,16 @@ func (s *watcherService) WithDirectoryWatcher() {
 				}
 
 				if event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
-					if libPath == nil {
+					ms, err := s.repo.Media().GetAllInPath(event.Name)
+					if err != nil {
+						s.logger.Errorf("could not get all media in path (%v): %v", event.Name, err.Error())
 						continue
 					}
 
-					if d.IsDir() {
-						ms, err := s.repo.Media().GetAllInPath(event.Name)
-						if err != nil {
-							s.logger.Errorf("could not get all media in path (%v): %v", event.Name, err.Error())
-							continue
-						}
-
-						for _, m := range ms {
-							s.markMediaRemoved(m)
-						}
+					for _, m := range ms {
+						s.markMediaRemoved(m)
 					}
 
-					if err != nil {
-						s.logger.Errorf("could not stat")
-					}
 					m, err := s.repo.Media().GetByPath(event.Name)
 					if err != nil {
 						s.logger.Errorf("remove event triggered but could not find media by path: %v", event.Name)
