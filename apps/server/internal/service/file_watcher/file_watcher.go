@@ -125,19 +125,18 @@ func (s *watcherService) WithDirectoryWatcher() {
 				}
 
 				s.logger.Debug("Got a file event in watched directory")
+				d, err := os.Stat(event.Name)
+				if err != nil {
+					s.logger.Errorf("colud not stat event path in watcher: %v", err.Error)
+					continue
+				}
+				libPath := findLibPathByFilePath(event.Name, s.libPaths)
+
+				if libPath == nil {
+					continue
+				}
 
 				if event.Has(fsnotify.Create) {
-					d, err := os.Stat(event.Name)
-					if err != nil {
-						s.logger.Errorf("colud not stat event path in watcher: %v", err.Error)
-						continue
-					}
-
-					libPath := findLibPathByFilePath(event.Name, s.libPaths)
-
-					if libPath == nil {
-						continue
-					}
 
 					if d.IsDir() {
 						s.addPath(event.Name)
@@ -196,6 +195,25 @@ func (s *watcherService) WithDirectoryWatcher() {
 				}
 
 				if event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
+					if libPath == nil {
+						continue
+					}
+
+					if d.IsDir() {
+						ms, err := s.repo.Media().GetAllInPath(event.Name)
+						if err != nil {
+							s.logger.Errorf("could not get all media in path (%v): %v", event.Name, err.Error())
+							continue
+						}
+
+						for _, m := range ms {
+							s.markMediaRemoved(m)
+						}
+					}
+
+					if err != nil {
+						s.logger.Errorf("could not stat")
+					}
 					m, err := s.repo.Media().GetByPath(event.Name)
 					if err != nil {
 						s.logger.Errorf("remove event triggered but could not find media by path: %v", event.Name)
@@ -206,18 +224,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 						continue
 					}
 
-					s.logger.Infof("file removed or renamed: %v", event.Name)
-
-					m.Exists = false
-
-					if err := s.repo.Media().UpdateExists(*m); err != nil {
-						s.logger.Errorf("could not mark media as removed in file watcher: %v", err.Error())
-						continue
-					}
-
-					s.logger.Infof("media has been marked as not exsisting any more: %v", event.Name)
-
-					s.wsService.MediaDelete(dto.MediaOverviewDTO{Id: m.ID, Deleted: true})
+					s.markMediaRemoved(*m)
 				}
 			case err, ok := <-s.watcher.Errors:
 				if !ok {
@@ -231,6 +238,20 @@ func (s *watcherService) WithDirectoryWatcher() {
 			}
 		}
 	}()
+}
+
+func (s *watcherService) markMediaRemoved(m model.Media) {
+	s.logger.Infof("file removed or renamed: %v", m.Path)
+
+	m.Exists = false
+
+	if err := s.repo.Media().UpdateExists(m); err != nil {
+		s.logger.Errorf("could not mark media as removed in file watcher: %v", err.Error())
+	}
+
+	s.logger.Infof("media has been marked as not exsisting any more: %v", m.Path)
+
+	s.wsService.MediaDelete(dto.MediaOverviewDTO{Id: m.ID, Deleted: true})
 }
 
 func (s *watcherService) Add(libPath model.LibraryPath) {

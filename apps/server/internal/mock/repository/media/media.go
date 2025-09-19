@@ -88,6 +88,21 @@ func (mr *MockMediaRepositoryMockRecorder) GetAll(userId, search any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockMediaRepository)(nil).GetAll), userId, search)
 }
 
+// GetAllInPath mocks base method.
+func (m *MockMediaRepository) GetAllInPath(p string) ([]model.Media, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllInPath", p)
+	ret0, _ := ret[0].([]model.Media)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllInPath indicates an expected call of GetAllInPath.
+func (mr *MockMediaRepositoryMockRecorder) GetAllInPath(p any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllInPath", reflect.TypeOf((*MockMediaRepository)(nil).GetAllInPath), p)
+}
+
 // GetAssetsFor mocks base method.
 func (m *MockMediaRepository) GetAssetsFor(id uuid.UUID) ([]model.Media, error) {
 	m.ctrl.T.Helper()
