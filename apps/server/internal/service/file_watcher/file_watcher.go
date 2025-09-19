@@ -2,6 +2,8 @@ package filewatcher
 
 import (
 	"context"
+	"io/fs"
+	"os"
 	"path/filepath"
 	"slices"
 	"strings"
@@ -77,11 +79,27 @@ func New(
 
 		for _, lp := range libPaths {
 			logger.Infof("watching %v", lp.Path)
-			watcher.Add(lp.Path)
+			watcherServiceInstance.Add(lp)
 		}
 	}
 
 	return watcherServiceInstance
+}
+
+func deepWatch(root string, watcher *fsnotify.Watcher) error {
+	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() {
+			watcher.Add(path)
+		}
+
+		return nil
+	})
+
+	return err
 }
 
 func findLibPathByFilePath(p string, libPaths []model.LibraryPath) *model.LibraryPath {
@@ -105,19 +123,42 @@ func (s *watcherService) WithDirectoryWatcher() {
 				if !ok {
 					return
 				}
+				s.logger.Debugf(event.String())
 
-				s.logger.Debug("Got a file event in watched directory")
+				libPath := findLibPathByFilePath(event.Name, s.libPaths)
+
+				if libPath == nil {
+					continue
+				}
 
 				if event.Has(fsnotify.Create) {
+					d, err := os.Stat(event.Name)
+					if err != nil {
+						s.logger.Errorf("colud not stat event path in watcher: %v", err.Error)
+						continue
+					}
+					if d.IsDir() {
+						s.addPath(event.Name)
+						videos, err := media.GetFilesByExtensions(event.Name, constants.VideoExtensions[:])
+						if err != nil {
+							s.logger.Errorf("could not scan new paths contents (%v): %v", event.Name, err.Error())
+						} else {
+							for _, v := range videos {
+								if err := job.CreateNewMedia(libPath, nil, v, *s.env, s.repo, s.logger, s.wsService); err != nil {
+									s.logger.Errorf("failed to create new media in watcher (%v): %v", v.Path, err.Error())
+									continue
+								}
+							}
+
+							s.service.Job().StartJobRunner()
+						}
+
+						continue
+					}
+
 					ext := filepath.Ext(event.Name)
 					if slices.Contains(constants.VideoExtensions[:], ext) {
 						s.logger.Infof("new file created: %v", event.Name)
-
-						libPath := findLibPathByFilePath(event.Name, s.libPaths)
-
-						if libPath == nil {
-							continue
-						}
 
 						m, err := s.repo.Media().GetByPath(event.Name)
 						if err != nil {
@@ -153,6 +194,16 @@ func (s *watcherService) WithDirectoryWatcher() {
 				}
 
 				if event.Has(fsnotify.Remove) || event.Has(fsnotify.Rename) {
+					ms, err := s.repo.Media().GetAllInPath(event.Name)
+					if err != nil {
+						s.logger.Errorf("could not get all media in path (%v): %v", event.Name, err.Error())
+						continue
+					}
+
+					for _, m := range ms {
+						s.markMediaRemoved(m)
+					}
+
 					m, err := s.repo.Media().GetByPath(event.Name)
 					if err != nil {
 						s.logger.Errorf("remove event triggered but could not find media by path: %v", event.Name)
@@ -163,18 +214,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 						continue
 					}
 
-					s.logger.Infof("file removed or renamed: %v", event.Name)
-
-					m.Exists = false
-
-					if err := s.repo.Media().UpdateExists(*m); err != nil {
-						s.logger.Errorf("could not mark media as removed in file watcher: %v", err.Error())
-						continue
-					}
-
-					s.logger.Infof("media has been marked as not exsisting any more: %v", event.Name)
-
-					s.wsService.MediaDelete(dto.MediaOverviewDTO{Id: m.ID, Deleted: true})
+					s.markMediaRemoved(*m)
 				}
 			case err, ok := <-s.watcher.Errors:
 				if !ok {
@@ -190,9 +230,30 @@ func (s *watcherService) WithDirectoryWatcher() {
 	}()
 }
 
+func (s *watcherService) markMediaRemoved(m model.Media) {
+	s.logger.Infof("file removed or renamed: %v", m.Path)
+
+	m.Exists = false
+
+	if err := s.repo.Media().UpdateExists(m); err != nil {
+		s.logger.Errorf("could not mark media as removed in file watcher: %v", err.Error())
+	}
+
+	s.logger.Infof("media has been marked as not exsisting any more: %v", m.Path)
+
+	s.wsService.MediaDelete(dto.MediaOverviewDTO{Id: m.ID, Deleted: true})
+}
+
 func (s *watcherService) Add(libPath model.LibraryPath) {
 	s.libPaths = append(s.libPaths, libPath)
-	s.watcher.Add(libPath.Path)
+	s.addPath(libPath.Path)
+}
+
+func (s *watcherService) addPath(p string) {
+	err := deepWatch(p, s.watcher)
+	if err != nil {
+		s.logger.Errorf("could not add all sub paths of %v: %v", p, err.Error())
+	}
 }
 
 func (s *watcherService) Close() {

@@ -3,6 +3,7 @@ package mediaRepository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/go-jet/jet/v2/postgres"
@@ -30,6 +31,7 @@ type MediaRepository interface {
 	GetById(id uuid.UUID) (*models.Media, error)
 	GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error)
 	GetByPath(p string) (*model.Media, error)
+	GetAllInPath(p string) ([]model.Media, error)
 	Relate(model.MediaRelation) (*model.MediaRelation, error)
 	Delete(m model.Media) error
 	GetAssetsFor(id uuid.UUID) ([]model.Media, error)
@@ -44,6 +46,21 @@ type mediaRepository struct {
 	env    *environment.EnvironmentVariables
 	logger logger.Logger
 	ctx    context.Context
+}
+
+// GetAllInPath implements MediaRepository.
+func (r *mediaRepository) GetAllInPath(p string) ([]model.Media, error) {
+	statement := table.Media.SELECT(media.ID).
+		WHERE(media.Path.LIKE(postgres.String(fmt.Sprintf("%v%%", p))).
+			AND(media.Deleted.IS_FALSE()).
+			AND(media.Exists.IS_TRUE()))
+
+	var m []model.Media
+	if err := statement.QueryContext(r.ctx, r.db, &m); err != nil {
+		return nil, errs.BuildError(err, "could not find media under path: %v", p)
+	}
+
+	return m, nil
 }
 
 // GetByPath implements MediaRepository.

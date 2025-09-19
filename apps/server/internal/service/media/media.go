@@ -90,11 +90,11 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 		// unsure if I want to move the removal logic to a method. Feels weird to just have it hanging about here.
 		assetsPath := path.Join(m.env.Assets, mediaEntity.Media.ID.String())
 		if err = os.RemoveAll(assetsPath); err != nil {
-			return errs.BuildError(err, "could not remove assets and assets folder: (%v)", assetsPath)
+			m.logger.Errorf("could not remove assets and assets folder (%v): ", assetsPath, err.Error())
 		}
 
 		if err = os.Remove(mediaEntity.Media.Path); err != nil {
-			return errs.BuildError(err, "could not remove media: (%v)", mediaEntity.Path)
+			m.logger.Errorf("could not remove media (%v): ", mediaEntity.Path, err.Error())
 		}
 
 		mediaEntity.Media.Exists = false
