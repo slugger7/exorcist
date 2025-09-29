@@ -35,6 +35,8 @@ One thing to keep in mind is that any path that does not have the `/api` prefix 
 
 #### Entity Relation Diagram
 
+>currently out of date
+
 ![entity_relation_diagram](./diagrams/out/entity_relation_diagram.d2.svg)
 
 This application is using a database first approach with a sql builder instead of an ORM.
@@ -58,15 +60,6 @@ The usual workflow would to add a migration would be:
 1. Create a migration
 1. Run the migrations
 1. Update the models
-
-### Troubleshooting
-
-- If using zsh remember to add the following to your .zshrc
-
-  ```bash
-  export GOPATH=$HOME/go  
-  export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
-  ```
 
 ### Diagrams
 
