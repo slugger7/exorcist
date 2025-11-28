@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"time"
 
 	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
@@ -11,6 +12,7 @@ import (
 	"github.com/slugger7/exorcist/internal/environment"
 	errs "github.com/slugger7/exorcist/internal/errors"
 	"github.com/slugger7/exorcist/internal/logger"
+	"github.com/slugger7/exorcist/internal/media"
 	"github.com/slugger7/exorcist/internal/repository"
 )
 
@@ -202,12 +204,31 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		generateThumbnailData.RelationType = &v
 	}
 
-	if _, err := i.repo.Video().GetByIdWithMedia(generateThumbnailData.MediaId); err != nil {
+	video, err := i.repo.Video().GetByIdWithMedia(generateThumbnailData.MediaId)
+	if err != nil {
 		return nil, errs.BuildError(
 			err,
 			ErrActionGenerateThumbnailVideoNotFound,
 			generateThumbnailData.MediaId)
 	}
+
+	_ = video
+
+	f, err := media.GetFileInformation(video.Media.Path)
+	if err != nil {
+		return nil, errs.BuildError(err, "could not get file information")
+	}
+
+	generateThumbnailData.Path = filepath.Join(
+		i.env.Assets,
+		generateThumbnailData.MediaId.String(), // currently is the video id
+		fmt.Sprintf(
+			`%v.%v.%vx%v.webp`,
+			f.FileName,
+			generateThumbnailData.RelationType.String(),
+			generateThumbnailData.Height,
+			generateThumbnailData.Width,
+		))
 
 	bytes, err := json.Marshal(generateThumbnailData)
 	if err != nil {
@@ -220,6 +241,9 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		Data:     &data,
 		Priority: priority,
 	}, nil
+
+	// Generates the thumbnail but does not remove the previous thumbnail record.
+	// The query to fetch the video with the thumbnail is joining with multiple results duplicating the record at the moment
 }
 
 const ErrActionScanGetLibraryPaths = "could not get library paths in scan action"
