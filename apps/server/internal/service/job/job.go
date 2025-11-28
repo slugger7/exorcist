@@ -11,6 +11,7 @@ import (
 	"github.com/slugger7/exorcist/internal/dto"
 	"github.com/slugger7/exorcist/internal/environment"
 	errs "github.com/slugger7/exorcist/internal/errors"
+	"github.com/slugger7/exorcist/internal/ffmpeg"
 	"github.com/slugger7/exorcist/internal/logger"
 	"github.com/slugger7/exorcist/internal/media"
 	"github.com/slugger7/exorcist/internal/repository"
@@ -217,6 +218,19 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 	f, err := media.GetFileInformation(video.Media.Path)
 	if err != nil {
 		return nil, errs.BuildError(err, "could not get file information")
+	}
+
+	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {
+		generateThumbnailData.Height = int(video.Video.Height)
+		generateThumbnailData.Width = int(video.Video.Width)
+	}
+
+	if generateThumbnailData.Height == 0 {
+		generateThumbnailData.Height = ffmpeg.ScaleHeightByWidth(int(video.Video.Height), int(video.Video.Width), generateThumbnailData.Width)
+	}
+
+	if generateThumbnailData.Width == 0 {
+		generateThumbnailData.Width = ffmpeg.ScaleWidthByHeight(int(video.Video.Height), int(video.Video.Width), generateThumbnailData.Height)
 	}
 
 	generateThumbnailData.Path = filepath.Join(
