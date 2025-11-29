@@ -205,7 +205,7 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		generateThumbnailData.RelationType = &v
 	}
 
-	video, err := i.repo.Video().GetByIdWithMedia(generateThumbnailData.MediaId)
+	m, err := i.repo.Video().GetByMediaId(generateThumbnailData.MediaId)
 	if err != nil {
 		return nil, errs.BuildError(
 			err,
@@ -213,29 +213,33 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 			generateThumbnailData.MediaId)
 	}
 
-	_ = video
-
-	f, err := media.GetFileInformation(video.Media.Path)
+	f, err := media.GetFileInformation(m.Media.Path)
 	if err != nil {
 		return nil, errs.BuildError(err, "could not get file information")
 	}
 
 	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {
-		generateThumbnailData.Height = int(video.Video.Height)
-		generateThumbnailData.Width = int(video.Video.Width)
+		generateThumbnailData.Height = int(m.Video.Height)
+		generateThumbnailData.Width = int(m.Video.Width)
 	}
 
 	if generateThumbnailData.Height == 0 {
-		generateThumbnailData.Height = ffmpeg.ScaleHeightByWidth(int(video.Video.Height), int(video.Video.Width), generateThumbnailData.Width)
+		generateThumbnailData.Height = ffmpeg.ScaleHeightByWidth(
+			int(m.Video.Height),
+			int(m.Video.Width),
+			generateThumbnailData.Width)
 	}
 
 	if generateThumbnailData.Width == 0 {
-		generateThumbnailData.Width = ffmpeg.ScaleWidthByHeight(int(video.Video.Height), int(video.Video.Width), generateThumbnailData.Height)
+		generateThumbnailData.Width = ffmpeg.ScaleWidthByHeight(
+			int(m.Video.Height),
+			int(m.Video.Width),
+			generateThumbnailData.Height)
 	}
 
 	generateThumbnailData.Path = filepath.Join(
 		i.env.Assets,
-		generateThumbnailData.MediaId.String(), // currently is the video id
+		generateThumbnailData.MediaId.String(),
 		fmt.Sprintf(
 			`%v.%v.%vx%v.webp`,
 			f.FileName,
