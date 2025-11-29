@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
 	"github.com/slugger7/exorcist/internal/dto"
 	"github.com/slugger7/exorcist/internal/environment"
@@ -191,6 +192,21 @@ func (i *jobService) refreshMetadata(data string, priority int16) (*model.Job, e
 
 }
 
+func (i *jobService) removeExistingThumbnail(mediaId uuid.UUID) error {
+	assets, err := i.repo.Media().GetAssetsFor(mediaId)
+	if err != nil {
+		return errs.BuildError(err, "could not get assets for media id %v", mediaId)
+	}
+
+	for _, m := range assets {
+		if m.MediaRelation.RelationType == model.MediaRelationTypeEnum_Thumbnail {
+			// TODO: delete the related to media by its id
+		}
+	}
+
+	return nil
+}
+
 const ErrActionGenerateThumbnailVideoNotFound = "could not find video for generate thumbnail job: %v"
 
 func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job, error) {
@@ -216,6 +232,10 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 	f, err := media.GetFileInformation(m.Media.Path)
 	if err != nil {
 		return nil, errs.BuildError(err, "could not get file information")
+	}
+
+	if err := i.removeExistingThumbnail(generateThumbnailData.MediaId); err != nil {
+		return nil, errs.BuildError(err, "could not remove existing thumbnail")
 	}
 
 	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {

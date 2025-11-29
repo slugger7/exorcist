@@ -104,8 +104,8 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 	for _, a := range assets {
 		a.Deleted = true
 		a.Exists = !physical
-		if err := m.repo.Media().Delete(a); err != nil {
-			return errs.BuildError(err, "something failed while deleting an asset (%v) in repo: %v", a.ID.String(), id.String())
+		if err := m.repo.Media().Delete(a.Media); err != nil {
+			return errs.BuildError(err, "something failed while deleting an asset (%v) in repo: %v", a.Media.ID.String(), id.String())
 		}
 	}
 

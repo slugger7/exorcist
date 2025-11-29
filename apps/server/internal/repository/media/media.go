@@ -34,7 +34,7 @@ type MediaRepository interface {
 	GetAllInPath(p string) ([]model.Media, error)
 	Relate(model.MediaRelation) (*model.MediaRelation, error)
 	Delete(m model.Media) error
-	GetAssetsFor(id uuid.UUID) ([]model.Media, error)
+	GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error)
 	GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error)
 	UpsertProgress(prog model.MediaProgress) (*model.MediaProgress, error)
 	Update(m model.Media, columns postgres.ColumnList) (*model.Media, error)
@@ -224,12 +224,12 @@ func (r *mediaRepository) GetProgressForUser(id uuid.UUID, userId uuid.UUID) (*m
 }
 
 // GetAssetsFor implements MediaRepository.
-func (r *mediaRepository) GetAssetsFor(id uuid.UUID) ([]model.Media, error) {
-	statement := media.SELECT(media.AllColumns).
+func (r *mediaRepository) GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error) {
+	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
 		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
 		WHERE(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())))
 
-	var entities []model.Media
+	var entities []models.MediaRelation
 	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
 		return nil, errs.BuildError(err, "could not fetch related media for: %v", id.String())
 	}

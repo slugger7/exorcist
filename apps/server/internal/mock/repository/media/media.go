@@ -104,10 +104,10 @@ func (mr *MockMediaRepositoryMockRecorder) GetAllInPath(p any) *gomock.Call {
 }
 
 // GetAssetsFor mocks base method.
-func (m *MockMediaRepository) GetAssetsFor(id uuid.UUID) ([]model.Media, error) {
+func (m *MockMediaRepository) GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAssetsFor", id)
-	ret0, _ := ret[0].([]model.Media)
+	ret0, _ := ret[0].([]models.MediaRelation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
