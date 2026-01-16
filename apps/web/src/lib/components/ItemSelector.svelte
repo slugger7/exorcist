@@ -142,6 +142,10 @@
     }
   };
 
+  /** @param {string} str */
+  const makeSearchableString = (str) =>
+    str.replaceAll(/[^a-zA-Z]/g, "").toLowerCase();
+
   const onQueryChange = (e) => {
     e.preventDefault();
     query = e.target.value;
@@ -150,12 +154,14 @@
 
     itemsInView = items
       .filter((t) =>
-        t.name.toLocaleLowerCase().includes(e.target.value.toLowerCase()),
+        makeSearchableString(t.name).includes(
+          makeSearchableString(e.target.value),
+        ),
       )
       .slice(0, itemsInViewCount);
 
     const exact = items.find(
-      (tag) => tag.name.toLowerCase() === query.toLowerCase(),
+      (tag) => makeSearchableString(tag.name) === makeSearchableString(query),
     );
     if (exact) {
       itemsInView = itemsInView.filter(
