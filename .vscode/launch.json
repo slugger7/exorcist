@@ -5,21 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "firefox",
-      "request": "launch",
-      "name": "Launch firefox",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/apps/web",
-      "tmpDir": "~/.mozilla/firefox"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch chrome",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/apps/web"
-    },
-    {
       "name": "Run server",
       "type": "go",
       "request": "launch",
@@ -31,14 +16,23 @@
       "name": "Run web",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "/home/slugger/.nvm/versions/node/v20.10.0/bin/npm",
-      "runtimeArgs": [
-        "run",
-        "dev"
-      ],
-      "envFile": "${workspaceFolder}/.env",
-      "console": "internalConsole",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "dev"],
       "cwd": "${workspaceFolder}/apps/web"
+    },
+    {
+      "type": "firefox",
+      "request": "launch",
+      "name": "Launch firefox",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/apps/web"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch chrome",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/apps/web"
     },
     {
       "command": "npm run stub",
@@ -54,6 +48,6 @@
       "mode": "auto",
       "program": "${workspaceFolder}/apps/server/playground/fsnotify",
       "cwd": "${workspaceFolder}/apps/server"
-    },
+    }
   ]
 }

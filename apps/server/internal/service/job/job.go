@@ -4,14 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
 	"github.com/slugger7/exorcist/internal/dto"
 	"github.com/slugger7/exorcist/internal/environment"
 	errs "github.com/slugger7/exorcist/internal/errors"
+	"github.com/slugger7/exorcist/internal/ffmpeg"
 	"github.com/slugger7/exorcist/internal/logger"
+	"github.com/slugger7/exorcist/internal/media"
 	"github.com/slugger7/exorcist/internal/repository"
+	mediaService "github.com/slugger7/exorcist/internal/service/media"
 )
 
 type JobService interface {
@@ -20,23 +25,25 @@ type JobService interface {
 }
 
 type jobService struct {
-	env    *environment.EnvironmentVariables
-	repo   repository.Repository
-	logger logger.Logger
-	jobCh  chan bool
-	ctx    context.Context
+	env          *environment.EnvironmentVariables
+	repo         repository.Repository
+	logger       logger.Logger
+	jobCh        chan bool
+	ctx          context.Context
+	mediaService mediaService.MediaService
 }
 
 var jobServiceInstance *jobService
 
-func New(repo repository.Repository, env *environment.EnvironmentVariables, jobCh chan bool, ctx context.Context) JobService {
+func New(repo repository.Repository, env *environment.EnvironmentVariables, jobCh chan bool, ctx context.Context, mediaService mediaService.MediaService) JobService {
 	if jobServiceInstance == nil {
 		jobServiceInstance = &jobService{
-			env:    env,
-			repo:   repo,
-			logger: logger.New(env),
-			jobCh:  jobCh,
-			ctx:    ctx,
+			env:          env,
+			repo:         repo,
+			logger:       logger.New(env),
+			jobCh:        jobCh,
+			ctx:          ctx,
+			mediaService: mediaService,
 		}
 
 		jobServiceInstance.logger.Info("UserService instance created")
@@ -188,6 +195,31 @@ func (i *jobService) refreshMetadata(data string, priority int16) (*model.Job, e
 
 }
 
+func (i *jobService) removeExistingThumbnail(mediaId uuid.UUID) error {
+	assets, err := i.repo.Media().GetRelationsFor(mediaId)
+	if err != nil {
+		return errs.BuildError(err, "could not get assets for media id %v", mediaId)
+	}
+
+	for _, m := range assets {
+		if m.MediaRelation.RelationType == model.MediaRelationTypeEnum_Thumbnail {
+			if err := i.mediaService.Delete(m.MediaRelation.RelatedTo, true); err != nil {
+				return errs.BuildError(err, "could not remove thumbnail information")
+			}
+
+			if err := i.repo.Media().RemoveRelation(m.MediaRelation.MediaID, m.MediaRelation.RelatedTo); err != nil {
+				return errs.BuildError(
+					err,
+					"could not remove thumbnail relation: %v related to %v",
+					m.MediaRelation.MediaID,
+					m.MediaRelation.RelatedTo)
+			}
+		}
+	}
+
+	return nil
+}
+
 const ErrActionGenerateThumbnailVideoNotFound = "could not find video for generate thumbnail job: %v"
 
 func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job, error) {
@@ -202,12 +234,52 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		generateThumbnailData.RelationType = &v
 	}
 
-	if _, err := i.repo.Video().GetByIdWithMedia(generateThumbnailData.MediaId); err != nil {
+	m, err := i.repo.Video().GetByMediaId(generateThumbnailData.MediaId)
+	if err != nil {
 		return nil, errs.BuildError(
 			err,
 			ErrActionGenerateThumbnailVideoNotFound,
 			generateThumbnailData.MediaId)
 	}
+
+	f, err := media.GetFileInformation(m.Media.Path)
+	if err != nil {
+		return nil, errs.BuildError(err, "could not get file information")
+	}
+
+	if err := i.removeExistingThumbnail(generateThumbnailData.MediaId); err != nil {
+		return nil, errs.BuildError(err, "could not remove existing thumbnail")
+	}
+
+	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {
+		generateThumbnailData.Height = int(m.Video.Height)
+		generateThumbnailData.Width = int(m.Video.Width)
+	}
+
+	if generateThumbnailData.Height == 0 {
+		generateThumbnailData.Height = ffmpeg.ScaleHeightByWidth(
+			int(m.Video.Height),
+			int(m.Video.Width),
+			generateThumbnailData.Width)
+	}
+
+	if generateThumbnailData.Width == 0 {
+		generateThumbnailData.Width = ffmpeg.ScaleWidthByHeight(
+			int(m.Video.Height),
+			int(m.Video.Width),
+			generateThumbnailData.Height)
+	}
+
+	generateThumbnailData.Path = filepath.Join(
+		i.env.Assets,
+		generateThumbnailData.MediaId.String(),
+		fmt.Sprintf(
+			`%v.%v.%vx%v.webp`,
+			f.FileName,
+			generateThumbnailData.RelationType.String(),
+			generateThumbnailData.Height,
+			generateThumbnailData.Width,
+		))
 
 	bytes, err := json.Marshal(generateThumbnailData)
 	if err != nil {
@@ -220,6 +292,9 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		Data:     &data,
 		Priority: priority,
 	}, nil
+
+	// Generates the thumbnail but does not remove the previous thumbnail record.
+	// The query to fetch the video with the thumbnail is joining with multiple results duplicating the record at the moment
 }
 
 const ErrActionScanGetLibraryPaths = "could not get library paths in scan action"

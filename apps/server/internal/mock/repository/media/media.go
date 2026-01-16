@@ -104,10 +104,10 @@ func (mr *MockMediaRepositoryMockRecorder) GetAllInPath(p any) *gomock.Call {
 }
 
 // GetAssetsFor mocks base method.
-func (m *MockMediaRepository) GetAssetsFor(id uuid.UUID) ([]model.Media, error) {
+func (m *MockMediaRepository) GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAssetsFor", id)
-	ret0, _ := ret[0].([]model.Media)
+	ret0, _ := ret[0].([]models.MediaRelation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -206,6 +206,21 @@ func (m *MockMediaRepository) GetProgressForUser(id, userId uuid.UUID) (*model.M
 func (mr *MockMediaRepositoryMockRecorder) GetProgressForUser(id, userId any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProgressForUser", reflect.TypeOf((*MockMediaRepository)(nil).GetProgressForUser), id, userId)
+}
+
+// GetRelationsFor mocks base method.
+func (m *MockMediaRepository) GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRelationsFor", id)
+	ret0, _ := ret[0].([]models.MediaRelation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRelationsFor indicates an expected call of GetRelationsFor.
+func (mr *MockMediaRepositoryMockRecorder) GetRelationsFor(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRelationsFor", reflect.TypeOf((*MockMediaRepository)(nil).GetRelationsFor), id)
 }
 
 // Relate mocks base method.

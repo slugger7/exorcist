@@ -1,16 +1,60 @@
 # Exorcist
 
-This project is a linking or a workflow project for the the exorcist project.
+**!!! UNDER CONSTRUCTION !!!**
 
-It makes use of git submodules for the [server](https://github.com/slugger7/exorcist-server) and [web](https://github.com/slugger7/exorcist-web).
+A project to manage your media and reduce duplicates.
 
-In VS code you can then manage all three projects git individually but have common things living in this repository like [vscode folder](./.vscode)
+Link people to videos and photos
+
+Add tags to media
 
 ## Getting started
 
-- `git clone --recurse-submodules git@github.com:slugger7/exorcist.git`
-- `git clone --recurse-submodules https://github.com/slugger7/exorcist.git`
+### Prerequisites
 
-If the project has been cloned without the `--recurse-submodules` option simply run
-`git submodule update --init --recursive` to initialise the submodules
+- [Docker](https://www.docker.com/)
 
+### Running application
+
+- Copy [.env.example](.env.example) to [.env](.env)
+  - Alter varibales in [.env](.env) to suit your needs
+- In [docker-compose.yml](docker-compose.yml) mount the volumes with your media to the server
+- Bring the environment up
+
+```bash
+docker compose up
+```
+
+- In your browser go to [http://localhost:3366](http://localhost:3366) (unless configured otherwise)
+- Log in with the username `admin` and password `admin`
+  - In the top right when you head to the admin profile you can change the password
+- Add a library
+- Add a library path to that library
+- Scan the library path
+
+## Development
+
+### Prerequisites
+
+- [Go](https://go.dev/)
+- [Node](https://nodejs.org/en)
+- [ffmpeg](https://ffmpeg.org/)
+- [Docker](https://www.docker.com/)
+- [psql](https://www.postgresql.org/docs/current/app-psql.html)
+- [tygo](https://github.com/gzuidhof/tygo)
+  - Mac:
+    - `brew install libpq`
+    - `brew link --force libpq`
+  - Ubuntu:
+    - `sudo apt update`
+    - `sudo apt install postgresql-client`
+
+### Running
+
+## Database
+
+- `docker compose up db -d`
+- There is a VS Code plugin suggestion for postgres that you could use to manage the database
+- You could also add a pg_admin container into the docker compose
+
+## Server

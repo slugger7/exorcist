@@ -46,7 +46,7 @@
   let loadingFavourite = $state(false);
 
   let watchedPercentage = $derived(
-    mediaEntity.progress / mediaEntity.video.runtime
+    mediaEntity.progress / mediaEntity.video.runtime,
   );
 
   const fetchMedia = async () => {
@@ -340,7 +340,7 @@
               aria-label="refresh metadata"
               to={routes.refreshMetadataFn(
                 id,
-                routes.videoFunc(id, mediaEntity.title)
+                routes.videoFunc(id, mediaEntity.title),
               )}
             >
               <span class="icon"><i class="fas fa-arrows-rotate"></i></span
@@ -353,11 +353,24 @@
               aria-label="generate chapters"
               to={routes.generateChaptersFn(
                 id,
-                routes.videoFunc(id, mediaEntity.title)
+                routes.videoFunc(id, mediaEntity.title),
               )}
               replace={true}
             >
               <span class="icon"><i class="fas fa-images"></i></span>
+            </Link>
+          </p>
+          <p class="control">
+            <Link
+              class="button"
+              aria-label="generate thumbnail"
+              to={routes.generateThumbnailFn(
+                id,
+                routes.videoFunc(id, mediaEntity.title),
+              )}
+              replace={true}
+            >
+              <span class="icon"><i class="fas fa-image"></i></span>
             </Link>
           </p>
         {/if}

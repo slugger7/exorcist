@@ -180,7 +180,7 @@ func CreateNewMedia(
 			height,
 			width,
 		))
-	thumbnailJob, err := CreateGenerateThumbnailJob(createdVideos[0], jobId, assetPath, 0, height, width, &relationType, nil)
+	thumbnailJob, err := CreateGenerateThumbnailJob(createdMedia[0].ID, jobId, assetPath, 0, height, width, &relationType, nil)
 	if err != nil {
 		return errs.BuildError(err, "could not create generate thumbnail job")
 	}

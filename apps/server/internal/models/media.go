@@ -10,6 +10,11 @@ type MediaVideo struct {
 	model.Video
 }
 
+type MediaRelation struct {
+	model.Media
+	model.MediaRelation
+}
+
 type MediaOverviewModel struct {
 	model.Media
 	model.MediaProgress

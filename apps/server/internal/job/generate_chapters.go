@@ -109,7 +109,7 @@ func (jr *JobRunner) generateChapters(job *model.Job) error {
 				jobData.Width,
 				i,
 			))
-		job, err := CreateGenerateThumbnailJob(*media.Video, &job.ID, assetPath, i.Seconds(), jobData.Height, jobData.Width, &relationType, &metadata)
+		job, err := CreateGenerateThumbnailJob(media.Media.ID, &job.ID, assetPath, i.Seconds(), jobData.Height, jobData.Width, &relationType, &metadata)
 		if err != nil {
 			accErr = errors.Join(accErr, err)
 			continue

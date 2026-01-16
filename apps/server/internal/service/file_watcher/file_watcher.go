@@ -156,7 +156,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 						continue
 					}
 
-					ext := filepath.Ext(event.Name)
+					ext := strings.ToLower(filepath.Ext(event.Name))
 					if slices.Contains(constants.VideoExtensions[:], ext) {
 						s.logger.Infof("new file created: %v", event.Name)
 

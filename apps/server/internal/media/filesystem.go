@@ -71,7 +71,7 @@ func GetFilesByExtensions(root string, extensions []string) (ret []File, reterr 
 		}
 
 		if !d.IsDir() {
-			if slices.Contains(extensions, filepath.Ext(d.Name())) {
+			if slices.Contains(extensions, strings.ToLower(filepath.Ext(d.Name()))) {
 				file, err := GetFileInformation(path)
 				if err != nil {
 					return errors.Join(reterr, errs.BuildError(err, "GetFilesByExtensions"))
