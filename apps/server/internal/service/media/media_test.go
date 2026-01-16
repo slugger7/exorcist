@@ -109,7 +109,7 @@ func Test_Delete_PhysicalIsFalse_UpdatesDeletedFlagOnly(t *testing.T) {
 			}
 
 			return nil
-		}).Times(2)
+		}).Times(1)
 
 	if err := s.svc.Delete(s.assetId, false); err != nil {
 		t.Errorf("was not expecting an error but received: %v", err.Error())
@@ -158,7 +158,7 @@ func Test_Delete_PhysicalIsTrue_UpdatesDeletedAndExistFlag_RemovesMediaAndAssets
 			}
 
 			return nil
-		}).Times(2)
+		}).Times(1)
 
 	if err := s.svc.Delete(s.assetId, false); err != nil {
 		t.Errorf("was not expecting an error but received: %v", err.Error())

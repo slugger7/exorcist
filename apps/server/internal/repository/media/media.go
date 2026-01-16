@@ -23,8 +23,8 @@ var media = table.Media
 
 type MediaRepository interface {
 	Create([]model.Media) ([]model.Media, error)
-	UpdateExists(model.Media) error
-	UpdateChecksum(m models.Media) error
+	Relate(model.MediaRelation) (*model.MediaRelation, error)
+
 	GetAll(userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
 	GetByLibraryPathId(id uuid.UUID) ([]model.Media, error)
 	GetByLibraryId(libraryId uuid.UUID, pageRequest *dto.PageRequestDTO, columns postgres.ColumnList) (*dto.PageDTO[model.Media], error)
@@ -32,13 +32,17 @@ type MediaRepository interface {
 	GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error)
 	GetByPath(p string) (*model.Media, error)
 	GetAllInPath(p string) ([]model.Media, error)
-	Relate(model.MediaRelation) (*model.MediaRelation, error)
-	Delete(m model.Media) error
 	GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error)
 	GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error)
+	GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error)
+
 	UpsertProgress(prog model.MediaProgress) (*model.MediaProgress, error)
 	Update(m model.Media, columns postgres.ColumnList) (*model.Media, error)
+	UpdateExists(model.Media) error
+	UpdateChecksum(m models.Media) error
+
 	RemoveRelation(id, relatedTo uuid.UUID) error
+	Delete(m model.Media) error
 }
 
 type mediaRepository struct {
@@ -46,6 +50,22 @@ type mediaRepository struct {
 	env    *environment.EnvironmentVariables
 	logger logger.Logger
 	ctx    context.Context
+}
+
+// GetRelationsFor implements MediaRepository.
+func (r *mediaRepository) GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error) {
+	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
+		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
+		WHERE(media.ID.EQ(postgres.UUID(id)))
+
+	var entities []models.MediaRelation
+	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
+		return nil, errs.BuildError(err, "could not fetch related media for: %v", id.String())
+	}
+
+	util.DebugCheck(r.env, statement)
+
+	return entities, nil
 }
 
 // GetAllInPath implements MediaRepository.
@@ -227,12 +247,15 @@ func (r *mediaRepository) GetProgressForUser(id uuid.UUID, userId uuid.UUID) (*m
 func (r *mediaRepository) GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error) {
 	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
 		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
-		WHERE(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())))
+		WHERE(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())).
+			AND(media.ID.EQ(postgres.UUID(id))))
 
 	var entities []models.MediaRelation
 	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
 		return nil, errs.BuildError(err, "could not fetch related media for: %v", id.String())
 	}
+
+	util.DebugCheck(r.env, statement)
 
 	return entities, nil
 }

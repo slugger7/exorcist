@@ -16,6 +16,7 @@ import (
 	"github.com/slugger7/exorcist/internal/logger"
 	"github.com/slugger7/exorcist/internal/media"
 	"github.com/slugger7/exorcist/internal/repository"
+	mediaService "github.com/slugger7/exorcist/internal/service/media"
 )
 
 type JobService interface {
@@ -24,23 +25,25 @@ type JobService interface {
 }
 
 type jobService struct {
-	env    *environment.EnvironmentVariables
-	repo   repository.Repository
-	logger logger.Logger
-	jobCh  chan bool
-	ctx    context.Context
+	env          *environment.EnvironmentVariables
+	repo         repository.Repository
+	logger       logger.Logger
+	jobCh        chan bool
+	ctx          context.Context
+	mediaService mediaService.MediaService
 }
 
 var jobServiceInstance *jobService
 
-func New(repo repository.Repository, env *environment.EnvironmentVariables, jobCh chan bool, ctx context.Context) JobService {
+func New(repo repository.Repository, env *environment.EnvironmentVariables, jobCh chan bool, ctx context.Context, mediaService mediaService.MediaService) JobService {
 	if jobServiceInstance == nil {
 		jobServiceInstance = &jobService{
-			env:    env,
-			repo:   repo,
-			logger: logger.New(env),
-			jobCh:  jobCh,
-			ctx:    ctx,
+			env:          env,
+			repo:         repo,
+			logger:       logger.New(env),
+			jobCh:        jobCh,
+			ctx:          ctx,
+			mediaService: mediaService,
 		}
 
 		jobServiceInstance.logger.Info("UserService instance created")
@@ -193,14 +196,24 @@ func (i *jobService) refreshMetadata(data string, priority int16) (*model.Job, e
 }
 
 func (i *jobService) removeExistingThumbnail(mediaId uuid.UUID) error {
-	assets, err := i.repo.Media().GetAssetsFor(mediaId)
+	assets, err := i.repo.Media().GetRelationsFor(mediaId)
 	if err != nil {
 		return errs.BuildError(err, "could not get assets for media id %v", mediaId)
 	}
 
 	for _, m := range assets {
 		if m.MediaRelation.RelationType == model.MediaRelationTypeEnum_Thumbnail {
-			// TODO: delete the related to media by its id
+			if err := i.mediaService.Delete(m.MediaRelation.RelatedTo, true); err != nil {
+				return errs.BuildError(err, "could not remove thumbnail information")
+			}
+
+			if err := i.repo.Media().RemoveRelation(m.MediaRelation.MediaID, m.MediaRelation.RelatedTo); err != nil {
+				return errs.BuildError(
+					err,
+					"could not remove thumbnail relation: %v related to %v",
+					m.MediaRelation.MediaID,
+					m.MediaRelation.RelatedTo)
+			}
 		}
 	}
 

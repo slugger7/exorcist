@@ -47,16 +47,17 @@ func New(repo repository.Repository, env *environment.EnvironmentVariables, jobC
 	if serviceInstance == nil {
 		personService := personService.New(repo, env)
 		tagService := tagService.New(repo, env)
+		mediaService := mediaService.New(env, repo, personService, tagService)
 		serviceInstance = &service{
 			env:         env,
 			logger:      logger.New(env),
 			user:        userService.New(repo, env),
 			library:     libraryService.New(repo, env),
 			libraryPath: libraryPathService.New(repo, env),
-			job:         jobService.New(repo, env, jobCh, ctx),
+			job:         jobService.New(repo, env, jobCh, ctx, mediaService),
 			person:      personService,
 			tag:         tagService,
-			media:       mediaService.New(env, repo, personService, tagService),
+			media:       mediaService,
 			playlist:    playlistService.New(env, repo),
 			ctx:         ctx,
 		}

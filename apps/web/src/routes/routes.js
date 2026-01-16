@@ -50,6 +50,8 @@ const routes = {
     refreshLibraryMetadataFn: (id, redirect) => (`/jobs/refresh-metadata/library/${id}/${encodeURIComponent(redirect)}`),
     generateChapters: "/jobs/generate-chapters/media/:id/:redirect",
     generateChaptersFn: (id, redirect) => (`/jobs/generate-chapters/media/${id}/${encodeURIComponent(redirect)}`),
+    generateThumbnail: "/jobs/generate-thumbnail/media/:id/:redirect",
+    generateThumbnailFn: (id, redirect) => (`/jobs/generate-thumbnail/media/${id}/${encodeURIComponent(redirect)}`),
     create: {
         library: "/create/libraries",
         /** @type {ItemUrlFn} */

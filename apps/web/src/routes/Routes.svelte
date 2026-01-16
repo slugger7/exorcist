@@ -25,6 +25,7 @@
     import RefreshMetadata from "./RefreshMetadata.svelte";
     import GenerateChaptersJob from "./GenerateChaptersJob.svelte";
     import VideoAlt from "./VideoAlt.svelte";
+    import GenerateThumbnailJob from "./GenerateThumbnailJob.svelte";
 </script>
 
 <main>
@@ -82,6 +83,12 @@
     >
     <Route path={routes.generateChapters} let:params
         ><GenerateChaptersJob
+            mediaId={params.id}
+            redirect={params.redirect}
+        /></Route
+    >
+    <Route path={routes.generateThumbnail} let:params
+        ><GenerateThumbnailJob
             mediaId={params.id}
             redirect={params.redirect}
         /></Route
