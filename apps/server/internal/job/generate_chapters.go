@@ -15,6 +15,36 @@ import (
 	"github.com/slugger7/exorcist/internal/models"
 )
 
+func CreateGenerateChaptersJob(mediaId uuid.UUID, jobId *uuid.UUID, interval *float64, height int, width int, maxDimension int, overwite bool) (*model.Job, error) {
+	d := dto.GenerateChaptersData{
+		MediaId:      mediaId,
+		Height:       height,
+		Width:        width,
+		MaxDimension: maxDimension,
+		Overwrite:    overwite,
+	}
+
+	if interval == nil {
+		d.Interval = 60
+	}
+
+	js, err := json.Marshal(d)
+	if err != nil {
+		return nil, errs.BuildError(err, "could not marshall generate chapters data")
+	}
+
+	data := string(js)
+	job := &model.Job{
+		JobType:  model.JobTypeEnum_GenerateChapters,
+		Status:   model.JobStatusEnum_NotStarted,
+		Data:     &data,
+		Parent:   jobId,
+		Priority: dto.JobPriority_MediumLow,
+	}
+
+	return job, nil
+}
+
 func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaChapter) error {
 	var accErr error
 	for _, i := range chapters {

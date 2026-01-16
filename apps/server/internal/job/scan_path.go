@@ -185,7 +185,12 @@ func CreateNewMedia(
 		return errs.BuildError(err, "could not create generate thumbnail job")
 	}
 
-	jobs := []model.Job{*checksumJob, *thumbnailJob}
+	chaptersJob, err := CreateGenerateChaptersJob(createdMedia[0].ID, jobId, nil, height, width, maxDimension, false)
+	if err != nil {
+		return errs.BuildError(err, "could not create generate chapters job")
+	}
+
+	jobs := []model.Job{*checksumJob, *thumbnailJob, *chaptersJob}
 
 	_, err = repo.Job().CreateAll(jobs)
 	if err != nil {
