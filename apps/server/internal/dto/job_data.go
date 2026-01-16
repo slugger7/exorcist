@@ -39,11 +39,10 @@ type RefreshLibraryMetadata struct {
 }
 
 type GenerateChaptersData struct {
-	MediaId      uuid.UUID             `json:"mediaId"`
-	Interval     float64               `json:"interval"`
-	Height       int                   `json:"height"`
-	Width        int                   `json:"width"`
-	MaxDimension int                   `json:"maxDimension"`
-	Metadata     *ChapterMetadadataDTO `json:"metadata"`
-	Overwrite    bool                  `json:"overwrite"`
+	MediaId      uuid.UUID `json:"mediaId"`
+	Interval     float64   `json:"interval"`
+	Height       int       `json:"height"`
+	Width        int       `json:"width"`
+	MaxDimension int       `json:"maxDimension"`
+	Overwrite    bool      `json:"overwrite"`
 }
