@@ -129,25 +129,26 @@ func (v *MediaOverviewDTO) FromModel(m models.MediaOverviewModel) *MediaOverview
 }
 
 type MediaDTO struct {
-	ID            uuid.UUID    `json:"id"`
-	LibraryPathID uuid.UUID    `json:"libraryPathId"`
-	Path          string       `json:"path"`
-	Title         string       `json:"title"`
-	Size          int64        `json:"size"`
-	Checksum      *string      `json:"checksum"`
-	Exists        bool         `json:"exists"`
-	Deleted       bool         `json:"deleted"`
-	Added         time.Time    `json:"added"`
-	Created       time.Time    `json:"created"`
-	Modified      time.Time    `json:"modified"`
-	Image         *ImageDTO    `json:"image,omitempty"`
-	Video         *VideoDTO    `json:"video,omitempty"`
-	ThumbnailID   uuid.UUID    `json:"thumbnailId,omitempty"`
-	Progress      float64      `json:"progress"`
-	People        []PersonDTO  `json:"people"`
-	Tags          []TagDTO     `json:"tags"`
-	Favourite     bool         `json:"favourite"`
-	Chapters      []ChapterDTO `json:"chapters"`
+	ID            uuid.UUID     `json:"id"`
+	LibraryPathID uuid.UUID     `json:"libraryPathId"`
+	Path          string        `json:"path"`
+	Title         string        `json:"title"`
+	Size          int64         `json:"size"`
+	Checksum      *string       `json:"checksum"`
+	Exists        bool          `json:"exists"`
+	Deleted       bool          `json:"deleted"`
+	Added         time.Time     `json:"added"`
+	Created       time.Time     `json:"created"`
+	Modified      time.Time     `json:"modified"`
+	Image         *ImageDTO     `json:"image,omitempty"`
+	Video         *VideoDTO     `json:"video,omitempty"`
+	ThumbnailID   uuid.UUID     `json:"thumbnailId,omitempty"`
+	Progress      float64       `json:"progress"`
+	People        []PersonDTO   `json:"people"`
+	Tags          []TagDTO      `json:"tags"`
+	Favourite     bool          `json:"favourite"`
+	Chapters      []ChapterDTO  `json:"chapters"`
+	Relations     []RelationDTO `json:"relations"`
 }
 
 func (d *MediaDTO) FromModel(m models.Media) *MediaDTO {
@@ -194,6 +195,13 @@ func (d *MediaDTO) FromModel(m models.Media) *MediaDTO {
 		d.Tags = make([]TagDTO, len(m.Tags))
 		for i, t := range m.Tags {
 			d.Tags[i] = *(&TagDTO{}).FromModel(&t)
+		}
+	}
+
+	if len(m.Relations) > 0 {
+		d.Relations = make([]RelationDTO, len(m.Relations))
+		for i, r := range m.Relations {
+			d.Relations[i] = *(&RelationDTO{}).FromModel(&r)
 		}
 	}
 
