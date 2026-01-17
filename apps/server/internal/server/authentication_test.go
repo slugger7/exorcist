@@ -8,8 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/assert"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/assert"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 	"go.uber.org/mock/gomock"
 )
 

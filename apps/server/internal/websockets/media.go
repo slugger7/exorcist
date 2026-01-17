@@ -1,7 +1,7 @@
 package websockets
 
 import (
-	"github.com/slugger7/exorcist/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
 )
 
 // MediaCreate implements Websockets.

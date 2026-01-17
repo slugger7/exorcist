@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/slugger7/exorcist/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
 )
 
 // https://medium.com/@abhishekranjandev/building-a-production-grade-websocket-for-notifications-with-golang-and-gin-a-detailed-guide-5b676dcfbd5a

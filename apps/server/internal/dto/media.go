@@ -6,9 +6,9 @@ import (
 
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/table"
-	"github.com/slugger7/exorcist/internal/models"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/table"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 )
 
 type MediaOrdinal string

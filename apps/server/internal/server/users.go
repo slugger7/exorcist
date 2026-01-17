@@ -7,8 +7,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/dto"
-	"github.com/slugger7/exorcist/internal/models"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 )
 
 const ErrCreateUser ApiError = "could not create new user"

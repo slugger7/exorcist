@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/ffmpeg"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/ffmpeg"
 )
 
 // https://www.digitalocean.com/community/tutorials/how-to-use-json-in-go#parsing-json-using-a-map

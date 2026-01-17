@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/slugger7/exorcist/internal/assert"
+	"github.com/slugger7/exorcist/apps/server/internal/assert"
 )
 
 func Test_ImageAt_NegativeWidth(t *testing.T) {

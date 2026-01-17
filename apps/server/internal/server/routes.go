@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/slugger7/exorcist/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
 )
 
 type Route = string

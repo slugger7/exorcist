@@ -3,8 +3,8 @@ package media_test
 import (
 	"testing"
 
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	. "github.com/slugger7/exorcist/internal/media"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	. "github.com/slugger7/exorcist/apps/server/internal/media"
 )
 
 func compareFileArrays(t *testing.T, got, want []File) {

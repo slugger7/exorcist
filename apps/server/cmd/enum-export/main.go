@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
 )
 
 type EnumSet struct {
@@ -49,7 +49,7 @@ func main() {
 	}
 
 	log.Print("Creating enum.d.ts")
-	f, err := os.Create("./ts/enum.ts")
+	f, err := os.Create("./apps/server/ts/enum.ts")
 	if err != nil {
 		log.Fatal(err)
 	}

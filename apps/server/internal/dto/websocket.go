@@ -1,8 +1,8 @@
 package dto
 
 import (
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/models"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 )
 
 type WSTopic string

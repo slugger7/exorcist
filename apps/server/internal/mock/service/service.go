@@ -12,14 +12,14 @@ package mock_service
 import (
 	reflect "reflect"
 
-	jobService "github.com/slugger7/exorcist/internal/service/job"
-	libraryService "github.com/slugger7/exorcist/internal/service/library"
-	libraryPathService "github.com/slugger7/exorcist/internal/service/library_path"
-	mediaService "github.com/slugger7/exorcist/internal/service/media"
-	personService "github.com/slugger7/exorcist/internal/service/person"
-	playlistService "github.com/slugger7/exorcist/internal/service/playlist"
-	tagService "github.com/slugger7/exorcist/internal/service/tag"
-	userService "github.com/slugger7/exorcist/internal/service/user"
+	jobService "github.com/slugger7/exorcist/apps/server/internal/service/job"
+	libraryService "github.com/slugger7/exorcist/apps/server/internal/service/library"
+	libraryPathService "github.com/slugger7/exorcist/apps/server/internal/service/library_path"
+	mediaService "github.com/slugger7/exorcist/apps/server/internal/service/media"
+	personService "github.com/slugger7/exorcist/apps/server/internal/service/person"
+	playlistService "github.com/slugger7/exorcist/apps/server/internal/service/playlist"
+	tagService "github.com/slugger7/exorcist/apps/server/internal/service/tag"
+	userService "github.com/slugger7/exorcist/apps/server/internal/service/user"
 	gomock "go.uber.org/mock/gomock"
 )
 

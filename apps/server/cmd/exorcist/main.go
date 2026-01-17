@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"github.com/slugger7/exorcist/internal/environment"
-	"github.com/slugger7/exorcist/internal/server"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/server"
 )
 
 func gracefulShutdown(apiServer *http.Server, done chan bool, wg *sync.WaitGroup) {

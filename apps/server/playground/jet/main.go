@@ -8,8 +8,8 @@ import (
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	. "github.com/slugger7/exorcist/internal/db/exorcist/public/table"
-	. "github.com/slugger7/exorcist/internal/errors"
+	. "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/table"
+	. "github.com/slugger7/exorcist/apps/server/internal/errors"
 )
 
 func main() {

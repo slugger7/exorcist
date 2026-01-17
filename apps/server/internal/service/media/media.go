@@ -7,14 +7,14 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
-	"github.com/slugger7/exorcist/internal/environment"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/repository"
-	personService "github.com/slugger7/exorcist/internal/service/person"
-	tagService "github.com/slugger7/exorcist/internal/service/tag"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
+	personService "github.com/slugger7/exorcist/apps/server/internal/service/person"
+	tagService "github.com/slugger7/exorcist/apps/server/internal/service/tag"
 )
 
 type MediaService interface {

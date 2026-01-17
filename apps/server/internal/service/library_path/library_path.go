@@ -3,11 +3,11 @@ package libraryPathService
 import (
 	"fmt"
 
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/environment"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/repository"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
 )
 
 const (

@@ -7,14 +7,14 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/environment"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/models"
-	"github.com/slugger7/exorcist/internal/repository"
-	"github.com/slugger7/exorcist/internal/service"
-	"github.com/slugger7/exorcist/internal/websockets"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
+	"github.com/slugger7/exorcist/apps/server/internal/service"
+	"github.com/slugger7/exorcist/apps/server/internal/websockets"
 )
 
 type JobRunner struct {

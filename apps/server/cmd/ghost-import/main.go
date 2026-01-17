@@ -17,12 +17,12 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/table"
-	gmodel "github.com/slugger7/exorcist/internal/db/ghost/model"
-	gtable "github.com/slugger7/exorcist/internal/db/ghost/table"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/job"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/table"
+	gmodel "github.com/slugger7/exorcist/apps/server/internal/db/ghost/model"
+	gtable "github.com/slugger7/exorcist/apps/server/internal/db/ghost/table"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/job"
 )
 
 type UserMap struct {

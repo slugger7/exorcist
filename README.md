@@ -58,3 +58,20 @@ docker compose up
 - You could also add a pg_admin container into the docker compose
 
 ## Server
+
+In order to do some development you can run the server by itself.
+
+From the root directory:
+
+- `go run ./apps/server/cmd/exorcist`
+
+There are also some configuration files for some editors but do not expect them to work or be up to date.
+
+## Web
+
+In order to run the web you will need to do the following
+
+- `cd ./apps/web`
+- `cp .env.example .env`
+- modify `.env` with the parameters you desire
+- `npm run dev`

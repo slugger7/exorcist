@@ -8,13 +8,13 @@ import (
 
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/table"
-	"github.com/slugger7/exorcist/internal/dto"
-	"github.com/slugger7/exorcist/internal/environment"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/models"
-	"github.com/slugger7/exorcist/internal/repository/util"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/table"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
+	"github.com/slugger7/exorcist/apps/server/internal/repository/util"
 )
 
 type RelationFn func(relationTable postgres.ReadableTable) postgres.ReadableTable

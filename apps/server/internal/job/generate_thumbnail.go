@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/ffmpeg"
-	"github.com/slugger7/exorcist/internal/media"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/ffmpeg"
+	"github.com/slugger7/exorcist/apps/server/internal/media"
 )
 
 func CreateGenerateThumbnailJob(

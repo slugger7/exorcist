@@ -5,57 +5,56 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
       - apps/server/**
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
       - apps/server/**
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.24.0'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.24.0"
 
-    - name: Build
-      working-directory: ./apps/server
-      run: go build -v ./cmd/exorcist
+      - name: Build
+        working-directory: ./
+        run: go build -v ./apps/server/cmd/exorcist
 
-    - name: Load cached FFmpeg
-      id: cache-ffmpeg
-      uses: actions/cache@v4
-      with:
-        path: |
-          /usr/local/bin/ffmpeg
-          /usr/local/bin/ffprobe
-        key: ${{ runner.os }}-ffmpeg-6.0.1
+      - name: Load cached FFmpeg
+        id: cache-ffmpeg
+        uses: actions/cache@v4
+        with:
+          path: |
+            /usr/local/bin/ffmpeg
+            /usr/local/bin/ffprobe
+          key: ${{ runner.os }}-ffmpeg-6.0.1
 
-    - name: Setup FFmpeg if not cached
-      if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
-      run: |
-        VERSION=6.0.1
-        RELEASE_NAME=ffmpeg-${VERSION}-amd64-static
-        wget --timeout=8 --tries=30 https://www.johnvansickle.com/ffmpeg/old-releases/${RELEASE_NAME}.tar.xz
-        tar -xf ${RELEASE_NAME}.tar.xz
-        mv ${RELEASE_NAME}/ffmpeg ${RELEASE_NAME}/ffprobe /usr/local/bin/
-        rm -rf ${RELEASE_NAME}
-    
-    - name: Test
-      working-directory: ./apps/server
-      run: go test -v ./...
+      - name: Setup FFmpeg if not cached
+        if: steps.cache-ffmpeg.outputs.cache-hit != 'true'
+        run: |
+          VERSION=6.0.1
+          RELEASE_NAME=ffmpeg-${VERSION}-amd64-static
+          wget --timeout=8 --tries=30 https://www.johnvansickle.com/ffmpeg/old-releases/${RELEASE_NAME}.tar.xz
+          tar -xf ${RELEASE_NAME}.tar.xz
+          mv ${RELEASE_NAME}/ffmpeg ${RELEASE_NAME}/ffprobe /usr/local/bin/
+          rm -rf ${RELEASE_NAME}
 
-    - name: Install tygo
-      working-directory: ./apps/server
-      run: go install github.com/gzuidhof/tygo@v0.2.18
+      - name: Test
+        working-directory: ./
+        run: go test -v ./apps/server/...
 
-    - name: Generate FE Types
-      working-directory: ./apps/server
-      run: make dtos
+      - name: Install tygo
+        working-directory: ./
+        run: go install github.com/gzuidhof/tygo@v0.2.18
+
+      - name: Generate FE Types
+        working-directory: ./
+        run: make dtos

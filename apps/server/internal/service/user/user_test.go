@@ -7,13 +7,13 @@ import (
 
 	"github.com/go-jet/jet/v2/postgres"
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/assert"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	mock_repository "github.com/slugger7/exorcist/internal/mock/repository"
-	mock_userRepository "github.com/slugger7/exorcist/internal/mock/repository/user"
-	userRepository "github.com/slugger7/exorcist/internal/repository/user"
+	"github.com/slugger7/exorcist/apps/server/internal/assert"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	mock_repository "github.com/slugger7/exorcist/apps/server/internal/mock/repository"
+	mock_userRepository "github.com/slugger7/exorcist/apps/server/internal/mock/repository/user"
+	userRepository "github.com/slugger7/exorcist/apps/server/internal/repository/user"
 	"go.uber.org/mock/gomock"
 )
 

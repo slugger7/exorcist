@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/slugger7/exorcist/internal/environment"
-	"github.com/slugger7/exorcist/internal/job"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/repository"
-	"github.com/slugger7/exorcist/internal/service"
-	filewatcher "github.com/slugger7/exorcist/internal/service/file_watcher"
-	"github.com/slugger7/exorcist/internal/websockets"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/job"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
+	"github.com/slugger7/exorcist/apps/server/internal/service"
+	filewatcher "github.com/slugger7/exorcist/apps/server/internal/service/file_watcher"
+	"github.com/slugger7/exorcist/apps/server/internal/websockets"
 )
 
 type server struct {

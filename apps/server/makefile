@@ -31,14 +31,5 @@ undo-migration:
 models:
 	./scripts/update-models.sh
 
-recreate-db:
-	docker compose down db
-	docker compose up -d
-	
 generate-diagrams:
 	./scripts/generate-diagrams.sh
-
-dtos:
-	mkdir -p ts
-	go run ./cmd/enum-export
-	tygo generate

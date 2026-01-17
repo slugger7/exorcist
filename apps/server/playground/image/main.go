@@ -1,6 +1,6 @@
 package main
 
-import "github.com/slugger7/exorcist/internal/ffmpeg"
+import "github.com/slugger7/exorcist/apps/server/internal/ffmpeg"
 
 // ffmpeg -ss 00:00:04 -i $PWD/internal/ffmpeg/test_data/working_video.mp4 -frames:v 1 $PWD/.temp/screenshot.png
 // https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/
