@@ -33,7 +33,7 @@ type MediaChapter struct {
 }
 
 type Relation struct {
-	model.Media
+	ThumbnailID uuid.UUID
 }
 
 type Media struct {

@@ -10,7 +10,7 @@ type RelationDTO struct {
 }
 
 func (o *RelationDTO) FromModel(m *models.Relation) *RelationDTO {
-	o.ID = m.ID
+	o.ID = m.ThumbnailID
 
 	return o
 }
