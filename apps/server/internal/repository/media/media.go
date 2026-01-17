@@ -395,7 +395,6 @@ func (r *mediaRepository) GetById(id uuid.UUID) (*models.Media, error) {
 func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error) {
 	image := table.Image
 	video := table.Video
-	thumbnail := table.Media.AS("thumbnail")
 	relation := table.Media.AS("relation")
 	mediaChapter := table.MediaRelation.AS("media_chapter")
 	mediaRelation := table.MediaRelation
@@ -408,7 +407,7 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		media.AllColumns,
 		image.AllColumns,
 		video.AllColumns,
-		thumbnail.ID,
+		mediaRelation.RelatedTo.AS("thumbnail.id"),
 		person.AllColumns,
 		tag.AllColumns,
 		table.MediaProgress.Timestamp,
@@ -419,9 +418,8 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 	).FROM(media.
 		LEFT_JOIN(image, image.MediaID.EQ(media.ID)).
 		LEFT_JOIN(video, video.MediaID.EQ(media.ID)).
-		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID)).
-		LEFT_JOIN(thumbnail, thumbnail.ID.EQ(mediaRelation.RelatedTo).
-			AND(thumbnail.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())))).
+		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID).
+			AND(mediaRelation.RelationType.EQ(postgres.NewEnumValue(model.MediaRelationTypeEnum_Thumbnail.String())))).
 		LEFT_JOIN(mediaChapter, mediaChapter.MediaID.EQ(media.ID).
 			AND(mediaChapter.RelationType.EQ(postgres.NewEnumValue(model.MediaRelationTypeEnum_Chapter.String())))).
 		LEFT_JOIN(relation, relation.ID.EQ(mediaRelation.RelatedTo).
