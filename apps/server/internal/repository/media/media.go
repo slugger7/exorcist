@@ -158,7 +158,7 @@ func (r *mediaRepository) GetByLibraryId(libraryId uuid.UUID, pageRequest *dto.P
 
 	var data []model.Media
 	total := 0
-	if mediaResult != nil && len(mediaResult) > 0 {
+	if len(mediaResult) > 0 {
 		data = make([]model.Media, len(mediaResult))
 		total = mediaResult[0].Total
 		for i, o := range mediaResult {
