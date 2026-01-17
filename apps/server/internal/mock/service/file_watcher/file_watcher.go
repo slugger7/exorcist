@@ -12,7 +12,7 @@ package mock_filewatcher
 import (
 	reflect "reflect"
 
-	model "github.com/slugger7/exorcist/internal/db/exorcist/public/model"
+	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 	gomock "go.uber.org/mock/gomock"
 )
 

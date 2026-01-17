@@ -3,17 +3,17 @@ package service
 import (
 	"context"
 
-	"github.com/slugger7/exorcist/internal/environment"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/repository"
-	jobService "github.com/slugger7/exorcist/internal/service/job"
-	libraryService "github.com/slugger7/exorcist/internal/service/library"
-	libraryPathService "github.com/slugger7/exorcist/internal/service/library_path"
-	mediaService "github.com/slugger7/exorcist/internal/service/media"
-	personService "github.com/slugger7/exorcist/internal/service/person"
-	playlistService "github.com/slugger7/exorcist/internal/service/playlist"
-	tagService "github.com/slugger7/exorcist/internal/service/tag"
-	userService "github.com/slugger7/exorcist/internal/service/user"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
+	jobService "github.com/slugger7/exorcist/apps/server/internal/service/job"
+	libraryService "github.com/slugger7/exorcist/apps/server/internal/service/library"
+	libraryPathService "github.com/slugger7/exorcist/apps/server/internal/service/library_path"
+	mediaService "github.com/slugger7/exorcist/apps/server/internal/service/media"
+	personService "github.com/slugger7/exorcist/apps/server/internal/service/person"
+	playlistService "github.com/slugger7/exorcist/apps/server/internal/service/playlist"
+	tagService "github.com/slugger7/exorcist/apps/server/internal/service/tag"
+	userService "github.com/slugger7/exorcist/apps/server/internal/service/user"
 )
 
 type Service interface {

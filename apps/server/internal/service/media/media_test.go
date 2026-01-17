@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	mock_repository "github.com/slugger7/exorcist/internal/mock/repository"
-	mock_mediaRepository "github.com/slugger7/exorcist/internal/mock/repository/media"
-	"github.com/slugger7/exorcist/internal/models"
-	mediaRepository "github.com/slugger7/exorcist/internal/repository/media"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	mock_repository "github.com/slugger7/exorcist/apps/server/internal/mock/repository"
+	mock_mediaRepository "github.com/slugger7/exorcist/apps/server/internal/mock/repository/media"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
+	mediaRepository "github.com/slugger7/exorcist/apps/server/internal/repository/media"
 	"go.uber.org/mock/gomock"
 )
 

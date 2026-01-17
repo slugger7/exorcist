@@ -10,26 +10,26 @@ COPY --chown=node:node ./apps/web .
 
 RUN npm run build
 
-FROM golang:1.24-alpine AS build_server
+FROM golang:1.25-alpine AS build_server
 
 WORKDIR /app
 
-COPY ./apps/server/go.mod .
-COPY ./apps/server/go.sum .
+COPY ./go.mod .
+COPY ./go.sum .
 RUN go mod download
 
-COPY ./apps/server .
+COPY ./apps/server ./apps/server
 
-RUN go build -o /exorcist ./cmd/exorcist
+RUN go build -o /exorcist ./apps/server/cmd/exorcist
 
 
-FROM golang:1.24-alpine AS exorcist
+FROM golang:1.25-alpine AS exorcist
 
 RUN apk update && apk add ffmpeg
 
 COPY --from=build_web /home/node/app/dist /web
 
-COPY --from=build_server /app/migrations /migrations
+COPY --from=build_server /app/apps/server/migrations /migrations
 COPY --from=build_server /exorcist /exorcist
 
 EXPOSE ${PORT}

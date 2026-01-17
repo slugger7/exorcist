@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/slugger7/exorcist/internal/environment"
-	"github.com/slugger7/exorcist/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
 )
 
 func functionWrappedLogs(logg logger.Logger) {

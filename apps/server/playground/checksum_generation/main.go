@@ -5,9 +5,9 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/slugger7/exorcist/internal/environment"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/repository"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
 )
 
 func main() {

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
-	errs "github.com/slugger7/exorcist/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 )
 
 func (jr *JobRunner) refreshLibraryMetadata(job *model.Job) error {

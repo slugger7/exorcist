@@ -10,16 +10,16 @@ import (
 	"sync"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/slugger7/exorcist/internal/constants"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
-	"github.com/slugger7/exorcist/internal/environment"
-	"github.com/slugger7/exorcist/internal/job"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/media"
-	"github.com/slugger7/exorcist/internal/repository"
-	"github.com/slugger7/exorcist/internal/service"
-	"github.com/slugger7/exorcist/internal/websockets"
+	"github.com/slugger7/exorcist/apps/server/internal/constants"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/job"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/media"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
+	"github.com/slugger7/exorcist/apps/server/internal/service"
+	"github.com/slugger7/exorcist/apps/server/internal/websockets"
 )
 
 type watcherService struct {

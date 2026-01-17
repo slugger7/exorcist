@@ -13,8 +13,8 @@ import (
 	reflect "reflect"
 
 	uuid "github.com/google/uuid"
-	model "github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	videoRepository "github.com/slugger7/exorcist/internal/repository/video"
+	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	videoRepository "github.com/slugger7/exorcist/apps/server/internal/repository/video"
 	gomock "go.uber.org/mock/gomock"
 )
 

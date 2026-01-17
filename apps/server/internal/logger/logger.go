@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/slugger7/exorcist/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
 )
 
 type Logger interface {

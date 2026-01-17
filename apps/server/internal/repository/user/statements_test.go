@@ -3,9 +3,9 @@ package userRepository
 import (
 	"testing"
 
-	"github.com/slugger7/exorcist/internal/assert"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/assert"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
 )
 
 var s = userRepository{
@@ -38,6 +38,6 @@ func Test_UpdatePassword(t *testing.T) {
 	u := model.User{}
 	actual, _ := s.updatePasswordStatement(&u).Sql()
 
-	expected := "\nUPDATE public.\"user\"\nSET (password, modified) = ($1, $2)\nWHERE \"user\".id = $3;\n"
+	expected := "\nUPDATE public.\"user\"\nSET (password, modified) = ($1, $2)\nWHERE \"user\".id = $3::uuid;\n"
 	assert.Eq(t, expected, actual)
 }

@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/slugger7/exorcist/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
 )
 
 func (s *server) withCors(r *gin.Engine) *server {

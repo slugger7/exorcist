@@ -12,16 +12,16 @@ package mock_repository
 import (
 	reflect "reflect"
 
-	imageRepository "github.com/slugger7/exorcist/internal/repository/image"
-	jobRepository "github.com/slugger7/exorcist/internal/repository/job"
-	libraryRepository "github.com/slugger7/exorcist/internal/repository/library"
-	libraryPathRepository "github.com/slugger7/exorcist/internal/repository/library_path"
-	mediaRepository "github.com/slugger7/exorcist/internal/repository/media"
-	personRepository "github.com/slugger7/exorcist/internal/repository/person"
-	playlistRepository "github.com/slugger7/exorcist/internal/repository/playlist"
-	tagRepository "github.com/slugger7/exorcist/internal/repository/tag"
-	userRepository "github.com/slugger7/exorcist/internal/repository/user"
-	videoRepository "github.com/slugger7/exorcist/internal/repository/video"
+	imageRepository "github.com/slugger7/exorcist/apps/server/internal/repository/image"
+	jobRepository "github.com/slugger7/exorcist/apps/server/internal/repository/job"
+	libraryRepository "github.com/slugger7/exorcist/apps/server/internal/repository/library"
+	libraryPathRepository "github.com/slugger7/exorcist/apps/server/internal/repository/library_path"
+	mediaRepository "github.com/slugger7/exorcist/apps/server/internal/repository/media"
+	personRepository "github.com/slugger7/exorcist/apps/server/internal/repository/person"
+	playlistRepository "github.com/slugger7/exorcist/apps/server/internal/repository/playlist"
+	tagRepository "github.com/slugger7/exorcist/apps/server/internal/repository/tag"
+	userRepository "github.com/slugger7/exorcist/apps/server/internal/repository/user"
+	videoRepository "github.com/slugger7/exorcist/apps/server/internal/repository/video"
 	gomock "go.uber.org/mock/gomock"
 )
 

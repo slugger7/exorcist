@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
 )
 
 var lr = libraryRepository{
@@ -36,7 +36,7 @@ func Test_GetById(t *testing.T) {
 	statment := lr.getById(id)
 	sql := statment.Sql()
 
-	expectedSql := "\nSELECT library.id AS \"library.id\",\n     library.name AS \"library.name\"\nFROM public.library\nWHERE library.id = $1;\n"
+	expectedSql := "\nSELECT library.id AS \"library.id\",\n     library.name AS \"library.name\"\nFROM public.library\nWHERE library.id = $1::uuid;\n"
 	if sql != expectedSql {
 		t.Errorf("Expected %v but got %v", expectedSql, sql)
 	}

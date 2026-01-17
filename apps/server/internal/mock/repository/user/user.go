@@ -14,7 +14,7 @@ import (
 
 	postgres "github.com/go-jet/jet/v2/postgres"
 	uuid "github.com/google/uuid"
-	model "github.com/slugger7/exorcist/internal/db/exorcist/public/model"
+	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -8,15 +8,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	"github.com/slugger7/exorcist/internal/dto"
-	"github.com/slugger7/exorcist/internal/environment"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	"github.com/slugger7/exorcist/internal/ffmpeg"
-	"github.com/slugger7/exorcist/internal/logger"
-	"github.com/slugger7/exorcist/internal/media"
-	"github.com/slugger7/exorcist/internal/repository"
-	mediaService "github.com/slugger7/exorcist/internal/service/media"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/ffmpeg"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/media"
+	"github.com/slugger7/exorcist/apps/server/internal/repository"
+	mediaService "github.com/slugger7/exorcist/apps/server/internal/service/media"
 )
 
 type JobService interface {

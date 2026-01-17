@@ -3,22 +3,22 @@ type_mappings:
   uuid.UUID: "string /* UUID */"
 
 packages:
-  - path: "github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-    output_path: "ts/model.ts"
+  - path: "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+    output_path: "apps/server/ts/model.ts"
     indent: "  "
     frontmatter: |
       /**
         * GENERATED FILE
-        * 
+        *
         * DO NOT EDIT
         */
-  - path: "github.com/slugger7/exorcist/internal/dto"
-    output_path: "ts/index.ts"
+  - path: "github.com/slugger7/exorcist/apps/server/internal/dto"
+    output_path: "apps/server/ts/index.ts"
     indent: "  "
     frontmatter: |
       /**
         * GENERATED FILE
-        * 
+        *
         * DO NOT EDIT
         */
       import * as model from "./model"

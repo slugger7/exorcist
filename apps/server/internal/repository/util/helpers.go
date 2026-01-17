@@ -5,8 +5,8 @@ import (
 	"runtime"
 
 	"github.com/go-jet/jet/v2/postgres"
-	"github.com/slugger7/exorcist/internal/environment"
-	"github.com/slugger7/exorcist/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/environment"
+	"github.com/slugger7/exorcist/apps/server/internal/logger"
 )
 
 func DebugCheck(env *environment.EnvironmentVariables, statement postgres.Statement) {

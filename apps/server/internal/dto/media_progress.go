@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/slugger7/exorcist/internal/db/exorcist/public/model"
+import "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 
 type ProgressDTO struct {
 	Progress float64 `json:"progress"`

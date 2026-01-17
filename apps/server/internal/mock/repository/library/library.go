@@ -13,9 +13,9 @@ import (
 	reflect "reflect"
 
 	uuid "github.com/google/uuid"
-	model "github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	dto "github.com/slugger7/exorcist/internal/dto"
-	models "github.com/slugger7/exorcist/internal/models"
+	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	dto "github.com/slugger7/exorcist/apps/server/internal/dto"
+	models "github.com/slugger7/exorcist/apps/server/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	errs "github.com/slugger7/exorcist/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 )
 
 type ApplicationEnvironment string

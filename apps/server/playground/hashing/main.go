@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	errs "github.com/slugger7/exorcist/internal/errors"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/slugger7/exorcist/internal/media"
+	"github.com/slugger7/exorcist/apps/server/internal/media"
 )
 
 func main() {

@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/slugger7/exorcist/internal/models"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 )
 
 func (s *server) withWS(r *gin.RouterGroup, route Route) *server {

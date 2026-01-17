@@ -6,14 +6,14 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
-	errs "github.com/slugger7/exorcist/internal/errors"
-	mock_repository "github.com/slugger7/exorcist/internal/mock/repository"
-	mock_libraryRepository "github.com/slugger7/exorcist/internal/mock/repository/library"
-	mock_libraryPathRepository "github.com/slugger7/exorcist/internal/mock/repository/library_path"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	mock_repository "github.com/slugger7/exorcist/apps/server/internal/mock/repository"
+	mock_libraryRepository "github.com/slugger7/exorcist/apps/server/internal/mock/repository/library"
+	mock_libraryPathRepository "github.com/slugger7/exorcist/apps/server/internal/mock/repository/library_path"
 
-	libraryRepository "github.com/slugger7/exorcist/internal/repository/library"
-	libraryPathRepository "github.com/slugger7/exorcist/internal/repository/library_path"
+	libraryRepository "github.com/slugger7/exorcist/apps/server/internal/repository/library"
+	libraryPathRepository "github.com/slugger7/exorcist/apps/server/internal/repository/library_path"
 	"go.uber.org/mock/gomock"
 )
 

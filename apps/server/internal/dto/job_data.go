@@ -2,7 +2,7 @@ package dto
 
 import (
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 )
 
 type ScanPathData struct {

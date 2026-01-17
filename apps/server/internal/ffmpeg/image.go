@@ -3,7 +3,7 @@ package ffmpeg
 import (
 	"fmt"
 
-	errs "github.com/slugger7/exorcist/internal/errors"
+	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 	ffmpeg_go "github.com/u2takey/ffmpeg-go"
 )
 
