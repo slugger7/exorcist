@@ -2,7 +2,7 @@ package dto
 
 import (
 	"github.com/google/uuid"
-	"github.com/slugger7/exorcist/internal/models"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 )
 
 type RelationDTO struct {
