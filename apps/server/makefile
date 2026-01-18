@@ -19,9 +19,6 @@ clean:
 	rm -rf build
 	rm -rf ts/*
 
-mocks:
-	./scripts/generate-mocks.sh
-
 run-migrations:
 	./scripts/run-migrations.sh
 

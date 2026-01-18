@@ -4,3 +4,6 @@ dtos:
 	tygo generate
 	rm -rf ./apps/web/src/dtos
 	mv ./apps/server/ts ./apps/web/src/dto
+
+mocks:
+	./apps/server/scripts/generate-mocks.sh
