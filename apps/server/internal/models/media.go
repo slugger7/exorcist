@@ -32,10 +32,6 @@ type MediaChapter struct {
 	RelatedTo uuid.UUID
 }
 
-type Relation struct {
-	ThumbnailID uuid.UUID
-}
-
 type Media struct {
 	model.Media
 	*model.Image
@@ -46,5 +42,5 @@ type Media struct {
 	People    []model.Person
 	Tags      []model.Tag
 	Chapters  []MediaChapter
-	Relations []Relation
+	Relations []MediaRelation
 }

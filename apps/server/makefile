@@ -7,9 +7,6 @@ get:
 update:
 	go get -u ./...
 
-test:
-	@go test ./... -v
-
 exorcist:
 	go build -o ./build/exorcist ./cmd/exorcist
 

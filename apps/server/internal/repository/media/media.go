@@ -34,7 +34,7 @@ type MediaRepository interface {
 	GetAllInPath(p string) ([]model.Media, error)
 	GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error)
 	GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error)
-	GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error)
+	GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error)
 
 	UpsertProgress(prog model.MediaProgress) (*model.MediaProgress, error)
 	Update(m model.Media, columns postgres.ColumnList) (*model.Media, error)
@@ -53,14 +53,20 @@ type mediaRepository struct {
 }
 
 // GetRelationsFor implements MediaRepository.
-func (r *mediaRepository) GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error) {
+func (r *mediaRepository) GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error) {
+	joinPredicate := media.ID.EQ(table.MediaRelation.MediaID)
+
+	if relationType != nil {
+		joinPredicate.AND(table.MediaRelation.RelationType.EQ(postgres.NewEnumValue(relationType.String())))
+	}
+
 	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
-		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
+		FROM(media.INNER_JOIN(table.MediaRelation, joinPredicate)).
 		WHERE(media.ID.EQ(postgres.UUID(id)))
 
 	var entities []models.MediaRelation
 	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
-		return nil, errs.BuildError(err, "could not fetch related media for: %v", id.String())
+		return nil, errs.BuildError(err, "could not fetch related media for id (%v) and relationType (%v)", id.String(), relationType.String())
 	}
 
 	util.DebugCheck(r.env, statement)
@@ -434,7 +440,7 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 
 	var result models.Media
 	if err := statement.QueryContext(r.ctx, r.db, &result); err != nil {
-		return nil, errs.BuildError(err, "could not get media by id: %v", id)
+		return nil, errs.BuildError(err, "could not get media by id (%v) and userId (%v)", id.String(), userId.String())
 	}
 
 	return &result, nil

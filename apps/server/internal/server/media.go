@@ -220,7 +220,8 @@ func (s *server) getMediaById(c *gin.Context) {
 		return
 	}
 
-	m, err := s.repo.Media().GetByIdAndUserId(id, *userId)
+	mediaRelationTypeEnum := model.MediaRelationTypeEnum_Media
+	m, err := s.service.Media().GetByIdAndUserIdWithRelations(id, *userId, &mediaRelationTypeEnum)
 	if err != nil {
 		s.logger.Errorf("could not get media by id: %v", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not get media by id"})

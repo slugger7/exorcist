@@ -12,6 +12,7 @@ import (
 	"github.com/slugger7/exorcist/apps/server/internal/environment"
 	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 	"github.com/slugger7/exorcist/apps/server/internal/repository"
 	personService "github.com/slugger7/exorcist/apps/server/internal/service/person"
 	tagService "github.com/slugger7/exorcist/apps/server/internal/service/tag"
@@ -22,6 +23,7 @@ type MediaService interface {
 	AddPerson(id uuid.UUID, personId uuid.UUID) (*model.MediaPerson, error)
 	Delete(id uuid.UUID, physical bool) error
 	LogProgress(id, userId uuid.UUID, progress dto.ProgressUpdateDTO) (*model.MediaProgress, error)
+	GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error)
 }
 
 type mediaService struct {
@@ -30,6 +32,22 @@ type mediaService struct {
 	logger        logger.Logger
 	personService personService.PersonService
 	tagService    tagService.TagService
+}
+
+func (s *mediaService) GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error) {
+	m, err := s.repo.Media().GetByIdAndUserId(id, userId)
+	if err != nil {
+		return nil, errs.BuildError(err, "")
+	}
+
+	r, err := s.repo.Media().GetRelationsFor(id, relationType)
+	if err != nil {
+		return nil, errs.BuildError(err, "")
+	}
+
+	m.Relations = r
+
+	return m, nil
 }
 
 // LogProgress implements MediaService.

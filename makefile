@@ -7,3 +7,6 @@ dtos:
 
 mocks:
 	./apps/server/scripts/generate-mocks.sh
+
+test:
+	@go test ./apps/server/... -v
