@@ -1,6 +1,6 @@
 module github.com/slugger7/exorcist
 
-go 1.25.6
+go 1.26
 
 require (
 	github.com/aws/aws-sdk-go v1.49.6 // indirect
