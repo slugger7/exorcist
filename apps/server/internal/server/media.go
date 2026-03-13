@@ -52,6 +52,16 @@ func (s *server) withMediaPut(r *gin.RouterGroup, route Route) *server {
 	return s
 }
 
+func (s *server) withMediaThumbnailGet(r *gin.RouterGroup, route Route) *server {
+	r.GET(fmt.Sprintf("%v/:%v/thumbnail", route, idKey), s.getMediaThumbnail)
+
+	return s
+}
+
+func (s *server) getMediaThumbnail(c *gin.Context) {
+	c.Status(http.StatusOK)
+}
+
 func (s *server) putMedia(c *gin.Context) {
 	id, err := uuid.Parse(c.Param(idKey))
 	if err != nil {
