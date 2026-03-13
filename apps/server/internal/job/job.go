@@ -79,7 +79,7 @@ func (jr *JobRunner) loop() {
 
 			jr.logger.Info("Processing jobs")
 			if err := jr.processJobs(); err != nil {
-				jr.logger.Errorf("Error received while processing jobs. Stopping job runner", err.Error())
+				jr.logger.Errorf("Error received while processing jobs. Stopping job runner: %v", err.Error())
 				return
 			}
 		}

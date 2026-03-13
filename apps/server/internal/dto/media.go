@@ -104,13 +104,12 @@ func (ms *MediaSearchDTO) Defaults(d MediaSearchDTO) *MediaSearchDTO {
 }
 
 type MediaOverviewDTO struct {
-	Id          uuid.UUID `json:"id"`
-	Title       string    `json:"title,omitempty"`
-	ThumbnailId uuid.UUID `json:"thumbnailId,omitempty"`
-	Progress    float64   `json:"progress,omitempty"`
-	Deleted     bool      `json:"deleted"`
-	Runtime     float64   `json:"runtime"`
-	Favourite   bool      `json:"favourite"`
+	Id        uuid.UUID `json:"id"`
+	Title     string    `json:"title,omitempty"`
+	Progress  float64   `json:"progress,omitempty"`
+	Deleted   bool      `json:"deleted"`
+	Runtime   float64   `json:"runtime"`
+	Favourite bool      `json:"favourite"`
 }
 
 func (v *MediaOverviewDTO) FromModel(m models.MediaOverviewModel) *MediaOverviewDTO {
@@ -118,7 +117,6 @@ func (v *MediaOverviewDTO) FromModel(m models.MediaOverviewModel) *MediaOverview
 	v.Title = m.Title
 	v.Deleted = m.Deleted
 	v.Progress = m.MediaProgress.Timestamp
-	v.ThumbnailId = m.Thumbnail.ID
 
 	v.Favourite = m.FavouriteMedia != nil
 
@@ -142,7 +140,6 @@ type MediaDTO struct {
 	Modified      time.Time          `json:"modified"`
 	Image         *ImageDTO          `json:"image,omitempty"`
 	Video         *VideoDTO          `json:"video,omitempty"`
-	ThumbnailID   uuid.UUID          `json:"thumbnailId,omitempty"`
 	Progress      float64            `json:"progress"`
 	People        []PersonDTO        `json:"people"`
 	Tags          []TagDTO           `json:"tags"`
@@ -166,10 +163,6 @@ func (d *MediaDTO) FromModel(m models.Media) *MediaDTO {
 
 	if m.MediaProgress != nil {
 		d.Progress = m.MediaProgress.Timestamp
-	}
-
-	if m.Thumbnail != nil {
-		d.ThumbnailID = m.Thumbnail.ID
 	}
 
 	if len(m.Chapters) != 0 {

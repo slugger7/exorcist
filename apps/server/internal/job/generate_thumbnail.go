@@ -145,8 +145,7 @@ func (jr *JobRunner) GenerateThumbnail(job *model.Job) error {
 	}
 
 	mediaOverviewUpdate := dto.MediaOverviewDTO{
-		Id:          video.Media.ID,
-		ThumbnailId: image.MediaID,
+		Id: video.Media.ID,
 	}
 	jr.ws.MediaOverviewUpdate(mediaOverviewUpdate)
 

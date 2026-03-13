@@ -19,12 +19,7 @@ type MediaOverviewModel struct {
 	model.Media
 	model.MediaProgress
 	*model.Video
-	Thumbnail
 	*model.FavouriteMedia
-}
-
-type Thumbnail struct {
-	ID uuid.UUID `sql:"primary_key" json:"id"`
 }
 
 type MediaChapter struct {
@@ -36,7 +31,6 @@ type Media struct {
 	model.Media
 	*model.Image
 	*model.Video
-	*Thumbnail
 	*model.MediaProgress
 	*model.FavouriteMedia
 	People    []model.Person

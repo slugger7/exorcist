@@ -25,16 +25,12 @@ func mediaOverviewStatement(userId uuid.UUID, search dto.MediaSearchDTO, relatio
 	personFilter := len(search.People) > 0
 	media := table.Media
 	mediaRelation := table.MediaRelation
-	thumbnail := table.Media.AS("thumbnail")
 	tag := table.Tag
 
 	fromStmnt := relationFn(
 		media.LEFT_JOIN(
 			mediaRelation, media.ID.EQ(mediaRelation.MediaID).
 				AND(mediaRelation.RelationType.EQ(postgres.NewEnumValue(model.MediaRelationTypeEnum_Thumbnail.String()))),
-		).LEFT_JOIN(
-			thumbnail,
-			thumbnail.ID.EQ(mediaRelation.RelatedTo),
 		).LEFT_JOIN(
 			table.Video,
 			table.Video.MediaID.EQ(media.ID),
@@ -79,7 +75,6 @@ func mediaOverviewStatement(userId uuid.UUID, search dto.MediaSearchDTO, relatio
 	selectStatement := media.SELECT(
 		media.ID,
 		media.Title,
-		thumbnail.ID,
 		table.MediaProgress.Timestamp,
 		table.Video.Runtime,
 		table.FavouriteMedia.ID,
@@ -160,7 +155,6 @@ func mediaOverviewStatement(userId uuid.UUID, search dto.MediaSearchDTO, relatio
 	if tagFilter || personFilter {
 		selectStatement = selectStatement.GROUP_BY(
 			media.ID,
-			thumbnail.ID,
 			table.Video.Runtime,
 			table.MediaProgress.Timestamp,
 			table.FavouriteMedia.ID,
