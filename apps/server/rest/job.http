@@ -7,7 +7,7 @@ Content-Type: application/json
 
 {
   "type": "scan_path",
-  "data": {"libraryPathId":"cecfbcb0-f7ee-4dc9-b83b-86a3f009203e"}
+  "data": {"libraryPathId":"da4c5635-75cf-4b5b-811e-7361caeea1c8"}
 }
 
 ### Create generate thumbnail job

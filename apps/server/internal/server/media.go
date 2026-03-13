@@ -59,7 +59,26 @@ func (s *server) withMediaThumbnailGet(r *gin.RouterGroup, route Route) *server 
 }
 
 func (s *server) getMediaThumbnail(c *gin.Context) {
-	c.Status(http.StatusOK)
+	id, err := uuid.Parse(c.Param(idKey))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "could not parse media id"})
+		return
+	}
+
+	thumb, err := s.repo.Media().GetThumbnailFor(id)
+	if err != nil {
+		s.logger.Errorf("could not get thumbnail media for: %v\n%v", id, err.Error())
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	if thumb == nil {
+		s.logger.Warningf("thumbnail not found for media: :%v", id)
+		c.AbortWithStatus(http.StatusNotFound)
+		return
+	}
+
+	c.File(thumb.Path)
 }
 
 func (s *server) putMedia(c *gin.Context) {

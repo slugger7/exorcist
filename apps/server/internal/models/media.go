@@ -43,3 +43,8 @@ type Media struct {
 	Tags     []model.Tag
 	Chapters []MediaChapter
 }
+
+type MediaImage struct {
+	model.Image
+	model.Media
+}

@@ -1,5 +1,5 @@
 ### Get All videos
-GET {{host}}:{{port}}/api/media?limit=50&favourites=true
+GET {{host}}:{{port}}/api/media?limit=50&favourites=false
 
 ### Get media by id
 GET {{host}}:{{port}}/api/media/0fa21151-458f-4a33-aa89-3e374952ddd8
@@ -56,4 +56,4 @@ Content-Type: application/json
 }
 
 ### Get Thumbnail
-GET {{host}}:{{port}}/api/media/0fa21151-458f-4a33-aa89-3e374952ddd8/thumbnail
+GET {{host}}:{{port}}/api/media/b8a94e24-3b5e-485e-87e4-2bd30740bf50/thumbnail
