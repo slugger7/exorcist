@@ -44,3 +44,8 @@ type Media struct {
 	Chapters  []MediaChapter
 	Relations []MediaRelation
 }
+
+type MediaImage struct {
+	model.Image
+	model.Media
+}

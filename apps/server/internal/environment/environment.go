@@ -39,6 +39,9 @@ type EnvironmentVariables struct {
 	CorsOrigins                []string
 	WebsocketHeartbeatInterval int
 	MigrationPath              string
+	CookieSecure               bool
+	CookieMaxAge               int
+	CookieHttpOnly             bool
 }
 
 type OsEnv = string
@@ -62,6 +65,9 @@ const (
 	CORS_ORIGINS                 OsEnv = "CORS_ORIGINS"
 	WEBSOCKET_HEARTBEAT_INTERVAL OsEnv = "WEBSOCKET_HEARTBEAT_INTERVAL"
 	MIGRATIONS_PATH              OsEnv = "MIGRATIONS_PATH"
+	COOKIE_SECURE                OsEnv = "COOKIE_SECURE"
+	COOKIE_MAX_AGE               OsEnv = "COOKIE_MAX_AGE"
+	COOKIE_HTTP_ONLY             OsEnv = "COOKIE_HTTP_ONLY"
 )
 
 var env *EnvironmentVariables
@@ -95,6 +101,9 @@ func RefreshEnvironmentVariables() {
 		CorsOrigins:                strings.Split(os.Getenv(CORS_ORIGINS), ";"),
 		WebsocketHeartbeatInterval: getIntValue(WEBSOCKET_HEARTBEAT_INTERVAL),
 		MigrationPath:              getValueOrDefault(MIGRATIONS_PATH, "./apps/server/migrations"),
+		CookieSecure:               getBoolValue(COOKIE_SECURE, true),
+		CookieMaxAge:               getIntValueOrDefault(COOKIE_MAX_AGE, 0),
+		CookieHttpOnly:             getBoolValue(COOKIE_HTTP_ONLY, false),
 	}
 }
 
@@ -127,6 +136,18 @@ func getValueOrDefault(key OsEnv, value string) string {
 
 func getIntValue(key OsEnv) int {
 	e := os.Getenv(key)
+	value, err := strconv.Atoi(e)
+	errs.PanicError(err)
+
+	return value
+}
+
+func getIntValueOrDefault(key OsEnv, defaultValue int) int {
+	e := os.Getenv(key)
+	if e == "" {
+		return defaultValue
+	}
+
 	value, err := strconv.Atoi(e)
 	errs.PanicError(err)
 

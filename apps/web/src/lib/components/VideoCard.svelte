@@ -1,7 +1,7 @@
 <script>
   import { Link } from "svelte-routing";
   import routes from "../../routes/routes";
-  import { imageUrlById } from "../controllers/image";
+  import { imageUrlById, thumbnailUrl } from "../controllers/image";
 
   /** @import { MediaOverviewDTO } from "../types"*/
 
@@ -42,7 +42,7 @@
     <button class={`button ${selected ? "is-focused" : ""}`} onclick={onselect}
       ><img
         class="image"
-        src={imageUrlById(video.thumbnailId)}
+        src={thumbnailUrl(video.id)}
         alt={video.title}
       /></button
     >
@@ -50,7 +50,7 @@
     <Link to={routes.videoFunc(video.id, video.title)}
       ><img
         class="image"
-        src={imageUrlById(video.thumbnailId)}
+        src={thumbnailUrl(video.id)}
         alt={video.title}
       /></Link
     >

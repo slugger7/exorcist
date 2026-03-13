@@ -14,7 +14,7 @@ import (
 
 	uuid "github.com/google/uuid"
 	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
-	imageRepository "github.com/slugger7/exorcist/apps/server/internal/repository/image"
+	models "github.com/slugger7/exorcist/apps/server/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -58,10 +58,10 @@ func (mr *MockImageRepositoryMockRecorder) Create(m any) *gomock.Call {
 }
 
 // GetById mocks base method.
-func (m *MockImageRepository) GetById(arg0 uuid.UUID) (*imageRepository.MediaImage, error) {
+func (m *MockImageRepository) GetById(arg0 uuid.UUID) (*models.MediaImage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetById", arg0)
-	ret0, _ := ret[0].(*imageRepository.MediaImage)
+	ret0, _ := ret[0].(*models.MediaImage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -73,10 +73,10 @@ func (mr *MockImageRepositoryMockRecorder) GetById(arg0 any) *gomock.Call {
 }
 
 // GetByMediaId mocks base method.
-func (m *MockImageRepository) GetByMediaId(arg0 uuid.UUID) (*imageRepository.MediaImage, error) {
+func (m *MockImageRepository) GetByMediaId(arg0 uuid.UUID) (*models.MediaImage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByMediaId", arg0)
-	ret0, _ := ret[0].(*imageRepository.MediaImage)
+	ret0, _ := ret[0].(*models.MediaImage)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

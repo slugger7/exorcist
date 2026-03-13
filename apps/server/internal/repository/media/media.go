@@ -35,6 +35,7 @@ type MediaRepository interface {
 	GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error)
 	GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error)
 	GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error)
+	GetThumbnailFor(id uuid.UUID) (*model.Media, error)
 
 	UpsertProgress(prog model.MediaProgress) (*model.MediaProgress, error)
 	Update(m model.Media, columns postgres.ColumnList) (*model.Media, error)
@@ -50,6 +51,29 @@ type mediaRepository struct {
 	env    *environment.EnvironmentVariables
 	logger logger.Logger
 	ctx    context.Context
+}
+
+// GetThumbnailFor implements [MediaRepository].
+func (r *mediaRepository) GetThumbnailFor(id uuid.UUID) (*model.Media, error) {
+	statement := media.SELECT(media.AllColumns).
+		FROM(media.INNER_JOIN(table.MediaRelation,
+			table.MediaRelation.RelatedTo.EQ(media.ID).
+				AND(table.MediaRelation.MediaID.EQ(postgres.UUID(id))).
+				AND(table.MediaRelation.RelationType.EQ(postgres.NewEnumValue(model.MediaRelationTypeEnum_Thumbnail.String()))),
+		))
+
+	util.DebugCheck(r.env, statement)
+
+	var entities []model.Media
+	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
+		return nil, errs.BuildError(err, "could not fetch media for: %v", id.String())
+	}
+
+	if len(entities) == 0 {
+		return nil, nil
+	}
+
+	return &entities[0], nil
 }
 
 // GetRelationsFor implements MediaRepository.

@@ -10,18 +10,14 @@ import (
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/table"
 	"github.com/slugger7/exorcist/apps/server/internal/environment"
 	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 	"github.com/slugger7/exorcist/apps/server/internal/repository/util"
 )
 
-type MediaImage struct {
-	model.Image
-	model.Media
-}
-
 type ImageRepository interface {
 	Create(m *model.Image) (*model.Image, error)
-	GetById(uuid.UUID) (*MediaImage, error)
-	GetByMediaId(uuid.UUID) (*MediaImage, error)
+	GetById(uuid.UUID) (*models.MediaImage, error)
+	GetByMediaId(uuid.UUID) (*models.MediaImage, error)
 }
 
 type imageRepository struct {
@@ -31,7 +27,7 @@ type imageRepository struct {
 }
 
 // GetByMediaId implements IImageRepository.
-func (i *imageRepository) GetByMediaId(id uuid.UUID) (*MediaImage, error) {
+func (i *imageRepository) GetByMediaId(id uuid.UUID) (*models.MediaImage, error) {
 	media := table.Media
 	image := table.Image
 
@@ -45,7 +41,7 @@ func (i *imageRepository) GetByMediaId(id uuid.UUID) (*MediaImage, error) {
 
 	util.DebugCheck(i.env, statement)
 
-	var result MediaImage
+	var result models.MediaImage
 	if err := statement.QueryContext(i.ctx, i.db, &result); err != nil {
 		return nil, errs.BuildError(err, "could not get image by media id: %v", id)
 	}
@@ -89,8 +85,8 @@ func (i *imageRepository) Create(m *model.Image) (*model.Image, error) {
 	return &img, nil
 }
 
-func (i *imageRepository) GetById(id uuid.UUID) (*MediaImage, error) {
-	var img MediaImage
+func (i *imageRepository) GetById(id uuid.UUID) (*models.MediaImage, error) {
+	var img models.MediaImage
 	statement := table.Image.SELECT(table.Image.AllColumns, table.Media.AllColumns).
 		FROM(table.Image.INNER_JOIN(
 			table.Image,

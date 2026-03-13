@@ -223,6 +223,21 @@ func (mr *MockMediaRepositoryMockRecorder) GetRelationsFor(id, relationType any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRelationsFor", reflect.TypeOf((*MockMediaRepository)(nil).GetRelationsFor), id, relationType)
 }
 
+// GetThumbnailFor mocks base method.
+func (m *MockMediaRepository) GetThumbnailFor(id uuid.UUID) (*model.Media, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetThumbnailFor", id)
+	ret0, _ := ret[0].(*model.Media)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetThumbnailFor indicates an expected call of GetThumbnailFor.
+func (mr *MockMediaRepositoryMockRecorder) GetThumbnailFor(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetThumbnailFor", reflect.TypeOf((*MockMediaRepository)(nil).GetThumbnailFor), id)
+}
+
 // Relate mocks base method.
 func (m *MockMediaRepository) Relate(arg0 model.MediaRelation) (*model.MediaRelation, error) {
 	m.ctrl.T.Helper()

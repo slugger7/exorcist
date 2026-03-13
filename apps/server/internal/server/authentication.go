@@ -48,6 +48,12 @@ const MsgAuthSuccess string = "successfully authenticated user"
 
 func (s *server) Login(c *gin.Context) {
 	session := sessions.Default(c)
+	session.Options(sessions.Options{
+		Secure:   s.env.CookieSecure,
+		MaxAge:   s.env.CookieMaxAge,
+		HttpOnly: s.env.CookieHttpOnly,
+	})
+
 	var userBody LoginModel
 	if err := c.ShouldBindBodyWithJSON(&userBody); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})

@@ -9,7 +9,7 @@ import (
 )
 
 func (s *server) withImageGet(r *gin.RouterGroup, route Route) *server {
-	r.GET(fmt.Sprintf("%v/:id", route, idKey), s.getImage)
+	r.GET(fmt.Sprintf("%v/:%v", route, idKey), s.getImage)
 	return s
 }
 
