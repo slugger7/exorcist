@@ -9,14 +9,12 @@ import (
 )
 
 func (s *server) withImageGet(r *gin.RouterGroup, route Route) *server {
-	r.GET(fmt.Sprintf("%v/:id", route), s.getImage)
+	r.GET(fmt.Sprintf("%v/:%v", route, idKey), s.getImage)
 	return s
 }
 
 func (s *server) getImage(c *gin.Context) {
-	idString := c.Param("id")
-
-	id, err := uuid.Parse(idString)
+	id, err := uuid.Parse(c.Param(idKey))
 	if err != nil {
 		s.logger.Errorf("Incorrect id format: %v", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": ErrInvalidIdFormat})

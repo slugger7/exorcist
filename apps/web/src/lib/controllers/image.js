@@ -5,3 +5,9 @@ import { server } from "../env";
  * @returns {string}
  */
 export const imageUrlById = (id) => `${server()}/images/${id}`
+
+/**
+ * @param {string} mediaId
+ * @returns {string}
+ */
+export const thumbnailUrl = (mediaId) => `${server()}/media/${mediaId}/thumbnail`
