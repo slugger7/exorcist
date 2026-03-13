@@ -52,7 +52,7 @@ func setupServer(t *testing.T) *TestServer {
 	ctrl := gomock.NewController(t)
 	svc := mock_service.NewMockService(ctrl)
 	env := environment.EnvironmentVariables{LogLevel: "none"}
-	server := &server{logger: logger.New(&env), service: svc}
+	server := &server{logger: logger.New(&env), service: svc, env: &env}
 	engine := setupEngine()
 	return &TestServer{server: server, mockService: svc, engine: engine, ctrl: ctrl}
 }
