@@ -10,7 +10,7 @@ COPY --chown=node:node ./apps/web .
 
 RUN npm run build
 
-FROM golang:1.25-alpine AS build_server
+FROM golang:1.26-alpine AS build_server
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ COPY ./apps/server ./apps/server
 RUN go build -o /exorcist ./apps/server/cmd/exorcist
 
 
-FROM golang:1.25-alpine AS exorcist
+FROM golang:1.26-alpine AS exorcist
 
 RUN apk update && apk add ffmpeg
 
