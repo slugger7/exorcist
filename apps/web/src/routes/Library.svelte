@@ -30,8 +30,6 @@
 
     return title;
   };
-
-  console.log("Hello");
 </script>
 
 {#snippet headerAddons()}

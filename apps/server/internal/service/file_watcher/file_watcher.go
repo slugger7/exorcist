@@ -123,7 +123,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 				if !ok {
 					return
 				}
-				s.logger.Debugf(event.String())
+				s.logger.Debug(event.String())
 
 				libPath := findLibPathByFilePath(event.Name, s.libPaths)
 
@@ -134,7 +134,7 @@ func (s *watcherService) WithDirectoryWatcher() {
 				if event.Has(fsnotify.Create) {
 					d, err := os.Stat(event.Name)
 					if err != nil {
-						s.logger.Errorf("colud not stat event path in watcher: %v", err.Error)
+						s.logger.Errorf("colud not stat event path in watcher: %v", err.Error())
 						continue
 					}
 					if d.IsDir() {
