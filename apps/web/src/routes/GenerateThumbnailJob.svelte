@@ -26,13 +26,13 @@
         relationType: "thumbnail",
       });
 
-      navigate(redirect, { replace: true });
+      navigate(redirect);
     } finally {
       submitting = false;
     }
   };
   const handleCancel = () => {
-    navigate(redirect, { replace: true });
+    navigate(redirect);
   };
 </script>
 

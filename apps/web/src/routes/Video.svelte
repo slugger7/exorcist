@@ -306,20 +306,7 @@
               </span>
             </Link>
           </p>
-          <p class="control">
-            <button
-              class={`button ${loadingProgress ? "is-loading" : ""}`}
-              onclick={handleWatchedClick}
-              aria-label="toggle watched"
-              disabled={loadingProgress}
-            >
-              <span class="icon">
-                <i
-                  class={`fas ${watchedPercentage > 0.9 ? "fa-eye-slash" : "fa-eye"}`}
-                ></i>
-              </span>
-            </button>
-          </p>
+
           <p class="control">
             <button
               class={`button ${loadingFavourite ? "is-loading" : ""}`}
@@ -355,7 +342,6 @@
                 id,
                 routes.videoFunc(id, mediaEntity.title),
               )}
-              replace={true}
             >
               <span class="icon"><i class="fas fa-images"></i></span>
             </Link>
@@ -368,12 +354,25 @@
                 id,
                 routes.videoFunc(id, mediaEntity.title),
               )}
-              replace={true}
             >
               <span class="icon"><i class="fas fa-image"></i></span>
             </Link>
           </p>
         {/if}
+        <p class="control">
+          <button
+            class={`button ${loadingProgress ? "is-loading" : ""}`}
+            onclick={handleWatchedClick}
+            aria-label="toggle watched"
+            disabled={loadingProgress}
+          >
+            <span class="icon">
+              <i
+                class={`fas ${watchedPercentage > 0.9 ? "fa-eye-slash" : "fa-eye"}`}
+              ></i>
+            </span>
+          </button>
+        </p>
         {#if !mediaEntity.deleted || mediaEntity.exists}
           <p class="control">
             <Link
