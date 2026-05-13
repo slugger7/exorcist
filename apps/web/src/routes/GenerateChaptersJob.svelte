@@ -48,6 +48,7 @@
           class="input"
           name="interval"
           type="number"
+          autofocus
           bind:value={interval}
         />
       </div>
