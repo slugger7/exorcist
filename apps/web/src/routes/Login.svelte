@@ -8,10 +8,8 @@
     let username = $state(import.meta.env.DEV ? "admin" : "");
     let password = $state(import.meta.env.DEV ? "admin" : "");
     let loading = $state(false);
-    const returnUrl = new URLSearchParams(window.location.search).get(
-        "returnUrl",
-    );
 
+    /** @param {SubmitEvent} e */
     async function handleSubmit(e) {
         e.preventDefault();
         loading = true;
@@ -22,6 +20,10 @@
             userState.username = user.username;
 
             setupWebsocket();
+
+            const returnUrl = new URLSearchParams(window.location.search).get(
+                "returnUrl",
+            );
 
             if (returnUrl === null) {
                 navigate(routes.home);
