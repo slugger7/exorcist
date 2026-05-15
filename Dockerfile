@@ -3,10 +3,14 @@ FROM node:24-alpine AS build_web
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY --chown=node:node apps/web/package*.json ./
+
 USER node
 RUN npm install
 
 COPY --chown=node:node ./apps/web .
+
+ENV VITE_WS=true
+ENV NODE_ENV=production
 
 RUN npm run build
 

@@ -9,12 +9,13 @@
    * @property {string} redirect
    */
   /** @type {props}*/
-  let { mediaId, redirect = null } = $props();
+  let { mediaId, redirect = "/" } = $props();
   let interval = $state(60);
   let overwrite = $state(false);
   let maxDimension = $state(400);
   let submitting = $state(false);
 
+  /** @param {SubmitEvent} e */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -48,6 +49,7 @@
           class="input"
           name="interval"
           type="number"
+          autofocus
           bind:value={interval}
         />
       </div>

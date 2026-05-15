@@ -15,9 +15,7 @@ export const login = async (username, password) => {
 
   if (res.status != 201) {
     throw new Error(`could not log in ${username} with given password`);
-  }
-
-  if (res.status == 201) {
+  } else {
     const data = await res.json();
 
     localStorage.setItem("userId", data.userId);

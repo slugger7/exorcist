@@ -17,13 +17,17 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run-script", "dev"],
+      "runtimeArgs": [
+        "run-script",
+        "dev"
+      ],
       "cwd": "${workspaceFolder}/apps/web"
     },
     {
       "type": "firefox",
       "request": "launch",
       "name": "Launch firefox",
+      "tmpDir": "${workspaceFolder}/.temp/firefox",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/apps/web"
     },
