@@ -35,9 +35,9 @@
 
   /** @type {{id: string}}*/
   let { id } = $props();
-  /** @type {HTMLVideoElement}*/
+  /** @type {HTMLVideoElement | undefined}*/
   let videoNode = $state();
-  /** @type {MediaDTO}*/
+  /** @type {MediaDTO | undefined}*/
   let mediaEntity = $state();
   let loadingMedia = $state(false);
   let loadingProgress = $state(false);
@@ -46,7 +46,10 @@
   let loadingFavourite = $state(false);
 
   let watchedPercentage = $derived(
-    mediaEntity.progress / mediaEntity.video.runtime,
+    mediaEntity
+      ? mediaEntity.progress /
+          (mediaEntity.video ? mediaEntity.video.runtime : 1)
+      : 0,
   );
 
   const fetchMedia = async () => {
@@ -64,7 +67,7 @@
 
   onDestroy(() => {
     localStorage.setItem("item", id);
-    nextFocusState.node = null;
+    nextFocusState.node = undefined;
 
     if (wsState.active) {
       wsState.connection.removeEventListener("message", onWsMessage);
@@ -96,13 +99,13 @@
   /** @type {WSTopicMap<MediaDTO>}*/
   const topicMap = {
     media_update: (updatedMedia) => {
-      if (updatedMedia.chapters.length > 0) {
+      if (mediaEntity && updatedMedia.chapters.length > 0) {
         mediaEntity.chapters = [
           ...(mediaEntity.chapters || []),
           ...updatedMedia.chapters,
         ];
       }
-      if (updatedMedia.chapters.length == 0) {
+      if (mediaEntity && updatedMedia.chapters.length == 0) {
         mediaEntity.chapters = [];
       }
     },
@@ -147,9 +150,11 @@
 
   /** @param {KeyboardEvent} e*/
   const handleOnKeyUp = (e) => {
+    if (!videoNode) {
+      return;
+    }
     switch (e.code) {
       case "KeyL":
-        console.log;
         videoNode.currentTime = videoNode.currentTime + 10;
         break;
       case "KeyJ":
@@ -175,16 +180,20 @@
     }
   };
 
+  /** @type {number} */
   let progressTimeout;
+
   /** @param {Event} e*/
   const handleTimeUpdate = (e) => {
     clearTimeout(progressTimeout);
     progressTimeout = setTimeout(async () => {
       loadingProgress = true;
       try {
-        const prog = await updateProgress(id, videoNode.currentTime);
+        if (videoNode && mediaEntity) {
+          const prog = await updateProgress(id, videoNode.currentTime);
 
-        mediaEntity.progress = prog.progress;
+          mediaEntity.progress = prog.progress;
+        }
       } finally {
         loadingProgress = false;
       }
@@ -194,7 +203,7 @@
   const handleWatchedClick = async () => {
     let val = 0;
     if (watchedPercentage <= 0.9) {
-      val = mediaEntity.video.runtime;
+      val = mediaEntity?.video?.runtime ?? 0;
     }
 
     loadingProgress = true;
@@ -216,7 +225,7 @@
     try {
       const res = await updateMedia(id, { title: updatedTitle });
 
-      mediaEntity.title = res.title;
+      mediaEntity.title = res.title ?? "";
       editingTitle = false;
     } finally {
       loadingTitle = false;
@@ -334,18 +343,7 @@
               ></Link
             >
           </p>
-          <p class="control">
-            <Link
-              class="button"
-              aria-label="generate chapters"
-              to={routes.generateChaptersFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
-            >
-              <span class="icon"><i class="fas fa-images"></i></span>
-            </Link>
-          </p>
+
           <p class="control">
             <Link
               class="button"
@@ -356,6 +354,18 @@
               )}
             >
               <span class="icon"><i class="fas fa-image"></i></span>
+            </Link>
+          </p>
+          <p class="control">
+            <Link
+              class="button"
+              aria-label="generate chapters"
+              to={routes.generateChaptersFn(
+                id,
+                routes.videoFunc(id, mediaEntity.title),
+              )}
+            >
+              <span class="icon"><i class="fas fa-images"></i></span>
             </Link>
           </p>
         {/if}

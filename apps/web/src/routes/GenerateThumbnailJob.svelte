@@ -9,11 +9,12 @@
    * @property {string} redirect
    */
   /** @type {props}*/
-  let { mediaId, redirect = null } = $props();
+  let { mediaId, redirect = "/" } = $props();
   let timestamp = $state(0);
   let width = $state(400);
   let submitting = $state(false);
 
+  /** @param {SubmitEvent} e*/
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,13 +27,13 @@
         relationType: "thumbnail",
       });
 
-      navigate(redirect);
+      navigate(redirect, { replace: true });
     } finally {
       submitting = false;
     }
   };
   const handleCancel = () => {
-    navigate(redirect);
+    navigate(redirect, { replace: true });
   };
 </script>
 
