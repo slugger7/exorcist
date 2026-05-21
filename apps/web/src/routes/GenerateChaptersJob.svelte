@@ -6,10 +6,9 @@
    * @typedef props
    * @type {object}
    * @property {string} mediaId
-   * @property {string} redirect
    */
   /** @type {props}*/
-  let { mediaId, redirect = "/" } = $props();
+  let { mediaId } = $props();
   let interval = $state(60);
   let overwrite = $state(false);
   let maxDimension = $state(400);
@@ -28,13 +27,14 @@
         maxDimension,
       });
 
-      navigate(redirect, { replace: true });
+      history.back();
     } finally {
       submitting = false;
     }
   };
+
   const handleCancel = () => {
-    navigate(redirect, { replace: true });
+    history.back();
   };
 </script>
 
