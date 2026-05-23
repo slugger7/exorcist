@@ -22,9 +22,9 @@ window.addEventListener("beforeunload", () => {
 
 export const setupWebsocket = () => {
 	const connect = () => {
-		if (!WS_ACTIVE()) { 
+		if (!WS_ACTIVE()) {
 			console.log("No websockets running")
-			return 
+			return
 		}
 		try {
 			conn = new WebSocket(`${ws()}/ws`)

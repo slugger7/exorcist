@@ -6,14 +6,14 @@
    * @typedef props
    * @type {object}
    * @property {string} mediaId
-   * @property {string} redirect
    */
   /** @type {props}*/
-  let { mediaId, redirect = null } = $props();
+  let { mediaId } = $props();
   let timestamp = $state(0);
   let width = $state(400);
   let submitting = $state(false);
 
+  /** @param {SubmitEvent} e*/
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,13 +26,13 @@
         relationType: "thumbnail",
       });
 
-      navigate(redirect, { replace: true });
+      history.back();
     } finally {
       submitting = false;
     }
   };
   const handleCancel = () => {
-    navigate(redirect, { replace: true });
+    history.back();
   };
 </script>
 
@@ -47,6 +47,7 @@
           class="input"
           name="timestamp"
           type="number"
+          autofocus
           bind:value={timestamp}
         />
       </div>

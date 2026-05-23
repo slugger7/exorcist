@@ -1,4 +1,4 @@
-/** @type {{node: HTMLElement}} */
+/** @type {{node: HTMLElement | undefined}} */
 export const nextFocusState = $state({
-  node: null
+  node: undefined
 })
