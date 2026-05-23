@@ -6,10 +6,9 @@
    * @typedef props
    * @type {object}
    * @property {string} mediaId
-   * @property {string} redirect
    */
   /** @type {props}*/
-  let { mediaId, redirect = "/" } = $props();
+  let { mediaId } = $props();
   let timestamp = $state(0);
   let width = $state(400);
   let submitting = $state(false);
@@ -27,13 +26,13 @@
         relationType: "thumbnail",
       });
 
-      navigate(redirect, { replace: true });
+      history.back();
     } finally {
       submitting = false;
     }
   };
   const handleCancel = () => {
-    navigate(redirect, { replace: true });
+    history.back();
   };
 </script>
 
