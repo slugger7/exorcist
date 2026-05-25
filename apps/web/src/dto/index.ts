@@ -180,7 +180,6 @@ export interface MediaDTO {
   people: PersonDTO[];
   tags: TagDTO[];
   favourite: boolean;
-  chapters: ChapterDTO[];
   relations: MediaRelationDto[];
 }
 export interface ImageDTO {
@@ -207,10 +206,6 @@ export interface MediaUpdatedDTO {
   title?: string;
   modified: Date;
 }
-export interface ChapterDTO {
-  thumbnailId: string /* UUID */;
-  timestamp: number /* float64 */;
-}
 
 //////////
 // source: media_progress.go
@@ -227,8 +222,9 @@ export interface ProgressUpdateDTO {
 // source: media_relation.go
 
 export interface MediaRelationDto {
-  mediaId: string /* UUID */;
-  thumbnailId: string /* UUID */;
+  relatedToId: string /* UUID */;
+  relationType: any /* model.MediaRelationTypeEnum */;
+  metadata?: string;
 }
 
 //////////

@@ -32,7 +32,6 @@
   import Chapters from "../lib/components/Chapters.svelte";
   import { wsState } from "../lib/state/wsState.svelte";
   import { PONG } from "../lib/constants/websocket";
-
   /** @type {{id: string}}*/
   let { id } = $props();
   /** @type {HTMLVideoElement | undefined}*/
@@ -444,10 +443,12 @@
       />
     </div>
     <br />
-    {#if mediaEntity.chapters}
+    {#if mediaEntity.relations}
       <div class="container">
         <Chapters
-          chapters={mediaEntity.chapters}
+          chapters={mediaEntity.relations.filter(
+            (relation) => relation.relationType === "chapter",
+          )}
           onclick={handleChapterClick}
         />
       </div>
