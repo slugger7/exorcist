@@ -12,6 +12,7 @@
   let title = $state(name);
   let submittingTitle = $state(false);
 
+  /** @param {string} newTitle*/
   const updateTitle = async (newTitle) => {
     submittingTitle = true;
     try {
