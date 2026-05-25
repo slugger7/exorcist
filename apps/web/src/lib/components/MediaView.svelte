@@ -56,22 +56,22 @@
   let ascending = $state(getBoolParamOrDefault("ascending", false));
   let selectedTags = $state(getArrayOfStringsSearchParamOrDefault("tags", []));
   let selectedWatchStatuses = $state(
-    getArrayOfStringsSearchParamOrDefault("watchStatuses", [])
+    getArrayOfStringsSearchParamOrDefault("watchStatuses", []),
   );
   let selectedPeople = $state(
-    getArrayOfStringsSearchParamOrDefault("people", [])
+    getArrayOfStringsSearchParamOrDefault("people", []),
   );
   let expanded = $state(getBoolParamOrDefault("expanded", false));
   let selecting = $state(getBoolParamOrDefault("selecting", false));
   let selectedMedia = $state(
-    getArrayOfStringsSearchParamOrDefault("selected", [])
+    getArrayOfStringsSearchParamOrDefault("selected", []),
   );
   let favourites = $state(getBoolParamOrDefault("favourites", false));
   let deleted = $state(getBoolParamOrDefault("deleted", false));
   let exists = $state(getBoolParamOrDefault("exists", true));
   let loading = $state(false);
   let error = $state();
-  /** @type {PageDTO<MediaOverviewDTO>}*/
+  /** @type {PageDTO<MediaOverviewDTO> | undefined}*/
   let mediaPage = $state();
   /** @type {MediaOverviewDTO[]}*/
   let newMedia = $state([]);
@@ -236,11 +236,11 @@
     const data = JSON.parse(e.data);
 
     const topic = topicMap[data.topic];
-    if (topic) {
+    if (topic && mediaPage) {
       const [updatedMediaPage, updatedNewMedia] = topic(
         mediaPage,
         newMedia,
-        data.data
+        data.data,
       );
       mediaPage = updatedMediaPage;
       newMedia = updatedNewMedia;
@@ -255,12 +255,16 @@
     setValueAndNavigate("search", search, route, { replace: true });
   };
 
+  /** @type {number}*/
   let searchTimeout;
+  /** @param {Event} event */
   const onSearchChange = (event) => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
+      // @ts-ignore
       setSearchAndNavigate(event.target.value);
 
+      // @ts-ignore
       event.target.focus();
     }, 500);
   };
@@ -269,6 +273,7 @@
     setSearchAndNavigate("");
   };
 
+  /** @param {string} id*/
   const toggleMediaSelected = (id) => () => {
     const exists = !!selectedMedia.find((m) => m === id);
     if (exists) {
@@ -286,7 +291,9 @@
         value={title}
         loading={submittingTitle}
         onsave={async (e, updatedTitle) => {
-          await updateTitle(updatedTitle);
+          if (updateTitle) {
+            await updateTitle(updatedTitle);
+          }
 
           editingTitle = false;
         }}

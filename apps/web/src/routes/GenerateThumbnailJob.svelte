@@ -47,7 +47,6 @@
           class="input"
           name="timestamp"
           type="number"
-          autofocus
           bind:value={timestamp}
         />
       </div>
