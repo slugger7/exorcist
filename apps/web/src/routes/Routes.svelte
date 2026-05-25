@@ -82,15 +82,9 @@
         /></Route
     >
     <Route path={routes.generateChapters} let:params
-        ><GenerateChaptersJob
-            mediaId={params.id}
-            redirect={params.redirect}
-        /></Route
+        ><GenerateChaptersJob mediaId={params.id} /></Route
     >
     <Route path={routes.generateThumbnail} let:params
-        ><GenerateThumbnailJob
-            mediaId={params.id}
-            redirect={params.redirect}
-        /></Route
+        ><GenerateThumbnailJob mediaId={params.id} /></Route
     >
 </main>
