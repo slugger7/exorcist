@@ -262,7 +262,7 @@ func (s *server) getMediaById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, (&dto.MediaDTO{}).FromModel(*m))
+	c.JSON(http.StatusOK, new(dto.MediaDTO).FromModel(*m))
 }
 
 func (s *server) getMedia(c *gin.Context) {

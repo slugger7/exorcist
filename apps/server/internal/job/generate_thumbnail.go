@@ -149,19 +149,5 @@ func (jr *JobRunner) GenerateThumbnail(job *model.Job) error {
 	}
 	jr.ws.MediaOverviewUpdate(mediaOverviewUpdate)
 
-	if *jobData.RelationType == model.MediaRelationTypeEnum_Chapter {
-		mediaUpdate := dto.MediaDTO{
-			ID: video.Media.ID,
-			Chapters: []dto.ChapterDTO{
-				{
-					ThumbnailId: image.MediaID,
-					Timestamp:   jobData.Timestamp,
-				},
-			},
-		}
-
-		jr.ws.MediaUpdate(mediaUpdate)
-	}
-
 	return nil
 }

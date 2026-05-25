@@ -425,7 +425,7 @@ func (r *mediaRepository) GetById(id uuid.UUID) (*models.Media, error) {
 func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error) {
 	image := table.Image
 	video := table.Video
-	mediaChapter := table.MediaRelation.AS("media_chapter")
+	mediaRelation := table.MediaRelation
 	mediaPerson := table.MediaPerson
 	person := table.Person
 	mediaTag := table.MediaTag
@@ -437,15 +437,13 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		video.AllColumns,
 		person.AllColumns,
 		tag.AllColumns,
+		mediaRelation.AllColumns,
 		table.MediaProgress.Timestamp,
 		table.FavouriteMedia.ID,
-		mediaChapter.Metadata,
-		mediaChapter.RelatedTo,
 	).FROM(media.
 		LEFT_JOIN(image, image.MediaID.EQ(media.ID)).
 		LEFT_JOIN(video, video.MediaID.EQ(media.ID)).
-		LEFT_JOIN(mediaChapter, mediaChapter.MediaID.EQ(media.ID).
-			AND(mediaChapter.RelationType.EQ(postgres.NewEnumValue(model.MediaRelationTypeEnum_Chapter.String())))).
+		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID)).
 		LEFT_JOIN(mediaPerson, mediaPerson.MediaID.EQ(media.ID)).
 		LEFT_JOIN(person, person.ID.EQ(mediaPerson.PersonID)).
 		LEFT_JOIN(mediaTag, mediaTag.MediaID.EQ(media.ID)).
@@ -454,7 +452,7 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		LEFT_JOIN(table.FavouriteMedia, table.FavouriteMedia.MediaID.EQ(media.ID).AND(table.FavouriteMedia.UserID.EQ(postgres.UUID(userId)))),
 	).
 		WHERE(media.ID.EQ(postgres.UUID(id))).
-		ORDER_BY(mediaChapter.Created)
+		ORDER_BY(mediaRelation.Created)
 
 	util.DebugCheck(r.env, statement)
 

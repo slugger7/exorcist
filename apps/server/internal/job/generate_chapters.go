@@ -45,7 +45,7 @@ func CreateGenerateChaptersJob(mediaId uuid.UUID, jobId *uuid.UUID, interval *fl
 	return job, nil
 }
 
-func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaChapter) error {
+func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelation) error {
 	var accErr error
 	for _, i := range chapters {
 		if err := jr.service.Media().Delete(i.RelatedTo, true); err != nil {
@@ -57,8 +57,17 @@ func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaChapter
 		}
 	}
 
+	m, err := jr.repo.Media().GetById(id)
+	if err != nil {
+		accErr = errors.Join(accErr, err)
+		return accErr
+	}
+
+	// TODO: this can be simplified seeing as we only need the relations
+	mediaDto := new(dto.MediaDTO).FromModel(*m)
+
 	mediaUpdate := dto.MediaDTO{
-		Chapters: []dto.ChapterDTO{},
+		Relations: mediaDto.Relations,
 	}
 
 	jr.ws.MediaUpdate(mediaUpdate)
@@ -81,9 +90,16 @@ func (jr *JobRunner) generateChapters(job *model.Job) error {
 		return fmt.Errorf("media was nil for generate chapters job: %v", jobData.MediaId.String())
 	}
 
-	if len(media.Chapters) > 0 {
+	relations := []models.MediaRelation{}
+	for _, relation := range media.MediaRelations {
+		if relation.RelationType == model.MediaRelationTypeEnum_Chapter {
+			relations = append(relations, relation)
+		}
+	}
+
+	if len(relations) > 0 {
 		if jobData.Overwrite {
-			if err := jr.removeChapters(media.Media.ID, media.Chapters); err != nil {
+			if err := jr.removeChapters(media.Media.ID, relations); err != nil {
 				jr.logger.Warningf("some issues removing previous chapters: %v", err.Error())
 			}
 		} else {

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/google/uuid"
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 )
 
@@ -11,7 +10,6 @@ type MediaVideo struct {
 }
 
 type MediaRelation struct {
-	model.Media
 	model.MediaRelation
 }
 
@@ -22,21 +20,15 @@ type MediaOverviewModel struct {
 	*model.FavouriteMedia
 }
 
-type MediaChapter struct {
-	Metadata  string
-	RelatedTo uuid.UUID
-}
-
 type Media struct {
 	model.Media
 	*model.Image
 	*model.Video
 	*model.MediaProgress
 	*model.FavouriteMedia
-	People    []model.Person
-	Tags      []model.Tag
-	Chapters  []MediaChapter
-	Relations []MediaRelation
+	People         []model.Person
+	Tags           []model.Tag
+	MediaRelations []MediaRelation
 }
 
 type MediaImage struct {
