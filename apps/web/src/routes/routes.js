@@ -45,13 +45,23 @@ const routes = {
         return `/playlists-add?${params.toString()}`
     },
     refreshMetadata: "/jobs/refresh-metadata/media/:id/:redirect",
+    /**
+     * @param {string} id
+     * @param {string} redirect
+     */
     refreshMetadataFn: (id, redirect) => (`/jobs/refresh-metadata/media/${id}/${encodeURIComponent(redirect)}`),
     refreshLibraryMetadata: "/jobs/refresh-metadata/library/:id/:redirect",
+    /**
+     * @param {string} id
+     * @param {string} redirect
+     */
     refreshLibraryMetadataFn: (id, redirect) => (`/jobs/refresh-metadata/library/${id}/${encodeURIComponent(redirect)}`),
-    generateChapters: "/jobs/generate-chapters/media/:id/:redirect",
-    generateChaptersFn: (id, redirect) => (`/jobs/generate-chapters/media/${id}/${encodeURIComponent(redirect)}`),
-    generateThumbnail: "/jobs/generate-thumbnail/media/:id/:redirect",
-    generateThumbnailFn: (id, redirect) => (`/jobs/generate-thumbnail/media/${id}/${encodeURIComponent(redirect)}`),
+    generateChapters: "/jobs/generate-chapters/media/:id/",
+    /** @param {string} id */
+    generateChaptersFn: (id) => (`/jobs/generate-chapters/media/${id}`),
+    generateThumbnail: "/jobs/generate-thumbnail/media/:id/",
+    /** @param {string} id */
+    generateThumbnailFn: (id) => (`/jobs/generate-thumbnail/media/${id}`),
     create: {
         library: "/create/libraries",
         /** @type {ItemUrlFn} */

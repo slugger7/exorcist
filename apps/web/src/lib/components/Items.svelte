@@ -2,6 +2,7 @@
   import ItemSelector from "./ItemSelector.svelte";
   import HeaderIconButton from "./HeaderIconButton.svelte";
   import { Link } from "svelte-routing";
+  import { pageState } from "../state/pageState.svelte";
   /**
    * @import { Item, FetchItems, RemoveItem, AddItem, CreateItem, ItemUrlFn } from '../types'
    *
@@ -31,6 +32,7 @@
   let editing = $state(false);
   /** @type {Item[]} */
   let selectedItems = $state([]);
+  /** @type {Item[]}*/
   let allItems = $state([]);
   let loadingItems = $state(false);
 
@@ -76,6 +78,7 @@
     addItem(item);
   };
 
+  /** @param {Item} item */
   const addItem = async (item) => {
     selectedItems.push(item);
 
@@ -150,8 +153,10 @@
     {#each selectedItems as item}
       <div class="control">
         <div class="tags has-addons is-medium">
-          <Link class="tag is-link" to={urlFn(item.id, item.name)}
-            >{item.name}</Link
+          <Link
+            class="tag is-link"
+            to={urlFn(item.id, item.name)}
+            on:click={(_e) => (pageState.id = item.id)}>{item.name}</Link
           >
           {#if editing}
             <button

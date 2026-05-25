@@ -4,11 +4,21 @@
   import { ordinals } from "../lib/controllers/media";
   import { getMediaWithParams, updatePerson } from "../lib/controllers/people";
   import { navigate } from "svelte-routing";
+  import { pageState } from "../lib/state/pageState.svelte";
+  import { onMount } from "svelte";
 
-  let { id, name } = $props();
+  let { id: paramId, name } = $props();
   let title = $state(name);
   let submittingTitle = $state(false);
+  let id = $derived(pageState.id ? pageState.id : paramId);
 
+  onMount(() => {
+    if (pageState.id === undefined) {
+      pageState.id = paramId;
+    }
+  });
+
+  /** @param {string} newTitle */
   const updateTitle = async (newTitle) => {
     submittingTitle = true;
     try {

@@ -1,13 +1,17 @@
 import { navigate } from "svelte-routing";
 
 /**
-  * @param {string} param
+  * @param {string} key
   * @param {number} def
   * @returns {number}
   */
-export const getIntSearchParamOrDefault = (param, def) => {
+export const getIntSearchParamOrDefault = (key, def) => {
   const params = new URLSearchParams(window.location.search);
-  const val = parseInt(params.get(param));
+  const param = params.get(key)
+  if (!param) {
+    return def
+  }
+  const val = parseInt(param);
   if (isNaN(val)) {
     return def;
   }

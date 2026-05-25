@@ -59,7 +59,7 @@ export const get = async (id) => {
 /**
  * @param {string} id
  * @param {boolean} [physical]
- * @returns {Promise}
+ * @returns {Promise<undefined>}
  */
 export const deleteMedia = async (id, physical = false) => {
   const params = new URLSearchParams()
