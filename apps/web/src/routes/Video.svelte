@@ -1,5 +1,5 @@
 <script>
-  /** @import { Item, MediaDTO, ChapterDTO, WSMessage, WSTopicMap } from "../lib/types";*/
+  /** @import { Item, MediaDTO, ChapterDTO, WSMessage, WSTopicMap, MediaRelationDto } from "../lib/types";*/
   import { onDestroy, onMount } from "svelte";
   import { imageUrlById } from "../lib/controllers/image";
   import {
@@ -49,6 +49,11 @@
       ? mediaEntity.progress /
           (mediaEntity.video ? mediaEntity.video.runtime : 1)
       : 0,
+  );
+  let thumbnailRelation = $derived(
+    mediaEntity?.relations.find(
+      (relation) => relation.relationType === "thumbnail",
+    ),
   );
 
   const fetchMedia = async () => {
@@ -208,8 +213,9 @@
     loadingProgress = true;
     try {
       const prog = await updateProgress(id, val, true);
-
-      mediaEntity.progress = prog.progress;
+      if (mediaEntity) {
+        mediaEntity.progress = prog.progress;
+      }
     } finally {
       loadingProgress = false;
     }
@@ -224,7 +230,9 @@
     try {
       const res = await updateMedia(id, { title: updatedTitle });
 
-      mediaEntity.title = res.title ?? "";
+      if (mediaEntity) {
+        mediaEntity.title = res.title ?? "";
+      }
       editingTitle = false;
     } finally {
       loadingTitle = false;
@@ -235,12 +243,14 @@
     loadingFavourite = true;
 
     try {
-      if (mediaEntity.favourite) {
-        await removeFavourite(id);
-        mediaEntity.favourite = false;
-      } else {
-        await addFavourite(id);
-        mediaEntity.favourite = true;
+      if (mediaEntity) {
+        if (mediaEntity.favourite) {
+          await removeFavourite(id);
+          mediaEntity.favourite = false;
+        } else {
+          await addFavourite(id);
+          mediaEntity.favourite = true;
+        }
       }
     } finally {
       loadingFavourite = false;
@@ -248,13 +258,13 @@
   };
 
   /**
-   * @param {Event} e
-   * @param {ChapterDTO} chapter
+   * @param {Event} _e
+   * @param {MediaRelationDto} chapter
    */
-  const handleChapterClick = (e, chapter) => {
-    const newTime = chapter.timestamp;
-    console.log("current time", videoNode.currentTime, "chapter time", newTime);
-    videoNode.currentTime = newTime;
+  const handleChapterClick = (_e, chapter) => {
+    // TODO: json parse metadata or have backend do this for us.
+    // const newTime = chapter.timestamp;
+    // videoNode.currentTime = newTime;
   };
 </script>
 
@@ -295,7 +305,7 @@
       <video
         src={videoUrlById(id)}
         controls
-        poster={imageUrlById(mediaEntity.thumbnailId)}
+        poster={imageUrlById(thumbnailRelation?.relatedToId ?? "")}
         bind:this={videoNode}
         onkeyup={handleOnKeyUp}
         onkeydown={handleOnKeyDown}
@@ -347,10 +357,7 @@
             <Link
               class="button"
               aria-label="generate thumbnail"
-              to={routes.generateThumbnailFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
+              to={routes.generateThumbnailFn(id)}
             >
               <span class="icon"><i class="fas fa-image"></i></span>
             </Link>
@@ -359,10 +366,7 @@
             <Link
               class="button"
               aria-label="generate chapters"
-              to={routes.generateChaptersFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
+              to={routes.generateChaptersFn(id)}
             >
               <span class="icon"><i class="fas fa-images"></i></span>
             </Link>
@@ -465,11 +469,11 @@
         <tbody>
           <tr>
             <td>Dimensions</td>
-            <td>{mediaEntity.video.width}x{mediaEntity.video.height}</td>
+            <td>{mediaEntity?.video?.width}x{mediaEntity?.video?.height}</td>
           </tr>
           <tr>
             <td>Runtime</td>
-            <td>{formatRuntime(mediaEntity.video.runtime)}</td>
+            <td>{formatRuntime(mediaEntity?.video?.runtime ?? 0)}</td>
           </tr>
           <tr>
             <td>Size</td>
