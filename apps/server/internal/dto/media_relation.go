@@ -3,6 +3,7 @@ package dto
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
@@ -28,7 +29,7 @@ func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
 	case model.MediaRelationTypeEnum_Chapter:
 		var chapterMetadata ChapterMetadadataDTO
 		if e := json.Unmarshal([]byte(*m.Metadata), &chapterMetadata); e != nil {
-			// TODO: log the error
+			slog.Error("failed to unmarshall chapter metadata", e.Error())
 			fmt.Println(e.Error())
 			d.Metadata = nil
 		} else {
@@ -37,7 +38,7 @@ func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
 	case model.MediaRelationTypeEnum_Thumbnail:
 		var thumbnailMetadata ThumbnailMetadataDTO
 		if e := json.Unmarshal([]byte(*m.Metadata), &thumbnailMetadata); e != nil {
-			// TODO: log the error
+			slog.Error("failed to unmarshall thumbnail metadata", e.Error())
 			fmt.Println(e.Error())
 			d.Metadata = nil
 		} else {
