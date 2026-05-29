@@ -224,7 +224,14 @@ export interface ProgressUpdateDTO {
 export interface MediaRelationDto {
   relatedToId: string /* UUID */;
   relationType: any /* model.MediaRelationTypeEnum */;
-  metadata?: string;
+  /**
+   * Needs to be any as we do not know what type the metadata is at this point
+   * however the Relation type does tell us and can be used to cast the data
+   * to the correct type if needed.
+   * This is only used to give the client a full json object without them needing
+   * to parse the json string
+   */
+  metadata: any;
 }
 
 //////////

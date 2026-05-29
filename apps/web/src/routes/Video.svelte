@@ -1,5 +1,5 @@
 <script>
-  /** @import { Item, MediaDTO, ChapterDTO, WSMessage, WSTopicMap, MediaRelationDto } from "../lib/types";*/
+  /** @import { Item, MediaDTO, ChapterDTO, WSMessage, WSTopicMap, MediaRelationDto, ChapterMetadadataDTO } from "../lib/types";*/
   import { onDestroy, onMount } from "svelte";
   import { imageUrlById } from "../lib/controllers/image";
   import {
@@ -103,14 +103,14 @@
   /** @type {WSTopicMap<MediaDTO>}*/
   const topicMap = {
     media_update: (updatedMedia) => {
-      if (mediaEntity && updatedMedia.chapters.length > 0) {
-        mediaEntity.chapters = [
-          ...(mediaEntity.chapters || []),
-          ...updatedMedia.chapters,
+      if (mediaEntity && updatedMedia.relations.length > 0) {
+        mediaEntity.relations = [
+          ...(mediaEntity.relations || []),
+          ...updatedMedia.relations,
         ];
       }
-      if (mediaEntity && updatedMedia.chapters.length == 0) {
-        mediaEntity.chapters = [];
+      if (mediaEntity && updatedMedia.relations.length == 0) {
+        mediaEntity.relations = [];
       }
     },
   };
@@ -259,12 +259,14 @@
 
   /**
    * @param {Event} _e
-   * @param {MediaRelationDto} chapter
+   * @param {{metadata: ChapterMetadadataDTO}} chapter
    */
   const handleChapterClick = (_e, chapter) => {
-    // TODO: json parse metadata or have backend do this for us.
-    // const newTime = chapter.timestamp;
-    // videoNode.currentTime = newTime;
+    const newTime = chapter.metadata.timestamp;
+
+    if (videoNode) {
+      videoNode.currentTime = newTime;
+    }
   };
 </script>
 
@@ -450,9 +452,9 @@
     {#if mediaEntity.relations}
       <div class="container">
         <Chapters
-          chapters={mediaEntity.relations.filter(
-            (relation) => relation.relationType === "chapter",
-          )}
+          chapters={mediaEntity.relations
+            .filter((relation) => relation.relationType === "chapter")
+            .sort((a, b) => a.metadata.timestamp - b.metadata.timestamp)}
           onclick={handleChapterClick}
         />
       </div>
