@@ -1,5 +1,5 @@
 <script>
-  /** @import { Item, MediaDTO, ChapterDTO, WSMessage, WSTopicMap, MediaRelationDto, ChapterMetadadataDTO } from "../lib/types";*/
+  /** @import { Item, MediaDTO, WSMessage, WSTopicMap, ChapterMetadadataDTO } from "../lib/types";*/
   import { onDestroy, onMount } from "svelte";
   import { imageUrlById } from "../lib/controllers/image";
   import {
@@ -32,6 +32,7 @@
   import Chapters from "../lib/components/Chapters.svelte";
   import { wsState } from "../lib/state/wsState.svelte";
   import { PONG } from "../lib/constants/websocket";
+  import Relations from "../lib/components/Relations.svelte";
   /** @type {{id: string}}*/
   let { id } = $props();
   /** @type {HTMLVideoElement | undefined}*/
@@ -345,10 +346,7 @@
             <Link
               class={`button`}
               aria-label="refresh metadata"
-              to={routes.refreshMetadataFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
+              to={routes.refreshMetadataFn(id, routes.videoFunc(id))}
             >
               <span class="icon"><i class="fas fa-arrows-rotate"></i></span
               ></Link
@@ -448,14 +446,25 @@
         disableEdit={mediaEntity.deleted}
       />
     </div>
-    <br />
-    {#if mediaEntity.relations}
+
+    {#if mediaEntity.relations.find((r) => r.relationType === "chapter")}
+      <br />
       <div class="container">
         <Chapters
           chapters={mediaEntity.relations
             .filter((relation) => relation.relationType === "chapter")
             .sort((a, b) => a.metadata.timestamp - b.metadata.timestamp)}
           onclick={handleChapterClick}
+        />
+      </div>
+    {/if}
+    {#if mediaEntity.relations.find((r) => r.relationType === "media")}
+      <br />
+      <div class="cotnainer">
+        <Relations
+          relations={mediaEntity.relations.filter(
+            (r) => r.relationType === "media",
+          )}
         />
       </div>
     {/if}
