@@ -275,10 +275,12 @@ func (r *mediaRepository) GetProgressForUser(id uuid.UUID, userId uuid.UUID) (*m
 
 // GetAssetsFor implements MediaRepository.
 func (r *mediaRepository) GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error) {
-	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
-		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
-		WHERE(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())).
-			AND(media.ID.EQ(postgres.UUID(id))))
+	statement := table.MediaRelation.SELECT(table.MediaRelation.AllColumns).
+		FROM(table.MediaRelation.INNER_JOIN(
+			table.Media,
+			table.Media.ID.EQ(table.MediaRelation.RelatedTo))).
+		WHERE(table.MediaRelation.MediaID.EQ(postgres.UUID(id)).
+			AND(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String()))))
 
 	var entities []models.MediaRelation
 	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
