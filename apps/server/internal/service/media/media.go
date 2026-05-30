@@ -99,7 +99,7 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 		return fmt.Errorf("media entity with id (%v) does not exist", id.String())
 	}
 
-	// assets, err := m.repo.Media().GetAssetsFor(id)
+	assets, err := m.repo.Media().GetAssetsFor(id)
 	if err != nil {
 		return errs.BuildError(err, "could not find assets for: %v", id.String())
 	}
@@ -119,14 +119,17 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 	}
 
 	mediaEntity.Media.Deleted = true
-	// TODO: properly delete assets on delet
-	// for _, a := range assets {
-	// 	a.Deleted = true
-	// 	a.Exists = !physical
-	// 	if err := m.repo.Media().Delete(a.Media); err != nil {
-	// 		return errs.BuildError(err, "something failed while deleting an asset (%v) in repo: %v", a.Media.ID.String(), id.String())
-	// 	}
-	// }
+	for _, a := range assets {
+		mediaModel := model.Media{
+			ID:      a.MediaID,
+			Deleted: true,
+			Exists:  !physical,
+		}
+
+		if err := m.repo.Media().Delete(mediaModel); err != nil {
+			return errs.BuildError(err, "something failed while deleting an asset (%v) in repo: %v", a.MediaID.String(), id.String())
+		}
+	}
 
 	if err := m.repo.Media().Delete(mediaEntity.Media); err != nil {
 		return errs.BuildError(err, "something failed while deleting media in repo: %v", id.String())
