@@ -1,6 +1,6 @@
 <script>
   /** @import { Item, MediaDTO, WSMessage, WSTopicMap, ChapterMetadadataDTO } from "../lib/types";*/
-  import { onDestroy, onMount } from "svelte";
+  import { onDestroy } from "svelte";
   import { imageUrlById } from "../lib/controllers/image";
   import {
     videoUrlById,
@@ -57,17 +57,18 @@
     ),
   );
 
-  const fetchMedia = async () => {
+  /** @param {string} mediaId */
+  const fetchMedia = async (mediaId) => {
     loadingMedia = true;
     try {
-      mediaEntity = await get(id);
+      mediaEntity = await get(mediaId);
     } finally {
       loadingMedia = false;
     }
   };
 
-  onMount(() => {
-    fetchMedia();
+  $effect(() => {
+    fetchMedia(id);
   });
 
   onDestroy(() => {
