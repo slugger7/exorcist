@@ -11,6 +11,8 @@ import (
 )
 
 type MediaRelationDto struct {
+	ID           uuid.UUID                   `json:"id"`
+	MediaID      uuid.UUID                   `json:"mediaId"`
 	RelatedToID  uuid.UUID                   `json:"relatedToId"`
 	RelationType model.MediaRelationTypeEnum `json:"relationType"`
 	// Needs to be any as we do not know what type the metadata is at this point
@@ -22,6 +24,8 @@ type MediaRelationDto struct {
 }
 
 func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
+	d.ID = m.ID
+	d.MediaID = m.MediaID
 	d.RelatedToID = m.RelatedTo
 	d.RelationType = m.RelationType
 
@@ -49,4 +53,10 @@ func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
 	}
 
 	return *d
+}
+
+type PutMediaRelationDto struct {
+	RelatedToIDs []uuid.UUID `json:"relatedToIds"`
+	Backrelate   bool        `json:"backrelate"`
+	Interrelate  bool        `json:"interrelate"`
 }

@@ -15,6 +15,7 @@ import (
 	uuid "github.com/google/uuid"
 	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 	dto "github.com/slugger7/exorcist/apps/server/internal/dto"
+	models "github.com/slugger7/exorcist/apps/server/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -86,6 +87,21 @@ func (mr *MockMediaServiceMockRecorder) Delete(id, physical any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockMediaService)(nil).Delete), id, physical)
 }
 
+// GetByIdAndUserIdWithRelations mocks base method.
+func (m *MockMediaService) GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIdAndUserIdWithRelations", id, userId, relationType)
+	ret0, _ := ret[0].(*models.Media)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIdAndUserIdWithRelations indicates an expected call of GetByIdAndUserIdWithRelations.
+func (mr *MockMediaServiceMockRecorder) GetByIdAndUserIdWithRelations(id, userId, relationType any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIdAndUserIdWithRelations", reflect.TypeOf((*MockMediaService)(nil).GetByIdAndUserIdWithRelations), id, userId, relationType)
+}
+
 // LogProgress mocks base method.
 func (m *MockMediaService) LogProgress(id, userId uuid.UUID, progress dto.ProgressUpdateDTO) (*model.MediaProgress, error) {
 	m.ctrl.T.Helper()
@@ -99,4 +115,19 @@ func (m *MockMediaService) LogProgress(id, userId uuid.UUID, progress dto.Progre
 func (mr *MockMediaServiceMockRecorder) LogProgress(id, userId, progress any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LogProgress", reflect.TypeOf((*MockMediaService)(nil).LogProgress), id, userId, progress)
+}
+
+// Relate mocks base method.
+func (m *MockMediaService) Relate(id uuid.UUID, relateDto dto.PutMediaRelationDto) ([]model.MediaRelation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Relate", id, relateDto)
+	ret0, _ := ret[0].([]model.MediaRelation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Relate indicates an expected call of Relate.
+func (mr *MockMediaServiceMockRecorder) Relate(id, relateDto any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Relate", reflect.TypeOf((*MockMediaService)(nil).Relate), id, relateDto)
 }

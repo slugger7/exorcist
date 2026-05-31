@@ -23,7 +23,7 @@ var media = table.Media
 
 type MediaRepository interface {
 	Create([]model.Media) ([]model.Media, error)
-	Relate(model.MediaRelation) (*model.MediaRelation, error)
+	Relate([]model.MediaRelation) ([]model.MediaRelation, error)
 
 	GetAll(userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
 	GetByLibraryPathId(id uuid.UUID) ([]model.Media, error)
@@ -466,7 +466,7 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 	return &result, nil
 }
 
-func (r *mediaRepository) Relate(m model.MediaRelation) (*model.MediaRelation, error) {
+func (r *mediaRepository) Relate(m []model.MediaRelation) ([]model.MediaRelation, error) {
 	// TODO: add constraint on unique combination of media ids
 	relation := table.MediaRelation
 	statement := relation.INSERT(
@@ -475,14 +475,15 @@ func (r *mediaRepository) Relate(m model.MediaRelation) (*model.MediaRelation, e
 		relation.RelationType,
 		relation.Metadata,
 	).
-		MODEL(m).
+		MODELS(m).
 		RETURNING(relation.AllColumns)
 
 	util.DebugCheck(r.env, statement)
 
-	if err := statement.Query(r.db, &m); err != nil {
+	var results []model.MediaRelation
+	if err := statement.Query(r.db, &results); err != nil {
 		return nil, errs.BuildError(err, "could not insert media models")
 	}
 
-	return &m, nil
+	return results, nil
 }

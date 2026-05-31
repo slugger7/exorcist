@@ -8,10 +8,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/dto"
 	mock_repository "github.com/slugger7/exorcist/apps/server/internal/mock/repository"
 	mock_mediaRepository "github.com/slugger7/exorcist/apps/server/internal/mock/repository/media"
 	"github.com/slugger7/exorcist/apps/server/internal/models"
 	mediaRepository "github.com/slugger7/exorcist/apps/server/internal/repository/media"
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
 
@@ -170,5 +172,119 @@ func Test_Delete_PhysicalIsTrue_UpdatesDeletedAndExistFlag_RemovesMediaAndAssets
 		}
 	} else {
 		t.Errorf("expected not exist error but file exists")
+	}
+}
+
+func Test_createRelations_ShouldCreateNormalRelations(t *testing.T) {
+	id, _ := uuid.NewRandom()
+	relateToId, _ := uuid.NewRandom()
+
+	relateDto := dto.PutMediaRelationDto{RelatedToIDs: []uuid.UUID{relateToId}, Backrelate: false, Interrelate: false}
+
+	relations := createRelations(id, relateDto)
+
+	expectedRelations := []model.MediaRelation{model.MediaRelation{
+		MediaID:      id,
+		RelatedTo:    relateToId,
+		RelationType: model.MediaRelationTypeEnum_Media,
+	}}
+
+	if !assert.ObjectsAreEqual(expectedRelations, relations) {
+		t.Errorf("expected %v, got %v", expectedRelations, relations)
+	}
+}
+
+func Test_createRelations_WithBackRelateTrue_ShouldCreateNormalRelationsAndBackRelateRelation(t *testing.T) {
+	id, _ := uuid.NewRandom()
+	relateToId, _ := uuid.NewRandom()
+
+	relateDto := dto.PutMediaRelationDto{RelatedToIDs: []uuid.UUID{relateToId}, Backrelate: true, Interrelate: false}
+
+	relations := createRelations(id, relateDto)
+
+	expectedRelations := []model.MediaRelation{
+		{
+			MediaID:      id,
+			RelatedTo:    relateToId,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+		{
+			MediaID:      relateToId,
+			RelatedTo:    id,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+	}
+
+	if !assert.ObjectsAreEqual(expectedRelations, relations) {
+		t.Errorf("expected %v, got %v", expectedRelations, relations)
+	}
+}
+
+func Test_createRelations_WithBackInterrelateTrue_andOnlyOneRelationId_ShouldCreateNormalRelations(t *testing.T) {
+	id, _ := uuid.NewRandom()
+	relateToId, _ := uuid.NewRandom()
+
+	relateDto := dto.PutMediaRelationDto{RelatedToIDs: []uuid.UUID{relateToId}, Backrelate: false, Interrelate: true}
+
+	relations := createRelations(id, relateDto)
+
+	expectedRelations := []model.MediaRelation{
+		{
+			MediaID:      id,
+			RelatedTo:    relateToId,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+	}
+
+	if !assert.ObjectsAreEqual(expectedRelations, relations) {
+		t.Errorf("expected %v, got %v", expectedRelations, relations)
+	}
+}
+
+func Test_createRelations_WithBackInterrelateTrue_andOnlyTwoRelationId_ShouldCreateNormalRelations_and_InterrelateRelations(t *testing.T) {
+	id, _ := uuid.NewRandom()
+	relateToId, _ := uuid.NewRandom()
+	relateToId2, _ := uuid.NewRandom()
+
+	relateDto := dto.PutMediaRelationDto{
+		RelatedToIDs: []uuid.UUID{relateToId, relateToId2}, Backrelate: false, Interrelate: true,
+	}
+
+	relations := createRelations(id, relateDto)
+
+	expectedRelations := []model.MediaRelation{
+		{
+			MediaID:      id,
+			RelatedTo:    relateToId,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+		{
+			MediaID:      id,
+			RelatedTo:    relateToId2,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+		{
+			MediaID:      relateToId,
+			RelatedTo:    relateToId2,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+		{
+			MediaID:      relateToId2,
+			RelatedTo:    relateToId,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		},
+	}
+
+	for i, e := range expectedRelations {
+		var rel *model.MediaRelation
+		for _, r := range relations {
+			if e.MediaID == r.MediaID && e.RelatedTo == r.RelatedTo {
+				rel = &r
+				break
+			}
+		}
+		if rel == nil {
+			t.Errorf("Could not find relation in expected result index %v", i)
+		}
 	}
 }

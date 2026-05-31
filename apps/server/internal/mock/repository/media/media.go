@@ -239,10 +239,10 @@ func (mr *MockMediaRepositoryMockRecorder) GetThumbnailFor(id any) *gomock.Call 
 }
 
 // Relate mocks base method.
-func (m *MockMediaRepository) Relate(arg0 model.MediaRelation) (*model.MediaRelation, error) {
+func (m *MockMediaRepository) Relate(arg0 []model.MediaRelation) ([]model.MediaRelation, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Relate", arg0)
-	ret0, _ := ret[0].(*model.MediaRelation)
+	ret0, _ := ret[0].([]model.MediaRelation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/table"
 	"github.com/slugger7/exorcist/apps/server/internal/dto"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 )
 
 func (s *server) withMediaSearch(r *gin.RouterGroup, route Route) *server {
@@ -54,6 +55,12 @@ func (s *server) withMediaPut(r *gin.RouterGroup, route Route) *server {
 
 func (s *server) withMediaThumbnailGet(r *gin.RouterGroup, route Route) *server {
 	r.GET(fmt.Sprintf("%v/:%v/thumbnail", route, idKey), s.getMediaThumbnail)
+
+	return s
+}
+
+func (s *server) withMediaRelate(r *gin.RouterGroup, route Route) *server {
+	r.PUT(fmt.Sprintf("%v/:%v/relate", route, idKey), s.putMediaRelate)
 
 	return s
 }
@@ -294,4 +301,33 @@ func (s *server) getMedia(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dto.DataToPage(dtos, *result))
+}
+
+func (s *server) putMediaRelate(c *gin.Context) {
+	id, err := uuid.Parse(c.Param(idKey))
+	if err != nil {
+		c.AbortWithError(http.StatusUnprocessableEntity, fmt.Errorf("could not parse media id"))
+		return
+	}
+
+	var putMediaRelateDto dto.PutMediaRelationDto
+	if err := c.ShouldBindBodyWithJSON(&putMediaRelateDto); err != nil {
+		c.AbortWithError(http.StatusUnprocessableEntity, fmt.Errorf("could not parse body"))
+		return
+	}
+
+	relations, err := s.service.Media().Relate(id, putMediaRelateDto)
+	if err != nil {
+		s.logger.Errorf("relating media to %v: %v", id.String(), err.Error())
+		c.AbortWithError(http.StatusInternalServerError, fmt.Errorf("error relating media"))
+		return
+	}
+
+	relationDtos := make([]dto.MediaRelationDto, len(relations))
+
+	for i, m := range relations {
+		relationDtos[i] = new(dto.MediaRelationDto).FromModel(models.MediaRelation{MediaRelation: m})
+	}
+
+	c.JSON(http.StatusCreated, relationDtos)
 }
