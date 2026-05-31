@@ -1,12 +1,12 @@
 <script>
+  /** @import {MediaRelationDto} from "../../dto"*/
   import { imageUrlById } from "../controllers/image";
 
   /**
-   * TODO: type the chapters properly from dtos from backend
    * @typedef props
    * @type {object}
-   * @property {any[]} chapters
-   * @property {(e: Event, chapter: any) => void} onclick
+   * @property {MediaRelationDto[]} chapters
+   * @property {(e: Event, chapter: MediaRelationDto) => void} onclick
    */
   /** @type {props}*/
   let { chapters, onclick } = $props();
