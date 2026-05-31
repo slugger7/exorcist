@@ -1,14 +1,12 @@
 <script>
   import { Link } from "svelte-routing";
   import routes from "../../routes/routes";
-  import { imageUrlById, thumbnailUrl } from "../controllers/image";
-
-  /** @import { MediaOverviewDTO } from "../types"*/
+  import { thumbnailUrl } from "../controllers/image";
 
   /**
    * @typedef props
    * @type {object}
-   * @property {MediaOverviewDTO} video
+   * @property {{id: string, title: string}} video
    * @property {boolean} [selected]
    * @property {boolean} [selecting]
    * @property {() => void} [onselect]
@@ -20,24 +18,23 @@
     selected = false,
     onselect = () => {},
   } = $props();
-  /** @type {HTMLElement}*/
+  /** @type {HTMLElement | undefined}*/
   let element = $state();
 
   $effect(() => {
     requestAnimationFrame(() => {
       const item = localStorage.getItem("item");
       if (item === video.id) {
-        element.scrollIntoView({ behavior: "smooth" });
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
         localStorage.removeItem("item");
       }
     });
   });
 </script>
 
-<figure
-  class={`image ${video.thumbnailId === "00000000-0000-0000-000000000000" ? "is-skeleton" : ""}`}
-  bind:this={element}
->
+<figure class={`image`} bind:this={element}>
   {#if selecting}
     <button class={`button ${selected ? "is-focused" : ""}`} onclick={onselect}
       ><img
@@ -47,7 +44,7 @@
       /></button
     >
   {:else}
-    <Link to={routes.videoFunc(video.id, video.title)}
+    <Link to={routes.videoFunc(video.id)}
       ><img
         class="image"
         src={thumbnailUrl(video.id)}

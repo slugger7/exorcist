@@ -13,6 +13,7 @@ func (s *server) withImageGet(r *gin.RouterGroup, route Route) *server {
 	return s
 }
 
+// TODO: if the media thumbnail endpoint works then this might not be necessary?
 func (s *server) getImage(c *gin.Context) {
 	id, err := uuid.Parse(c.Param(idKey))
 	if err != nil {

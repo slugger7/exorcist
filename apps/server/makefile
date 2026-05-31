@@ -7,9 +7,6 @@ get:
 update:
 	go get -u ./...
 
-test:
-	@go test ./... -v
-
 exorcist:
 	go build -o ./build/exorcist ./cmd/exorcist
 
@@ -18,9 +15,6 @@ build: exorcist
 clean:
 	rm -rf build
 	rm -rf ts/*
-
-mocks:
-	./scripts/generate-mocks.sh
 
 run-migrations:
 	./scripts/run-migrations.sh

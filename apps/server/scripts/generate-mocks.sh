@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 echo "Generating mocks"
 
-REPO_DIR="./internal/repository"
-SERVICE_DIR="./internal/service"
+REPO_DIR="./apps/server/internal/repository"
+SERVICE_DIR="./apps/server/internal/service"
 
-MOCK_DIR="./internal/mock"
+MOCK_DIR="./apps/server/internal/mock"
 MOCK_REPO_DIR="${MOCK_DIR}/repository"
 MOCK_SERVICE_DIR="${MOCK_DIR}/service"
 

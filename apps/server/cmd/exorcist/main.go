@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/http"
+	"os"
 	"os/signal"
 	"sync"
 	"syscall"
@@ -43,6 +45,9 @@ func main() {
 		log.Printf("warning: an error occured while loading environment variables from file %v", err.Error())
 	}
 	env := environment.GetEnvironmentVariables()
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
 
 	var wg sync.WaitGroup
 	server := server.New(env, &wg)

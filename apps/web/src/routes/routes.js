@@ -18,7 +18,7 @@ const routes = {
     libraryPathFunc: (id, name) => (`/library-paths/${id}/${name}`),
     home: "/",
     video: "/videos/:id",
-    /** @type {ItemUrlFn} */
+    /** @param {string} id */
     videoFunc: (id) => (`/videos/${id}`),
     videoAlt: "/videos-alt/:id",
     login: "/login",

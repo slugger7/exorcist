@@ -34,7 +34,7 @@ type MediaRepository interface {
 	GetAllInPath(p string) ([]model.Media, error)
 	GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error)
 	GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error)
-	GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error)
+	GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error)
 	GetThumbnailFor(id uuid.UUID) (*model.Media, error)
 
 	UpsertProgress(prog model.MediaProgress) (*model.MediaProgress, error)
@@ -77,14 +77,20 @@ func (r *mediaRepository) GetThumbnailFor(id uuid.UUID) (*model.Media, error) {
 }
 
 // GetRelationsFor implements MediaRepository.
-func (r *mediaRepository) GetRelationsFor(id uuid.UUID) ([]models.MediaRelation, error) {
+func (r *mediaRepository) GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error) {
+	joinPredicate := media.ID.EQ(table.MediaRelation.MediaID)
+
+	if relationType != nil {
+		joinPredicate.AND(table.MediaRelation.RelationType.EQ(postgres.NewEnumValue(relationType.String())))
+	}
+
 	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
-		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
+		FROM(media.INNER_JOIN(table.MediaRelation, joinPredicate)).
 		WHERE(media.ID.EQ(postgres.UUID(id)))
 
 	var entities []models.MediaRelation
 	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
-		return nil, errs.BuildError(err, "could not fetch related media for: %v", id.String())
+		return nil, errs.BuildError(err, "could not fetch related media for id (%v) and relationType (%v)", id.String(), relationType.String())
 	}
 
 	util.DebugCheck(r.env, statement)
@@ -269,10 +275,12 @@ func (r *mediaRepository) GetProgressForUser(id uuid.UUID, userId uuid.UUID) (*m
 
 // GetAssetsFor implements MediaRepository.
 func (r *mediaRepository) GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error) {
-	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
-		FROM(media.INNER_JOIN(table.MediaRelation, media.ID.EQ(table.MediaRelation.MediaID))).
-		WHERE(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())).
-			AND(media.ID.EQ(postgres.UUID(id))))
+	statement := table.MediaRelation.SELECT(table.MediaRelation.AllColumns).
+		FROM(table.MediaRelation.INNER_JOIN(
+			table.Media,
+			table.Media.ID.EQ(table.MediaRelation.RelatedTo))).
+		WHERE(table.MediaRelation.MediaID.EQ(postgres.UUID(id)).
+			AND(table.Media.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String()))))
 
 	var entities []models.MediaRelation
 	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
@@ -419,9 +427,6 @@ func (r *mediaRepository) GetById(id uuid.UUID) (*models.Media, error) {
 func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error) {
 	image := table.Image
 	video := table.Video
-	thumbnail := table.Media.AS("thumbnail")
-	chapter := table.Media.AS("chapter")
-	mediaChapter := table.MediaRelation.AS("media_chapter")
 	mediaRelation := table.MediaRelation
 	mediaPerson := table.MediaPerson
 	person := table.Person
@@ -432,26 +437,15 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		media.AllColumns,
 		image.AllColumns,
 		video.AllColumns,
-		thumbnail.ID,
 		person.AllColumns,
 		tag.AllColumns,
+		mediaRelation.AllColumns,
 		table.MediaProgress.Timestamp,
 		table.FavouriteMedia.ID,
-		mediaChapter.Metadata,
-		mediaChapter.RelatedTo,
 	).FROM(media.
 		LEFT_JOIN(image, image.MediaID.EQ(media.ID)).
 		LEFT_JOIN(video, video.MediaID.EQ(media.ID)).
-		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID).
-			AND(mediaRelation.RelationType.EQ(
-				postgres.NewEnumValue(model.MediaRelationTypeEnum_Thumbnail.String()),
-			))).
-		LEFT_JOIN(thumbnail, thumbnail.ID.EQ(mediaRelation.RelatedTo).
-			AND(thumbnail.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())))).
-		LEFT_JOIN(mediaChapter, mediaChapter.MediaID.EQ(media.ID).
-			AND(mediaChapter.RelationType.EQ(postgres.NewEnumValue(model.MediaRelationTypeEnum_Chapter.String())))).
-		LEFT_JOIN(chapter, chapter.ID.EQ(mediaChapter.RelatedTo).
-			AND(chapter.MediaType.EQ(postgres.NewEnumValue(model.MediaTypeEnum_Asset.String())))).
+		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID)).
 		LEFT_JOIN(mediaPerson, mediaPerson.MediaID.EQ(media.ID)).
 		LEFT_JOIN(person, person.ID.EQ(mediaPerson.PersonID)).
 		LEFT_JOIN(mediaTag, mediaTag.MediaID.EQ(media.ID)).
@@ -460,13 +454,13 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		LEFT_JOIN(table.FavouriteMedia, table.FavouriteMedia.MediaID.EQ(media.ID).AND(table.FavouriteMedia.UserID.EQ(postgres.UUID(userId)))),
 	).
 		WHERE(media.ID.EQ(postgres.UUID(id))).
-		ORDER_BY(mediaChapter.Created)
+		ORDER_BY(mediaRelation.Created)
 
 	util.DebugCheck(r.env, statement)
 
 	var result models.Media
 	if err := statement.QueryContext(r.ctx, r.db, &result); err != nil {
-		return nil, errs.BuildError(err, "could not get media by id: %v", id)
+		return nil, errs.BuildError(err, "could not get media by id (%v) and userId (%v)", id.String(), userId.String())
 	}
 
 	return &result, nil

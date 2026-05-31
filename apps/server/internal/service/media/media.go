@@ -12,6 +12,7 @@ import (
 	"github.com/slugger7/exorcist/apps/server/internal/environment"
 	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 	"github.com/slugger7/exorcist/apps/server/internal/logger"
+	"github.com/slugger7/exorcist/apps/server/internal/models"
 	"github.com/slugger7/exorcist/apps/server/internal/repository"
 	personService "github.com/slugger7/exorcist/apps/server/internal/service/person"
 	tagService "github.com/slugger7/exorcist/apps/server/internal/service/tag"
@@ -22,6 +23,7 @@ type MediaService interface {
 	AddPerson(id uuid.UUID, personId uuid.UUID) (*model.MediaPerson, error)
 	Delete(id uuid.UUID, physical bool) error
 	LogProgress(id, userId uuid.UUID, progress dto.ProgressUpdateDTO) (*model.MediaProgress, error)
+	GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error)
 }
 
 type mediaService struct {
@@ -30,6 +32,22 @@ type mediaService struct {
 	logger        logger.Logger
 	personService personService.PersonService
 	tagService    tagService.TagService
+}
+
+func (s *mediaService) GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error) {
+	m, err := s.repo.Media().GetByIdAndUserId(id, userId)
+	if err != nil {
+		return nil, errs.BuildError(err, "")
+	}
+
+	r, err := s.repo.Media().GetRelationsFor(id, relationType)
+	if err != nil {
+		return nil, errs.BuildError(err, "")
+	}
+
+	m.MediaRelations = r
+
+	return m, nil
 }
 
 // LogProgress implements MediaService.
@@ -87,14 +105,14 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 	}
 
 	if physical {
-		// unsure if I want to move the removal logic to a method. Feels weird to just have it hanging about here.
+		// BE CAREFUL IN THIS SECTION, FILES ARE DELETED OFF DISK
 		assetsPath := path.Join(m.env.Assets, mediaEntity.Media.ID.String())
 		if err = os.RemoveAll(assetsPath); err != nil {
-			m.logger.Errorf("could not remove assets and assets folder (%v): ", assetsPath, err.Error())
+			m.logger.Errorf("could not remove assets and assets folder (%v): %v", assetsPath, err.Error())
 		}
 
 		if err = os.Remove(mediaEntity.Media.Path); err != nil {
-			m.logger.Errorf("could not remove media (%v): ", mediaEntity.Path, err.Error())
+			m.logger.Errorf("could not remove media (%v): %v", mediaEntity.Path, err.Error())
 		}
 
 		mediaEntity.Media.Exists = false
@@ -102,10 +120,14 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 
 	mediaEntity.Media.Deleted = true
 	for _, a := range assets {
-		a.Deleted = true
-		a.Exists = !physical
-		if err := m.repo.Media().Delete(a.Media); err != nil {
-			return errs.BuildError(err, "something failed while deleting an asset (%v) in repo: %v", a.Media.ID.String(), id.String())
+		mediaModel := model.Media{
+			ID:      a.MediaID,
+			Deleted: true,
+			Exists:  !physical,
+		}
+
+		if err := m.repo.Media().Delete(mediaModel); err != nil {
+			return errs.BuildError(err, "something failed while deleting an asset (%v) in repo: %v", a.MediaID.String(), id.String())
 		}
 	}
 

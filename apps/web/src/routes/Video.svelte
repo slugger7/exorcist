@@ -1,6 +1,6 @@
 <script>
-  /** @import { Item, MediaDTO, ChapterDTO, WSMessage, WSTopicMap } from "../lib/types";*/
-  import { onDestroy, onMount } from "svelte";
+  /** @import { Item, MediaDTO, WSMessage, WSTopicMap, ChapterMetadadataDTO } from "../lib/types";*/
+  import { onDestroy } from "svelte";
   import { imageUrlById } from "../lib/controllers/image";
   import {
     videoUrlById,
@@ -32,7 +32,7 @@
   import Chapters from "../lib/components/Chapters.svelte";
   import { wsState } from "../lib/state/wsState.svelte";
   import { PONG } from "../lib/constants/websocket";
-
+  import Relations from "../lib/components/Relations.svelte";
   /** @type {{id: string}}*/
   let { id } = $props();
   /** @type {HTMLVideoElement | undefined}*/
@@ -51,18 +51,24 @@
           (mediaEntity.video ? mediaEntity.video.runtime : 1)
       : 0,
   );
+  let thumbnailRelation = $derived(
+    mediaEntity?.relations.find(
+      (relation) => relation.relationType === "thumbnail",
+    ),
+  );
 
-  const fetchMedia = async () => {
+  /** @param {string} mediaId */
+  const fetchMedia = async (mediaId) => {
     loadingMedia = true;
     try {
-      mediaEntity = await get(id);
+      mediaEntity = await get(mediaId);
     } finally {
       loadingMedia = false;
     }
   };
 
-  onMount(() => {
-    fetchMedia();
+  $effect(() => {
+    fetchMedia(id);
   });
 
   onDestroy(() => {
@@ -99,14 +105,14 @@
   /** @type {WSTopicMap<MediaDTO>}*/
   const topicMap = {
     media_update: (updatedMedia) => {
-      if (mediaEntity && updatedMedia.chapters.length > 0) {
-        mediaEntity.chapters = [
-          ...(mediaEntity.chapters || []),
-          ...updatedMedia.chapters,
+      if (mediaEntity && updatedMedia.relations.length > 0) {
+        mediaEntity.relations = [
+          ...(mediaEntity.relations || []),
+          ...updatedMedia.relations,
         ];
       }
-      if (mediaEntity && updatedMedia.chapters.length == 0) {
-        mediaEntity.chapters = [];
+      if (mediaEntity && updatedMedia.relations.length == 0) {
+        mediaEntity.relations = [];
       }
     },
   };
@@ -209,8 +215,9 @@
     loadingProgress = true;
     try {
       const prog = await updateProgress(id, val, true);
-
-      mediaEntity.progress = prog.progress;
+      if (mediaEntity) {
+        mediaEntity.progress = prog.progress;
+      }
     } finally {
       loadingProgress = false;
     }
@@ -225,7 +232,9 @@
     try {
       const res = await updateMedia(id, { title: updatedTitle });
 
-      mediaEntity.title = res.title ?? "";
+      if (mediaEntity) {
+        mediaEntity.title = res.title ?? "";
+      }
       editingTitle = false;
     } finally {
       loadingTitle = false;
@@ -236,12 +245,14 @@
     loadingFavourite = true;
 
     try {
-      if (mediaEntity.favourite) {
-        await removeFavourite(id);
-        mediaEntity.favourite = false;
-      } else {
-        await addFavourite(id);
-        mediaEntity.favourite = true;
+      if (mediaEntity) {
+        if (mediaEntity.favourite) {
+          await removeFavourite(id);
+          mediaEntity.favourite = false;
+        } else {
+          await addFavourite(id);
+          mediaEntity.favourite = true;
+        }
       }
     } finally {
       loadingFavourite = false;
@@ -249,13 +260,15 @@
   };
 
   /**
-   * @param {Event} e
-   * @param {ChapterDTO} chapter
+   * @param {Event} _e
+   * @param {{metadata: ChapterMetadadataDTO}} chapter
    */
-  const handleChapterClick = (e, chapter) => {
-    const newTime = chapter.timestamp;
-    console.log("current time", videoNode.currentTime, "chapter time", newTime);
-    videoNode.currentTime = newTime;
+  const handleChapterClick = (_e, chapter) => {
+    const newTime = chapter.metadata.timestamp;
+
+    if (videoNode) {
+      videoNode.currentTime = newTime;
+    }
   };
 </script>
 
@@ -296,7 +309,7 @@
       <video
         src={videoUrlById(id)}
         controls
-        poster={imageUrlById(mediaEntity.thumbnailId)}
+        poster={imageUrlById(thumbnailRelation?.relatedToId ?? "")}
         bind:this={videoNode}
         onkeyup={handleOnKeyUp}
         onkeydown={handleOnKeyDown}
@@ -334,10 +347,7 @@
             <Link
               class={`button`}
               aria-label="refresh metadata"
-              to={routes.refreshMetadataFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
+              to={routes.refreshMetadataFn(id, routes.videoFunc(id))}
             >
               <span class="icon"><i class="fas fa-arrows-rotate"></i></span
               ></Link
@@ -348,10 +358,7 @@
             <Link
               class="button"
               aria-label="generate thumbnail"
-              to={routes.generateThumbnailFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
+              to={routes.generateThumbnailFn(id)}
             >
               <span class="icon"><i class="fas fa-image"></i></span>
             </Link>
@@ -360,10 +367,7 @@
             <Link
               class="button"
               aria-label="generate chapters"
-              to={routes.generateChaptersFn(
-                id,
-                routes.videoFunc(id, mediaEntity.title),
-              )}
+              to={routes.generateChaptersFn(id)}
             >
               <span class="icon"><i class="fas fa-images"></i></span>
             </Link>
@@ -443,12 +447,25 @@
         disableEdit={mediaEntity.deleted}
       />
     </div>
-    <br />
-    {#if mediaEntity.chapters}
+
+    {#if mediaEntity.relations.find((r) => r.relationType === "chapter")}
+      <br />
       <div class="container">
         <Chapters
-          chapters={mediaEntity.chapters}
+          chapters={mediaEntity.relations
+            .filter((relation) => relation.relationType === "chapter")
+            .sort((a, b) => a.metadata.timestamp - b.metadata.timestamp)}
           onclick={handleChapterClick}
+        />
+      </div>
+    {/if}
+    {#if mediaEntity.relations.find((r) => r.relationType === "media")}
+      <br />
+      <div class="cotnainer">
+        <Relations
+          relations={mediaEntity.relations.filter(
+            (r) => r.relationType === "media",
+          )}
         />
       </div>
     {/if}
@@ -464,11 +481,11 @@
         <tbody>
           <tr>
             <td>Dimensions</td>
-            <td>{mediaEntity.video.width}x{mediaEntity.video.height}</td>
+            <td>{mediaEntity?.video?.width}x{mediaEntity?.video?.height}</td>
           </tr>
           <tr>
             <td>Runtime</td>
-            <td>{formatRuntime(mediaEntity.video.runtime)}</td>
+            <td>{formatRuntime(mediaEntity?.video?.runtime ?? 0)}</td>
           </tr>
           <tr>
             <td>Size</td>
