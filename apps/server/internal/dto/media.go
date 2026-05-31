@@ -165,8 +165,8 @@ func (d *MediaDTO) FromModel(m models.Media) *MediaDTO {
 
 	d.Favourite = m.FavouriteMedia != nil
 
-	d.Image = (&ImageDTO{}).FromModel(m.Image)
-	d.Video = (&VideoDTO{}).FromModel(m.Video)
+	d.Image = new(ImageDTO).FromModel(m.Image)
+	d.Video = new(VideoDTO).FromModel(m.Video)
 
 	if len(m.People) > 0 {
 		d.People = make([]PersonDTO, len(m.People))

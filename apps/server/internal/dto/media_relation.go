@@ -25,24 +25,26 @@ func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
 	d.RelatedToID = m.RelatedTo
 	d.RelationType = m.RelationType
 
-	switch d.RelationType {
-	case model.MediaRelationTypeEnum_Chapter:
-		var chapterMetadata ChapterMetadadataDTO
-		if e := json.Unmarshal([]byte(*m.Metadata), &chapterMetadata); e != nil {
-			slog.Error("failed to unmarshall chapter metadata", "error", e.Error())
-			fmt.Println(e.Error())
-			d.Metadata = nil
-		} else {
-			d.Metadata = chapterMetadata
-		}
-	case model.MediaRelationTypeEnum_Thumbnail:
-		var thumbnailMetadata ThumbnailMetadataDTO
-		if e := json.Unmarshal([]byte(*m.Metadata), &thumbnailMetadata); e != nil {
-			slog.Error("failed to unmarshall thumbnail metadata", "error", e.Error())
-			fmt.Println(e.Error())
-			d.Metadata = nil
-		} else {
-			d.Metadata = thumbnailMetadata
+	if m.Metadata != nil {
+		switch d.RelationType {
+		case model.MediaRelationTypeEnum_Chapter:
+			var chapterMetadata ChapterMetadadataDTO
+			if e := json.Unmarshal([]byte(*m.Metadata), &chapterMetadata); e != nil {
+				slog.Error("failed to unmarshall chapter metadata", "error", e.Error())
+				fmt.Println(e.Error())
+				d.Metadata = nil
+			} else {
+				d.Metadata = chapterMetadata
+			}
+		case model.MediaRelationTypeEnum_Thumbnail:
+			var thumbnailMetadata ThumbnailMetadataDTO
+			if e := json.Unmarshal([]byte(*m.Metadata), &thumbnailMetadata); e != nil {
+				slog.Error("failed to unmarshall thumbnail metadata", "error", e.Error())
+				fmt.Println(e.Error())
+				d.Metadata = nil
+			} else {
+				d.Metadata = thumbnailMetadata
+			}
 		}
 	}
 
