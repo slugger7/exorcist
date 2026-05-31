@@ -459,16 +459,17 @@
         />
       </div>
     {/if}
-    {#if mediaEntity.relations.find((r) => r.relationType === "media")}
-      <br />
-      <div class="cotnainer">
-        <Relations
-          relations={mediaEntity.relations.filter(
-            (r) => r.relationType === "media",
-          )}
-        />
-      </div>
-    {/if}
+
+    <br />
+    <div class="container">
+      <Relations
+        {id}
+        relations={mediaEntity.relations.filter(
+          (r) => r.relationType === "media",
+        )}
+      />
+    </div>
+
     <br />
     <div class="container">
       <table class="table">

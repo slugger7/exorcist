@@ -24,6 +24,9 @@ const routes = {
     login: "/login",
     logout: "/logout",
     jobs: "/jobs",
+    relate: "/relate/:id",
+    /** @param {string} id */
+    relateFunc: (id) => (`/relate/${id}`),
     /** @type {ItemUrlFn} */
     userFunc: (id, name) => (`/users/${id}/${name}`),
     user: "/users/:id/:name",
