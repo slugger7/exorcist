@@ -13,13 +13,6 @@
       "cwd": "${workspaceFolder}"
     },
     {
-      "name": "Run web",
-      "type": "node-terminal",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/apps/web",
-      "command": "npm run dev"
-    },
-    {
       "type": "firefox",
       "request": "launch",
       "name": "Launch firefox",
@@ -34,6 +27,13 @@
       "name": "Launch chrome",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/apps/web"
+    },
+    {
+      "name": "Run web",
+      "type": "node-terminal",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/apps/web",
+      "command": "npm run dev"
     },
     {
       "command": "npm run stub",

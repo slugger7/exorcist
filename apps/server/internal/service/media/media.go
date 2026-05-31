@@ -105,7 +105,7 @@ func (m *mediaService) Delete(id uuid.UUID, physical bool) error {
 	}
 
 	if physical {
-		// unsure if I want to move the removal logic to a method. Feels weird to just have it hanging about here.
+		// BE CAREFUL IN THIS SECTION, FILES ARE DELETED OFF DISK
 		assetsPath := path.Join(m.env.Assets, mediaEntity.Media.ID.String())
 		if err = os.RemoveAll(assetsPath); err != nil {
 			m.logger.Errorf("could not remove assets and assets folder (%v): %v", assetsPath, err.Error())
