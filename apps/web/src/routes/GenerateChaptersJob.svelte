@@ -1,5 +1,4 @@
 <script>
-  import { navigate } from "svelte-routing";
   import { create } from "../lib/controllers/job";
 
   /**

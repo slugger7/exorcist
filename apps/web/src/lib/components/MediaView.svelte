@@ -34,6 +34,8 @@
    * @property {(title: string) => Promise<string>} [updateTitle]
    * @property {boolean} [submittingTitle]
    * @property {any} [headerAddons]
+   * @property {boolean} [picker]
+   * @property {string[]} [selectedMedia]
    */
   /** @type {props}*/
   let {
@@ -47,6 +49,10 @@
     disablePeople = false,
     disableTags = false,
     headerAddons,
+    picker = false,
+    selectedMedia = $bindable(
+      getArrayOfStringsSearchParamOrDefault("selected", []),
+    ),
   } = $props();
 
   let page = $state(getIntSearchParamOrDefault("page", 1));
@@ -62,10 +68,7 @@
     getArrayOfStringsSearchParamOrDefault("people", []),
   );
   let expanded = $state(getBoolParamOrDefault("expanded", false));
-  let selecting = $state(getBoolParamOrDefault("selecting", false));
-  let selectedMedia = $state(
-    getArrayOfStringsSearchParamOrDefault("selected", []),
-  );
+  let selecting = $state(getBoolParamOrDefault("selecting", false) || picker);
   let favourites = $state(getBoolParamOrDefault("favourites", false));
   let deleted = $state(getBoolParamOrDefault("deleted", false));
   let exists = $state(getBoolParamOrDefault("exists", true));
@@ -340,6 +343,7 @@
       bind:favourites
       bind:exists
       bind:deleted
+      picker
     />
   </div>
 
