@@ -24,6 +24,60 @@ type MediaService interface {
 	Delete(id uuid.UUID, physical bool) error
 	LogProgress(id, userId uuid.UUID, progress dto.ProgressUpdateDTO) (*model.MediaProgress, error)
 	GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error)
+	Relate(id uuid.UUID, relateDto dto.PutMediaRelationDto) ([]model.MediaRelation, error)
+}
+
+func createRelations(id uuid.UUID, relationDto dto.PutMediaRelationDto) []model.MediaRelation {
+	relations := []model.MediaRelation{}
+	for _, r := range relationDto.RelatedToIDs {
+		relations = append(relations, model.MediaRelation{
+			MediaID:      id,
+			RelatedTo:    r,
+			RelationType: model.MediaRelationTypeEnum_Media,
+		})
+
+		if relationDto.Backrelate {
+			relations = append(relations, model.MediaRelation{
+				MediaID:      r,
+				RelatedTo:    id,
+				RelationType: model.MediaRelationTypeEnum_Media,
+			})
+		}
+
+		if relationDto.Interrelate {
+			for _, r1 := range relationDto.RelatedToIDs {
+				if r1 != r {
+					relations = append(relations, model.MediaRelation{
+						MediaID:      r,
+						RelatedTo:    r1,
+						RelationType: model.MediaRelationTypeEnum_Media,
+					})
+				}
+			}
+		}
+	}
+
+	return relations
+}
+
+func (s *mediaService) Relate(id uuid.UUID, relateDto dto.PutMediaRelationDto) ([]model.MediaRelation, error) {
+	media, err := s.repo.Media().GetById(id)
+	if err != nil {
+		return nil, errs.BuildError(err, "error fetching media")
+	}
+
+	if media == nil {
+		return nil, fmt.Errorf("No media found for id: %v", id)
+	}
+
+	relations := createRelations(id, relateDto)
+
+	relationModels, err := s.repo.Media().Relate(relations)
+	if err != nil {
+		return nil, errs.BuildError(err, "error relating media")
+	}
+
+	return relationModels, nil
 }
 
 type mediaService struct {

@@ -26,6 +26,7 @@
   import GenerateChaptersJob from "./GenerateChaptersJob.svelte";
   import VideoAlt from "./VideoAlt.svelte";
   import GenerateThumbnailJob from "./GenerateThumbnailJob.svelte";
+  import Relate from "./Relate.svelte";
 </script>
 
 <main>
@@ -81,4 +82,5 @@
   <Route path={routes.generateThumbnail} let:params
     ><GenerateThumbnailJob mediaId={params.id} /></Route
   >
+  <Route path={routes.relate} let:params><Relate id={params.id} /></Route>
 </main>

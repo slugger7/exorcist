@@ -15,7 +15,6 @@
     WatchStatus_InProgress,
     WatchStatus_Unwatched,
   } from "@exorcist-dto";
-  import { bind } from "ramda";
 
   /** @type {Item[]}*/
   const watchStatuses = [
@@ -54,6 +53,7 @@
    * @property {boolean} [expanded]
    * @property {boolean} [deleted]
    * @property {boolean} [exists]
+   * @property {boolean} [picker]
    */
 
   /** @type {props} */
@@ -76,6 +76,7 @@
     expanded = $bindable(false),
     deleted = $bindable(false),
     exists = $bindable(true),
+    picker = false,
   } = $props();
   /** @type {Item[]}*/
   let tags = $state([]);
@@ -395,45 +396,48 @@
       <button
         class={`button ${selecting ? "is-primary" : ""}`}
         onclick={() => (selecting = !selecting)}
+        disabled={picker}
         ><span>Select</span><span class="icon"
           ><i class={`fas ${selecting ? "fa-xmark" : "fa-check"}`}></i></span
         >
       </button>
       {#if selection.length > 0}
         <button class="button" onclick={clearSelection}>Clear</button>
-        <div class="field has-addons">
-          <p class="control">
-            <Link class="button" to={routes.playlistAddFn(selection)}>
-              <span class="icon">
-                <i class="fas fa-plus"></i>
-              </span>
-            </Link>
-          </p>
-          <p class="control">
-            <button
-              class={`button ${loadingWatchStatus ? "is-loading" : ""}`}
-              aria-label="mark selection watched"
-              onclick={handleWatchedClick}
-              disabled={loadingWatchStatus}
-            >
-              <span class="icon">
-                <i class="fas fa-eye"></i>
-              </span>
-            </button>
-          </p>
-          <p class="control">
-            <button
-              class={`button ${loadingWatchStatus ? "is-loading" : ""}`}
-              aria-label="mark selection unwatched"
-              onclick={handleUnwatchClick}
-              disabled={loadingWatchStatus}
-            >
-              <span class="icon">
-                <i class="fas fa-eye-slash"></i>
-              </span>
-            </button>
-          </p>
-        </div>
+        {#if !picker}
+          <div class="field has-addons">
+            <p class="control">
+              <Link class="button" to={routes.playlistAddFn(selection)}>
+                <span class="icon">
+                  <i class="fas fa-plus"></i>
+                </span>
+              </Link>
+            </p>
+            <p class="control">
+              <button
+                class={`button ${loadingWatchStatus ? "is-loading" : ""}`}
+                aria-label="mark selection watched"
+                onclick={handleWatchedClick}
+                disabled={loadingWatchStatus}
+              >
+                <span class="icon">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </button>
+            </p>
+            <p class="control">
+              <button
+                class={`button ${loadingWatchStatus ? "is-loading" : ""}`}
+                aria-label="mark selection unwatched"
+                onclick={handleUnwatchClick}
+                disabled={loadingWatchStatus}
+              >
+                <span class="icon">
+                  <i class="fas fa-eye-slash"></i>
+                </span>
+              </button>
+            </p>
+          </div>
+        {/if}
       {/if}
     </div>
   </div>

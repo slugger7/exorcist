@@ -2,7 +2,7 @@
 GET {{host}}:{{port}}/api/media?limit=50&favourites=false
 
 ### Get media by id
-GET {{host}}:{{port}}/api/media/0fa21151-458f-4a33-aa89-3e374952ddd8
+GET {{host}}:{{port}}/api/media/4da57d01-ff03-4dcf-859c-8f87679186fd
 
 ### Get video media by id
 GET {{host}}:{{port}}/api/media/video/064eb817-2347-4648-9608-84a86f7b303d
@@ -57,3 +57,13 @@ Content-Type: application/json
 
 ### Get Thumbnail
 GET {{host}}:{{port}}/api/media/b8a94e24-3b5e-485e-87e4-2bd30740bf50/thumbnail
+
+### Relate media
+PUT {{host}}:{{port}}/api/media/4da57d01-ff03-4dcf-859c-8f87679186fd/relate
+Content-Type: application/json
+
+{
+  "relatedToIds": ["87480b62-a82d-4a6d-85e5-02b3afd704e2", "605b12d5-e335-4d33-b46c-3ef35151ef97"],
+  "backrelate": false,
+  "interrelate": true
+}

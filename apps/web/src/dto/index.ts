@@ -222,6 +222,8 @@ export interface ProgressUpdateDTO {
 // source: media_relation.go
 
 export interface MediaRelationDto {
+  id: string /* UUID */;
+  mediaId: string /* UUID */;
   relatedToId: string /* UUID */;
   relationType: any /* model.MediaRelationTypeEnum */;
   /**
@@ -232,6 +234,11 @@ export interface MediaRelationDto {
    * to parse the json string
    */
   metadata: any;
+}
+export interface PutMediaRelationDto {
+  relatedToIds: string /* UUID */[];
+  backrelate: boolean;
+  interrelate: boolean;
 }
 
 //////////

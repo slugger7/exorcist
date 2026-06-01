@@ -139,7 +139,7 @@ func (jr *JobRunner) GenerateThumbnail(job *model.Job) error {
 		Metadata:     &metadata,
 	}
 
-	_, err = jr.repo.Media().Relate(*videoImage)
+	_, err = jr.repo.Media().Relate([]model.MediaRelation{*videoImage})
 	if err != nil {
 		return errs.BuildError(err, "could not create video image relation")
 	}

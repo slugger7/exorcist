@@ -1,4 +1,4 @@
-/** @import { PageDTO, MediaDTO, MediaOverviewDTO, ProgressDTO, MediaUpdateDTO, MediaUpdatedDTO } from "../../dto" */
+/** @import { PageDTO, MediaDTO, MediaOverviewDTO, ProgressDTO, MediaUpdateDTO, MediaUpdatedDTO, PutMediaRelationDto, MediaRelationDto } from "../../dto" */
 /** @import {Ordinal} from "../types" */
 import { server } from '../env.js'
 import { fetch } from './fetch.js'
@@ -96,6 +96,17 @@ export const updateProgress = async (id, timestamp, overwrite = false) => {
  */
 export const updateMedia = async (id, updateDto) => {
   const res = await fetch(`${server()}/media/${id}`, { method: "PUT", body: JSON.stringify(updateDto) })
+
+  return await res.json()
+}
+
+/**
+ * @param {string} id 
+ * @param {PutMediaRelationDto} relations
+ * @returns {Promise<MediaRelationDto[]>}
+ */
+export const relateMedia = async (id, relations) => {
+  const res = await fetch(`${server()}/media/${id}/relate`, { method: "PUT", body: JSON.stringify(relations) })
 
   return await res.json()
 }
