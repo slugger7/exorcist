@@ -343,7 +343,7 @@
       bind:favourites
       bind:exists
       bind:deleted
-      picker
+      {picker}
     />
   </div>
 

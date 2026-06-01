@@ -1,6 +1,10 @@
 <script>
   import MediaView from "../lib/components/MediaView.svelte";
-  import { getAllWithParams, ordinals } from "../lib/controllers/media";
+  import {
+    getAllWithParams,
+    ordinals,
+    relateMedia,
+  } from "../lib/controllers/media";
   import routes from "./routes";
 
   /**
@@ -17,12 +21,16 @@
   let interrelate = $state(false);
 
   /** @param {SubmitEvent} e */
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     submitting = true;
     try {
-      // TODO put data to backend
+      await relateMedia(id, {
+        relatedToIds: selectedMedia,
+        backrelate,
+        interrelate,
+      });
       history.back();
     } finally {
       submitting = false;
