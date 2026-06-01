@@ -20,7 +20,7 @@ type MediaRelationDto struct {
 	// to the correct type if needed.
 	// This is only used to give the client a full json object without them needing
 	// to parse the json string
-	Metadata any `json:"metadata"`
+	Metadata any `json:"metadata" tstype:"ThumbnailMetadataDTO | ChapterMetadadataDTO | null"`
 }
 
 func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {

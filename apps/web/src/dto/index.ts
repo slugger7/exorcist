@@ -17,7 +17,7 @@ export type Enum = any;
 
 export interface CreateJobDTO {
   type: model.JobTypeEnum;
-  data: ScanPathData | GenerateThumbnailData;
+  data: ScanPathData | GenerateThumbnailData | ConvertData;
   priority?: JobPriority;
 }
 export type JobPriority = number /* int16 */;
@@ -95,6 +95,15 @@ export interface GenerateChaptersData {
   width: number /* int */;
   maxDimension: number /* int */;
   overwrite: boolean;
+}
+export interface ConvertData {
+  mediaId: string /* UUID */;
+  height?: number /* int */;
+  width?: number /* int */;
+  filename: string;
+  constantRateFactor?: number /* int */;
+  variableBitrate?: number /* int */;
+  forcePixelFormat?: string;
 }
 
 //////////
@@ -233,7 +242,7 @@ export interface MediaRelationDto {
    * This is only used to give the client a full json object without them needing
    * to parse the json string
    */
-  metadata: any;
+  metadata: ThumbnailMetadataDTO | ChapterMetadadataDTO | null;
 }
 export interface PutMediaRelationDto {
   relatedToIds: string /* UUID */[];
