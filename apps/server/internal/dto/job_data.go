@@ -46,3 +46,13 @@ type GenerateChaptersData struct {
 	MaxDimension int       `json:"maxDimension"`
 	Overwrite    bool      `json:"overwrite"`
 }
+
+type ConvertData struct {
+	MediaId            uuid.UUID `json:"mediaId" binding:"required"`
+	Height             *int      `json:"height"`
+	Width              *int      `json:"width"`
+	Filename           string    `json:"filename" binding:"required"`
+	ConstantRateFactor *int      `json:"constantRateFactor"`
+	VariableBitrate    *int      `json:"variableBitrate"`
+	ForcePixelFormat   *string   `json:"forcePixelFormat"`
+}

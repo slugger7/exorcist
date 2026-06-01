@@ -11,7 +11,7 @@ import (
 
 type CreateJobDTO struct {
 	Type     model.JobTypeEnum      `json:"type" binding:"required" tstype:"model.JobTypeEnum"`
-	Data     map[string]interface{} `json:"data" tstype:"ScanPathData | GenerateThumbnailData"`
+	Data     map[string]interface{} `json:"data" tstype:"ScanPathData | GenerateThumbnailData | ConvertData"`
 	Priority *JobPriority           `json:"priority"`
 }
 
