@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 echo "Generating diagrams"
 
-SOURCE_DIR="./diagrams/src"
-DEST_DIR="./diagrams/out"
+SOURCE_DIR="./apps/server/diagrams/src"
+DEST_DIR="./apps/server/diagrams/out"
 
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Source directory does not exist."
