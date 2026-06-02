@@ -55,3 +55,100 @@ func Test_ScaleHeightByWidth(t *testing.T) {
 		t.Errorf("calculated height was not 400 it was %v", newHeight)
 	}
 }
+
+func Test_DetermineDimensions_WithNoWantedHeightOrWidth_ShouldReturnCurrentDimension(t *testing.T) {
+	wantedDimension := Dimension{}
+	currentDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*currentDimension.Height = 666
+	*currentDimension.Width = 666
+
+	actualDimension := DetermineDimensions(wantedDimension, currentDimension)
+
+	if *actualDimension.Height != *currentDimension.Height ||
+		*actualDimension.Width != *currentDimension.Width {
+		t.Errorf("value returned did not match the current dimension: %vx%v", *actualDimension.Width, *actualDimension.Height)
+	}
+}
+
+func Test_DetermineDimensions_WithWantedHeightAndWidthDefined_ShouldReturnWantedDimension(t *testing.T) {
+	wantedDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*wantedDimension.Height = 420
+	*wantedDimension.Width = 420
+	currentDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*currentDimension.Height = 666
+	*currentDimension.Width = 666
+
+	actualDimension := DetermineDimensions(wantedDimension, currentDimension)
+
+	if *actualDimension.Height != *wantedDimension.Height ||
+		*actualDimension.Width != *wantedDimension.Width {
+		t.Errorf("value returned did not match the wanted dimension: %vx%v", *actualDimension.Width, *actualDimension.Height)
+	}
+}
+
+func Test_DetermineDimensions_WithWantedHeightDefinedButNoWidth_ShouldReturnDimensionWithCalculatedWidth(t *testing.T) {
+	wantedDimension := Dimension{
+		Height: new(int),
+	}
+	*wantedDimension.Height = 69
+	currentDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*currentDimension.Height = 1000
+	*currentDimension.Width = 2000
+
+	actualDimension := DetermineDimensions(wantedDimension, currentDimension)
+
+	expectedDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*expectedDimension.Height = *wantedDimension.Height
+	*expectedDimension.Width = *wantedDimension.Height * 2
+
+	if *actualDimension.Height != *expectedDimension.Height ||
+		*actualDimension.Width != *expectedDimension.Width {
+		t.Errorf("value returned did not match the expected dimension(%vx%v): %vx%v",
+			*expectedDimension.Width, *expectedDimension.Height,
+			*actualDimension.Width, *actualDimension.Height)
+	}
+}
+
+func Test_DetermineDimensions_WithWantedWidthDefinedButNoHeight_ShouldReturnDimensionWithCalculatedHeight(t *testing.T) {
+	wantedDimension := Dimension{
+		Width: new(int),
+	}
+	*wantedDimension.Width = 138
+	currentDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*currentDimension.Height = 1000
+	*currentDimension.Width = 2000
+
+	actualDimension := DetermineDimensions(wantedDimension, currentDimension)
+
+	expectedDimension := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*expectedDimension.Height = int(float64(*wantedDimension.Width) / 2.0)
+	*expectedDimension.Width = *wantedDimension.Width
+
+	if *actualDimension.Height != *expectedDimension.Height ||
+		*actualDimension.Width != *expectedDimension.Width {
+		t.Errorf("value returned did not match the expected dimension(%vx%v): %vx%v",
+			*expectedDimension.Width, *expectedDimension.Height,
+			*actualDimension.Width, *actualDimension.Height)
+	}
+}

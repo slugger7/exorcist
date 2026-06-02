@@ -21,6 +21,35 @@ func ScaleHeightByWidth(currentHeight, currentWidth, wantedWidth int) int {
 	return int(float32(currentHeight) / float32(currentWidth) * float32(wantedWidth))
 }
 
+type Dimension struct {
+	Height *int
+	Width  *int
+}
+
+func DetermineDimensions(wanted, current Dimension) Dimension {
+	if wanted.Height != nil && wanted.Width != nil {
+		return wanted
+	}
+
+	if wanted.Height == nil && wanted.Width == nil {
+		return current
+	}
+
+	if wanted.Height != nil {
+		scaledWidth := ScaleWidthByHeight(*current.Height, *current.Width, *wanted.Height)
+		return Dimension{
+			Height: wanted.Height,
+			Width:  &scaledWidth,
+		}
+	} else {
+		scaledHeight := ScaleHeightByWidth(*current.Height, *current.Width, *wanted.Width)
+		return Dimension{
+			Height: &scaledHeight,
+			Width:  wanted.Width,
+		}
+	}
+}
+
 func ImageAt(vid string, time float64, img string, width, height int) error {
 	if width <= 0 {
 		return fmt.Errorf(ErrNegativeWidth, width)
