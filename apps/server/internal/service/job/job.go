@@ -74,6 +74,8 @@ func (s *jobService) Create(m dto.CreateJobDTO) (*model.Job, error) {
 		j, e = s.refreshLibraryMetadata(strData, *m.Priority)
 	case model.JobTypeEnum_GenerateChapters:
 		j, e = s.generateChapters(strData, *m.Priority)
+	case model.JobTypeEnum_Convert:
+		j, e = s.convert(strData, *m.Priority)
 	default:
 		return nil, fmt.Errorf("job type not implemented: %v", m.Type)
 	}
@@ -100,6 +102,49 @@ func (s *jobService) Create(m dto.CreateJobDTO) (*model.Job, error) {
 	go s.StartJobRunner()
 
 	return &jobs[0], nil
+}
+
+func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
+	var jobData dto.ConvertData
+	if err := json.Unmarshal([]byte(data), &jobData); err != nil {
+		return nil, errs.BuildError(err, "unmarshalling data for convert: %v", data)
+	}
+
+	media, err := i.repo.Media().GetById(jobData.MediaId)
+	if err != nil {
+		return nil, errs.BuildError(err, "getting media by id: %v", jobData.MediaId.String())
+	}
+
+	if media == nil {
+		return nil, fmt.Errorf("no media with id: %v", jobData.MediaId.String())
+	}
+
+	wantedDimension := ffmpeg.Dimension{
+		Height: jobData.Height,
+		Width:  jobData.Width,
+	}
+	currentDimension := ffmpeg.Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*currentDimension.Width = int(media.Video.Width)
+	*currentDimension.Height = int(media.Video.Height)
+
+	dimension := ffmpeg.DetermineDimensions(wantedDimension, currentDimension)
+
+	jobData.Height = dimension.Height
+	jobData.Width = dimension.Width
+
+	bytes, err := json.Marshal(jobData)
+	if err != nil {
+		return nil, errs.BuildError(err, "could not remarshall convert data")
+	}
+
+	data = string(bytes)
+	return &model.Job{
+		Data:     &data,
+		Priority: priority,
+	}, nil
 }
 
 func (i *jobService) generateChapters(data string, priority int16) (*model.Job, error) {
