@@ -190,6 +190,10 @@ func (jr *JobRunner) jobFuncResolver(jobType model.JobTypeEnum) (JobFunc, error)
 		f = func(j *model.Job) error {
 			return jr.generateChapters(j)
 		}
+	case model.JobTypeEnum_Convert:
+		f = func(j *model.Job) error {
+			return jr.convert(j)
+		}
 	default:
 		return nil, fmt.Errorf("no implementation to run job type %v", jobType)
 	}

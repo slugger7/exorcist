@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -119,10 +120,27 @@ func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
 		return nil, fmt.Errorf("no media with id: %v", jobData.MediaId.String())
 	}
 
-	wantedDimension := ffmpeg.Dimension{
-		Height: jobData.Height,
-		Width:  jobData.Width,
+	if !media.Exists {
+		return nil, fmt.Errorf("media does not exist: %v", jobData.MediaId)
 	}
+
+	if media.Deleted {
+		i.logger.Warningf("Conversion requested on deleted media: %v", jobData.MediaId)
+	}
+
+	// TODO: probably need some more filepath sanitization
+	filePath := filepath.Clean(
+		filepath.Join(
+			filepath.Dir(media.Path),
+			filepath.Base(jobData.Filename),
+		))
+
+	if _, err := os.Stat(filePath); err == nil {
+		return nil, fmt.Errorf("destination for conversion already existst: %v", filePath)
+	}
+
+	jobData.Path = filePath
+
 	currentDimension := ffmpeg.Dimension{
 		Height: new(int),
 		Width:  new(int),
@@ -130,10 +148,9 @@ func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
 	*currentDimension.Width = int(media.Video.Width)
 	*currentDimension.Height = int(media.Video.Height)
 
-	dimension := ffmpeg.DetermineDimensions(wantedDimension, currentDimension)
+	dimension := ffmpeg.DetermineDimensions(jobData.Dimension, currentDimension)
 
-	jobData.Height = dimension.Height
-	jobData.Width = dimension.Width
+	jobData.Dimension = dimension
 
 	bytes, err := json.Marshal(jobData)
 	if err != nil {
@@ -295,6 +312,7 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		return nil, errs.BuildError(err, "could not remove existing thumbnail")
 	}
 
+	// TODO: refactor this to use determine dimensions
 	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {
 		generateThumbnailData.Height = int(m.Video.Height)
 		generateThumbnailData.Width = int(m.Video.Width)

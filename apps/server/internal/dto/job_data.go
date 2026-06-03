@@ -3,6 +3,7 @@ package dto
 import (
 	"github.com/google/uuid"
 	"github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
+	"github.com/slugger7/exorcist/apps/server/internal/ffmpeg"
 )
 
 type ScanPathData struct {
@@ -48,11 +49,20 @@ type GenerateChaptersData struct {
 }
 
 type ConvertData struct {
-	MediaId            uuid.UUID `json:"mediaId" binding:"required"`
-	Height             *int      `json:"height"`
-	Width              *int      `json:"width"`
-	Filename           string    `json:"filename" binding:"required"`
-	ConstantRateFactor *int      `json:"constantRateFactor"`
-	VariableBitrate    *int      `json:"variableBitrate"`
-	ForcePixelFormat   *string   `json:"forcePixelFormat"`
+	MediaId            uuid.UUID        `json:"mediaId" binding:"required"`
+	Dimension          ffmpeg.Dimension `json:"dimension"`
+	Filename           string           `json:"filename" binding:"required"`
+	Path               string           `json:"path" tstype:"-"` // omitted for clients
+	ConstantRateFactor *int             `json:"constantRateFactor"`
+	VariableBitrate    *int             `json:"variableBitrate"`
+	ForcePixelFormat   *string          `json:"forcePixelFormat"`
+}
+
+func (d *ConvertData) ToFfmpegDto() *ffmpeg.ConvertDto {
+	return &ffmpeg.ConvertDto{
+		Dimension:          d.Dimension,
+		ConstantRateFactor: d.ConstantRateFactor,
+		VariableBitrate:    d.VariableBitrate,
+		ForcePixelFormat:   d.ForcePixelFormat,
+	}
 }

@@ -42,7 +42,7 @@ func (jr *JobRunner) GenerateChecksum(job *model.Job) error {
 
 	jobMedia, err := jr.repo.Media().GetById(jobData.MediaId)
 	if err != nil {
-		return errs.BuildError(err, "error fetching video with library path by id: %v", jobData.MediaId)
+		return errs.BuildError(err, "error fetching video with library path by id")
 	}
 
 	jr.logger.Infof("Calculating checksum for %v", jobMedia.Path)
