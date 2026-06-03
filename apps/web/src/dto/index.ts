@@ -98,8 +98,7 @@ export interface GenerateChaptersData {
 }
 export interface ConvertData {
   mediaId: string /* UUID */;
-  height?: number /* int */;
-  width?: number /* int */;
+  dimension: any /* ffmpeg.Dimension */;
   filename: string;
   constantRateFactor?: number /* int */;
   variableBitrate?: number /* int */;
