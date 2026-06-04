@@ -171,7 +171,7 @@ func (jr *jobRunner) addStubMedia(existing models.Media, filePath, tempPath stri
 		return nil, nil, errs.BuildError(err, "could not create stub media for %v", filePath)
 	}
 	if len(createdMedia) != 1 {
-		return nil, nil, fmt.Errorf("incorrect amount of media returned at creation: count %v for", len(createdMedia), filePath)
+		return nil, nil, fmt.Errorf("incorrect amount of media returned at creation: count %v for %v", len(createdMedia), filePath)
 	}
 
 	createdVideo, err := jr.addVideo(tempPath, createdMedia[len(createdMedia)-1].ID)

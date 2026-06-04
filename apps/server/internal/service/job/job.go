@@ -312,25 +312,22 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		return nil, errs.BuildError(err, "could not remove existing thumbnail")
 	}
 
-	// TODO: refactor this to use determine dimensions
-	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {
-		generateThumbnailData.Height = int(m.Video.Height)
-		generateThumbnailData.Width = int(m.Video.Width)
+	w := ffmpeg.Dimension{
+		Height: &generateThumbnailData.Height,
+		Width:  &generateThumbnailData.Width,
 	}
 
-	if generateThumbnailData.Height == 0 {
-		generateThumbnailData.Height = ffmpeg.ScaleHeightByWidth(
-			int(m.Video.Height),
-			int(m.Video.Width),
-			generateThumbnailData.Width)
+	c := ffmpeg.Dimension{
+		Height: new(int),
+		Width:  new(int),
 	}
+	*c.Height = int(m.Video.Height)
+	*c.Width = int(m.Video.Width)
 
-	if generateThumbnailData.Width == 0 {
-		generateThumbnailData.Width = ffmpeg.ScaleWidthByHeight(
-			int(m.Video.Height),
-			int(m.Video.Width),
-			generateThumbnailData.Height)
-	}
+	d := ffmpeg.DetermineDimensions(w, c)
+
+	generateThumbnailData.Height = *d.Height
+	generateThumbnailData.Width = *d.Width
 
 	generateThumbnailData.Path = filepath.Join(
 		i.env.Assets,
