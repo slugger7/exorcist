@@ -357,6 +357,21 @@
           <p class="control">
             <Link
               class="button"
+              aria-label="convert media"
+              to={routes.convertFn(id)}
+              on:click={() =>
+                window.history.pushState(
+                  { media: mediaEntity },
+                  "",
+                  routes.convertFn(id),
+                )}
+              ><span class="icon"><i class="fas fa-arrows-spin"></i></span
+              ></Link
+            >
+          </p>
+          <p class="control">
+            <Link
+              class="button"
               aria-label="generate thumbnail"
               to={routes.generateThumbnailFn(id)}
             >

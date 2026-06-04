@@ -65,6 +65,9 @@ const routes = {
     generateThumbnail: "/jobs/generate-thumbnail/media/:id/",
     /** @param {string} id */
     generateThumbnailFn: (id) => (`/jobs/generate-thumbnail/media/${id}`),
+    convert: "/jobs/convert/media/:id",
+    /** @param {string} id */
+    convertFn: (id) => (`/jobs/convert/media/${id}`),
     create: {
         library: "/create/libraries",
         /** @type {ItemUrlFn} */
