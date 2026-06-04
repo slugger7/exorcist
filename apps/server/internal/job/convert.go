@@ -39,20 +39,24 @@ func (jr *jobRunner) convert(job *model.Job) error {
 	jr.logger.Infof("Converting video %v to %v", mediaModel.Path, jobData.Filename)
 
 	tempPath := filepath.Join(jr.env.Cache, CONVERT_FOLDER_NAME, mediaModel.Media.ID.String())
+	tempFilePath := filepath.Join(tempPath, jobData.Filename)
 
 	if _, err := os.Stat(jobData.Path); err == nil {
 		return fmt.Errorf("Path for converted media already exsists: %v", jobData.Path)
 	}
 
+	// TODO: figure out the file permissions
+	os.MkdirAll(tempPath, 0777)
+
 	convertData := jobData.ToFfmpegDto()
 	convertData.InputFilePath = mediaModel.Path
-	convertData.OutputFilePath = tempPath
+	convertData.OutputFilePath = tempFilePath
 
 	if err = ffmpeg.Convert(*convertData); err != nil {
 		return errs.BuildError(err, "conversion failed")
 	}
 
-	createdMedia, createdVideo, err := jr.addStubMedia(*mediaModel, jobData.Path, tempPath)
+	createdMedia, createdVideo, err := jr.addStubMedia(*mediaModel, jobData.Path, tempFilePath)
 	if err != nil {
 		return errs.BuildError(err, "error creating media")
 	}
@@ -60,8 +64,12 @@ func (jr *jobRunner) convert(job *model.Job) error {
 		return fmt.Errorf("created media is null")
 	}
 
-	if err := media.CopyFile(tempPath, jobData.Path); err != nil {
+	if err := media.CopyFile(tempFilePath, jobData.Path); err != nil {
 		return errs.BuildError(err, "error copying file")
+	}
+
+	if err := os.Remove(tempFilePath); err != nil {
+		return errs.BuildError(err, "error removing temp file from %v", tempFilePath)
 	}
 
 	if _, err := jr.service.Media().Relate(jobData.MediaId, dto.PutMediaRelationDto{
@@ -96,10 +104,13 @@ func createNewMediaJobs(jobId *uuid.UUID, newMedia model.Media, newVideo model.V
 
 	relationType := model.MediaRelationTypeEnum_Thumbnail
 
-	dimension := ffmpeg.Dimension{}
-	*dimension.Height = int(newVideo.Height)
-	*dimension.Width = int(newVideo.Width)
-	dimension = *ffmpeg.ScaleByMaxDimension(maxDimension, dimension)
+	height := int(newVideo.Height)
+	width := int(newVideo.Width)
+	dimension := ffmpeg.Dimension{
+		Height: &height,
+		Width:  &width,
+	}
+	scaledDimension := ffmpeg.ScaleByMaxDimension(maxDimension, dimension)
 
 	thumbnailPath := filepath.Join(
 		assetPath,
@@ -108,12 +119,12 @@ func createNewMediaJobs(jobId *uuid.UUID, newMedia model.Media, newVideo model.V
 			`%v.%v.%vx%v.webp`,
 			filepath.Base(newMedia.Path),
 			relationType.String(),
-			*dimension.Height,
-			*dimension.Width,
+			*scaledDimension.Height,
+			*scaledDimension.Width,
 		))
 
 	thumbnailJob, err := CreateGenerateThumbnailJob(newMedia.ID, jobId,
-		thumbnailPath, 0, *dimension.Height, *dimension.Width, &relationType, nil)
+		thumbnailPath, 0, *scaledDimension.Height, *scaledDimension.Width, &relationType, nil)
 	if err != nil {
 		slog.Warn("could not create generate thumbnail job", "jobId", jobId.String())
 	}
@@ -122,7 +133,7 @@ func createNewMediaJobs(jobId *uuid.UUID, newMedia model.Media, newVideo model.V
 	}
 
 	chaptersJob, err := CreateGenerateChaptersJob(newMedia.ID, jobId,
-		nil, *dimension.Height, *dimension.Width, maxDimension, false)
+		nil, *scaledDimension.Height, *scaledDimension.Width, maxDimension, false)
 	if err != nil {
 		slog.Warn("could not create generate chapters job", "jobId", jobId.String())
 	}
