@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"path/filepath"
 	"slices"
 	"strconv"
 
@@ -22,9 +21,12 @@ import (
 	"github.com/slugger7/exorcist/apps/server/internal/websockets"
 )
 
-const batchSize = 100
+const (
+	batchSize    = 100
+	maxDimension = 400
+)
 
-func (jr *JobRunner) getFilesByExtension(path string, extensions []string, ch chan []media.File) {
+func (jr *jobRunner) getFilesByExtension(path string, extensions []string, ch chan []media.File) {
 	defer jr.wg.Done()
 
 	select {
@@ -42,7 +44,7 @@ func (jr *JobRunner) getFilesByExtension(path string, extensions []string, ch ch
 
 }
 
-func (jr *JobRunner) ScanPath(job *model.Job) error {
+func (jr *jobRunner) ScanPath(job *model.Job) error {
 	var data dto.ScanPathData
 	if err := json.Unmarshal([]byte(*job.Data), &data); err != nil {
 		return errs.BuildError(err, "could not unmarshal scan path job data: %v", err)
@@ -122,22 +124,25 @@ func CreateNewMedia(
 		return fmt.Errorf("expected a created media but there was none")
 	}
 
-	width, height, err := ffmpeg.GetDimensions(data.Streams)
+	dimension, err := ffmpeg.GetDimensions(data.Streams)
 	if err != nil {
 		logger.Warningf("could not extract dimensions for %v. Setting to 0. Reason: %v", f.Path, err)
+		*dimension.Height = 0
+		*dimension.Width = 0
 	}
 
 	runtime, err := strconv.ParseFloat(data.Format.Duration, 32)
 	if err != nil {
 		logger.Warningf("could not convert duration from string (%v) to float for video %v. Setting runtime to 0. Reason: %v", data.Format.Duration, f.Path, err)
+		runtime = 0.0
 	}
 
 	mediaId := createdMedia[0].ID
 
 	newVideoModel := model.Video{
 		MediaID: mediaId,
-		Height:  int32(height),
-		Width:   int32(width),
+		Height:  int32(*dimension.Height),
+		Width:   int32(*dimension.Width),
 		Runtime: float64(runtime),
 	}
 
@@ -152,55 +157,17 @@ func CreateNewMedia(
 	})
 	ws.MediaCreate(*dto)
 
-	checksumJob, err := CreateGenerateChecksumJob(mediaId, jobId)
-	if err != nil {
-		logger.Warningf("could not create checksum job for media %v in job %v", mediaId, jobId)
-	}
-
-	maxDimension := 400
-	if width > maxDimension {
-		height = ffmpeg.ScaleHeightByWidth(height, width, maxDimension)
-		width = maxDimension
-	}
-
-	if height > maxDimension {
-		width = ffmpeg.ScaleWidthByHeight(height, width, maxDimension)
-		height = maxDimension
-	}
-
-	relationType := model.MediaRelationTypeEnum_Thumbnail
-
-	assetPath := filepath.Join(
-		env.Assets,
-		mediaId.String(),
-		fmt.Sprintf(
-			`%v.%v.%vx%v.webp`,
-			f.FileName,
-			relationType.String(),
-			height,
-			width,
-		))
-	thumbnailJob, err := CreateGenerateThumbnailJob(createdMedia[0].ID, jobId, assetPath, 0, height, width, &relationType, nil)
-	if err != nil {
-		return errs.BuildError(err, "could not create generate thumbnail job")
-	}
-
-	chaptersJob, err := CreateGenerateChaptersJob(createdMedia[0].ID, jobId, nil, height, width, maxDimension, false)
-	if err != nil {
-		return errs.BuildError(err, "could not create generate chapters job")
-	}
-
-	jobs := []model.Job{*checksumJob, *thumbnailJob, *chaptersJob}
+	jobs := createNewMediaJobs(jobId, createdMedia[0], createdVideos[0], env.Assets)
 
 	_, err = repo.Job().CreateAll(jobs)
 	if err != nil {
-		return errs.BuildError(err, "could not create checksum and thumbnail job for video: %v", createdVideos[0].ID)
+		return errs.BuildError(err, "could not create jobs for video: %v", createdVideos[0].ID.String())
 	}
 
 	return nil
 }
 
-func (jr *JobRunner) handleVideosOnDisk(job model.Job, libPath model.LibraryPath, existingMedia []model.Media, videosOnDisk []media.File) error {
+func (jr *jobRunner) handleVideosOnDisk(job model.Job, libPath model.LibraryPath, existingMedia []model.Media, videosOnDisk []media.File) error {
 	nonExistentMedia := media.FindNonExistentMedia(existingMedia, videosOnDisk)
 	if len(nonExistentMedia) > 0 {
 		jr.removeMedia(nonExistentMedia)
@@ -231,7 +198,7 @@ func (jr *JobRunner) handleVideosOnDisk(job model.Job, libPath model.LibraryPath
 	return nil
 }
 
-func (jr *JobRunner) removeMedia(nonExistentMedia []model.Media) {
+func (jr *jobRunner) removeMedia(nonExistentMedia []model.Media) {
 	for _, v := range nonExistentMedia {
 		select {
 		case <-jr.shutdownCtx.Done():

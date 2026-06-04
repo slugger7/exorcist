@@ -46,7 +46,7 @@ func CreateRefreshMetadataJob(media model.Media, jobId *uuid.UUID, refreshFields
 	return job, nil
 }
 
-func (jr *JobRunner) RefreshMetadata(job *model.Job) error {
+func (jr *jobRunner) RefreshMetadata(job *model.Job) error {
 	var jobData dto.RefreshMetadata
 	if err := json.Unmarshal([]byte(*job.Data), &jobData); err != nil {
 		return errs.BuildError(err, "error parsing job data for refresh metadata: %v", job.Data)

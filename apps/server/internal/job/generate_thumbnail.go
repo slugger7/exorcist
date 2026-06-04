@@ -59,7 +59,7 @@ func createAssetDirectory(path string) error {
 	return os.MkdirAll(dir, os.ModePerm)
 }
 
-func (jr *JobRunner) GenerateThumbnail(job *model.Job) error {
+func (jr *jobRunner) GenerateThumbnail(job *model.Job) error {
 	var jobData dto.GenerateThumbnailData
 	if err := json.Unmarshal([]byte(*job.Data), &jobData); err != nil {
 		return errs.BuildError(err, "error parsing job data: %v", job.Data)

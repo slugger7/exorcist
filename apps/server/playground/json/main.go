@@ -231,8 +231,8 @@ func main() {
 	err = json.Unmarshal([]byte(jsonData), &structdata)
 	errs.PanicError(err)
 
-	width, height, err := ffmpeg.GetDimensions(structdata.Streams)
+	dimension, err := ffmpeg.GetDimensions(structdata.Streams)
 	errs.PanicError(err)
 
-	fmt.Printf("Width & Height: %v %v\n", width, height)
+	fmt.Printf("Width & Height: %v %v\n", *dimension.Width, *dimension.Height)
 }

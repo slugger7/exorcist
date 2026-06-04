@@ -17,7 +17,7 @@ import (
 	"github.com/slugger7/exorcist/apps/server/internal/websockets"
 )
 
-type JobRunner struct {
+type jobRunner struct {
 	env         *environment.EnvironmentVariables
 	service     service.Service
 	repo        repository.Repository
@@ -28,7 +28,7 @@ type JobRunner struct {
 	ws          websockets.Websockets
 }
 
-var jobRunnerInstance *JobRunner
+var jobRunnerInstance *jobRunner
 
 func New(
 	env *environment.EnvironmentVariables,
@@ -42,7 +42,7 @@ func New(
 
 	if jobRunnerInstance == nil {
 		repo := repository.New(env, context.Background())
-		jobRunnerInstance = &JobRunner{
+		jobRunnerInstance = &jobRunner{
 			env:         env,
 			service:     service.New(repo, env, ch, shutdownCtx),
 			repo:        repo,
@@ -61,7 +61,7 @@ func New(
 	return ch
 }
 
-func (jr *JobRunner) loop() {
+func (jr *jobRunner) loop() {
 	defer jr.wg.Done()
 
 	jr.logger.Infof("Running jobs")
@@ -86,7 +86,7 @@ func (jr *JobRunner) loop() {
 	}
 }
 
-func (jr *JobRunner) disableJobChecker(job *model.Job) error {
+func (jr *jobRunner) disableJobChecker(job *model.Job) error {
 	if slices.Contains(jr.env.DisableJobs, job.JobType) {
 		return fmt.Errorf("job of type %v is disabled", job.JobType.String())
 	}
@@ -94,7 +94,7 @@ func (jr *JobRunner) disableJobChecker(job *model.Job) error {
 	return nil
 }
 
-func (jr *JobRunner) processJobs() error {
+func (jr *jobRunner) processJobs() error {
 	for {
 		select {
 		case <-jr.shutdownCtx.Done():
@@ -163,7 +163,7 @@ func (jr *JobRunner) processJobs() error {
 
 type JobFunc func(*model.Job) error
 
-func (jr *JobRunner) jobFuncResolver(jobType model.JobTypeEnum) (JobFunc, error) {
+func (jr *jobRunner) jobFuncResolver(jobType model.JobTypeEnum) (JobFunc, error) {
 	var f JobFunc
 	switch jobType {
 	case model.JobTypeEnum_ScanPath:
@@ -200,7 +200,7 @@ func (jr *JobRunner) jobFuncResolver(jobType model.JobTypeEnum) (JobFunc, error)
 	return f, nil
 }
 
-func (jr *JobRunner) marshallJobError(e string) string {
+func (jr *jobRunner) marshallJobError(e string) string {
 	data, err := json.Marshal(models.JobError{
 		Error: e,
 	})

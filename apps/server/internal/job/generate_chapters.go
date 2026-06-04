@@ -45,7 +45,7 @@ func CreateGenerateChaptersJob(mediaId uuid.UUID, jobId *uuid.UUID, interval *fl
 	return job, nil
 }
 
-func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelation) error {
+func (jr *jobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelation) error {
 	var accErr error
 	for _, i := range chapters {
 		if err := jr.service.Media().Delete(i.RelatedTo, true); err != nil {
@@ -75,7 +75,7 @@ func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelatio
 	return accErr
 }
 
-func (jr *JobRunner) generateChapters(job *model.Job) error {
+func (jr *jobRunner) generateChapters(job *model.Job) error {
 	var jobData dto.GenerateChaptersData
 	if err := json.Unmarshal([]byte(*job.Data), &jobData); err != nil {
 		return errs.BuildError(err, "error parsing job data for generate chapters: %v", job.Data)

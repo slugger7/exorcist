@@ -50,6 +50,24 @@ func DetermineDimensions(wanted, current Dimension) Dimension {
 	}
 }
 
+func ScaleByMaxDimension(maxDimension int, currentDimension Dimension) *Dimension {
+	// TODO: unit tests
+	d := Dimension{}
+	*d.Height = *currentDimension.Height
+	*d.Width = *currentDimension.Width
+	if *d.Width > maxDimension {
+		*d.Height = ScaleHeightByWidth(*d.Height, *d.Width, maxDimension)
+		*currentDimension.Width = maxDimension
+	}
+
+	if *d.Height > maxDimension {
+		*d.Width = ScaleWidthByHeight(*d.Height, *d.Width, maxDimension)
+		*d.Height = maxDimension
+	}
+
+	return &d
+}
+
 func ImageAt(vid string, time float64, img string, width, height int) error {
 	if width <= 0 {
 		return fmt.Errorf(ErrNegativeWidth, width)
