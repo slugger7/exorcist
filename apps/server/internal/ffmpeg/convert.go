@@ -25,8 +25,18 @@ func Convert(c ConvertDto) error {
 		return fmt.Errorf(ErrNegativeWidth, *c.Dimension.Width)
 	}
 
+	ouptutArgs := ffmpeg_go.KwArgs{"vf": fmt.Sprintf("scale=%v:%v", *c.Dimension.Width, *c.Dimension.Height)}
+
+	if c.ConstantRateFactor != nil {
+		ouptutArgs["crf"] = *c.ConstantRateFactor
+	}
+
+	if c.ForcePixelFormat != nil {
+		ouptutArgs["pix_fmt"] = *c.ForcePixelFormat
+	}
+
 	err := ffmpeg_go.Input(c.InputFilePath).Output(c.OutputFilePath,
-		ffmpeg_go.KwArgs{"vf": fmt.Sprintf("scale=%v:%v", *c.Dimension.Width, *c.Dimension.Height)}).
+		ouptutArgs).
 		Run()
 	if err != nil {
 		str := err.Error()
