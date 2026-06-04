@@ -51,14 +51,13 @@ func DetermineDimensions(wanted, current Dimension) Dimension {
 }
 
 func ScaleByMaxDimension(maxDimension int, currentDimension Dimension) *Dimension {
-	// TODO: unit tests
-
-	height := *currentDimension.Height
-	width := *currentDimension.Width
 	d := Dimension{
-		Height: &height,
-		Width:  &width,
+		Height: new(int),
+		Width:  new(int),
 	}
+	*d.Height = *currentDimension.Height
+	*d.Width = *currentDimension.Width
+
 	if *d.Width > maxDimension {
 		*d.Height = ScaleHeightByWidth(*d.Height, *d.Width, maxDimension)
 		*d.Width = maxDimension

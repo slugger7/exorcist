@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/slugger7/exorcist/apps/server/internal/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_ImageAt_NegativeWidth(t *testing.T) {
@@ -13,16 +13,15 @@ func Test_ImageAt_NegativeWidth(t *testing.T) {
 
 	err := ImageAt("", 0, "", width, 1)
 
-	assert.ErrorNotNil(t, err)
-	assert.Error(t, fmt.Errorf(ErrNegativeWidth, width), err)
+	assert.ErrorContains(t, err, fmt.Sprintf(ErrNegativeWidth, width))
 }
 
 func Test_ImageAt_NegativeHeight(t *testing.T) {
 	height := -1
 
 	err := ImageAt("", 0, "", 1, height)
-	assert.ErrorNotNil(t, err)
-	assert.Error(t, fmt.Errorf(ErrNegativeHeight, height), err)
+
+	assert.ErrorContains(t, err, fmt.Sprintf(ErrNegativeHeight, height))
 }
 
 func Test_ImageAt_Success(t *testing.T) {
@@ -30,7 +29,7 @@ func Test_ImageAt_Success(t *testing.T) {
 	time := float64(3)
 
 	err := ImageAt(testVideoPath, time, testImagePath, width, height)
-	assert.ErrorNil(t, err)
+	assert.Nil(t, err)
 	assert.FileExists(t, testImagePath)
 
 	os.Remove(testImagePath)
@@ -151,4 +150,36 @@ func Test_DetermineDimensions_WithWantedWidthDefinedButNoHeight_ShouldReturnDime
 			*expectedDimension.Width, *expectedDimension.Height,
 			*actualDimension.Width, *actualDimension.Height)
 	}
+}
+
+func Test_ScaleByMaxDimension_WithWidthGreaterThanMaxDimension_ShouldScaleHeightAndSetWidthToMaxDimension(t *testing.T) {
+	maxDimension := 10
+
+	c := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*c.Height = 100
+	*c.Width = 200
+
+	d := ScaleByMaxDimension(maxDimension, c)
+
+	assert.Equal(t, 5, *d.Height, "height was not correctly scaled")
+	assert.Equal(t, maxDimension, *d.Width, "width was not set to max dimension")
+}
+
+func Test_ScaleByMaxDimension_WithHeightGreaterThanMaxDimension_ShouldScaleWidthAndSetHightToMaxDimension(t *testing.T) {
+	maxDimension := 10
+
+	c := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*c.Height = 200
+	*c.Width = 100
+
+	d := ScaleByMaxDimension(maxDimension, c)
+
+	assert.Equal(t, 5, *d.Width, "width was not correctly scaled")
+	assert.Equal(t, maxDimension, *d.Height, "height was not set to max dimension")
 }
