@@ -13,6 +13,14 @@ export * from "./enum"
 export type Enum = any;
 
 //////////
+// source: helper_types.go
+
+export interface Dimension {
+  height?: number /* int */;
+  width?: number /* int */;
+}
+
+//////////
 // source: job.go
 
 export interface CreateJobDTO {
@@ -98,7 +106,7 @@ export interface GenerateChaptersData {
 }
 export interface ConvertData {
   mediaId: string /* UUID */;
-  dimension: any /* ffmpeg.Dimension */;
+  dimension: Dimension;
   filename: string;
   constantRateFactor?: number /* int */;
   variableBitrate?: number /* int */;
