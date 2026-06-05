@@ -25,7 +25,7 @@ export interface Dimension {
 
 export interface CreateJobDTO {
   type: model.JobTypeEnum;
-  data: ScanPathData | GenerateThumbnailData | ConvertData;
+  data: ScanPathData | GenerateThumbnailData | GenerateChaptersData | ConvertData | RefreshMetadata | RefreshLibraryMetadata;
   priority?: JobPriority;
 }
 export type JobPriority = number /* int16 */;
@@ -67,19 +67,12 @@ export interface ScanPathData {
 }
 export interface GenerateThumbnailData {
   mediaId: string /* UUID */;
-  path: string;
   /**
    * Optional: If set to 0, timestamp at 25% of video playback will be used. Value in seconds
    */
   timestamp: number /* float64 */;
-  /**
-   * Optional: If set to 0, video height will be used
-   */
-  height: number /* int */;
-  /**
-   * Optional: If set to 0, video widtch will be used
-   */
-  width: number /* int */;
+  height?: number /* int */;
+  width?: number /* int */;
   relationType?: any /* model.MediaRelationTypeEnum */;
   metadata?: ThumbnailMetadataDTO;
 }
@@ -99,8 +92,8 @@ export interface RefreshLibraryMetadata {
 export interface GenerateChaptersData {
   mediaId: string /* UUID */;
   interval: number /* float64 */;
-  height: number /* int */;
-  width: number /* int */;
+  height?: number /* int */;
+  width?: number /* int */;
   maxDimension: number /* int */;
   overwrite: boolean;
 }
