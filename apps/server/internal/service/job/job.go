@@ -313,8 +313,8 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 	}
 
 	w := ffmpeg.Dimension{
-		Height: &generateThumbnailData.Height,
-		Width:  &generateThumbnailData.Width,
+		Height: generateThumbnailData.Height,
+		Width:  generateThumbnailData.Width,
 	}
 
 	c := ffmpeg.Dimension{
@@ -326,8 +326,8 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 
 	d := ffmpeg.DetermineDimensions(w, c)
 
-	generateThumbnailData.Height = *d.Height
-	generateThumbnailData.Width = *d.Width
+	*generateThumbnailData.Height = *d.Height
+	*generateThumbnailData.Width = *d.Width
 
 	generateThumbnailData.Path = filepath.Join(
 		i.env.Assets,

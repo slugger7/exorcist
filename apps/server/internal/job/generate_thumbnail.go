@@ -26,12 +26,14 @@ func CreateGenerateThumbnailJob(
 	d := dto.GenerateThumbnailData{
 		MediaId:      mediaId,
 		Path:         imagePath,
-		Height:       height,
-		Width:        width,
+		Height:       new(int),
+		Width:        new(int),
 		Timestamp:    timestamp,
 		RelationType: relationType,
 		Metadata:     metadata,
 	}
+	*d.Height = height
+	*d.Width = width
 
 	if d.RelationType == nil {
 		v := model.MediaRelationTypeEnum_Thumbnail
@@ -74,11 +76,11 @@ func (jr *jobRunner) GenerateThumbnail(job *model.Job) error {
 		return errs.BuildError(err, "error fetching video with media id: %v", jobData.MediaId)
 	}
 
-	if jobData.Height == 0 {
-		jobData.Height = int(video.Height)
+	if *jobData.Height == 0 {
+		*jobData.Height = int(video.Height)
 	}
-	if jobData.Width == 0 {
-		jobData.Width = int(video.Width)
+	if *jobData.Width == 0 {
+		*jobData.Width = int(video.Width)
 	}
 	if jobData.Timestamp == 0 {
 		jobData.Timestamp = video.Runtime * 0.25
@@ -89,7 +91,7 @@ func (jr *jobRunner) GenerateThumbnail(job *model.Job) error {
 		return errs.BuildError(err, "could not create path for asset")
 	}
 
-	if err := ffmpeg.ImageAt(video.Path, jobData.Timestamp, jobData.Path, jobData.Width, jobData.Height); err != nil {
+	if err := ffmpeg.ImageAt(video.Path, jobData.Timestamp, jobData.Path, *jobData.Width, *jobData.Height); err != nil {
 		return errs.BuildError(err, "could not create image at timestamp: %v, video: %v", jobData.Timestamp, video.Runtime)
 	}
 
@@ -116,8 +118,8 @@ func (jr *jobRunner) GenerateThumbnail(job *model.Job) error {
 
 	image := &model.Image{
 		MediaID: newModels[0].ID,
-		Height:  int32(jobData.Height),
-		Width:   int32(jobData.Width),
+		Height:  int32(*jobData.Height),
+		Width:   int32(*jobData.Width),
 	}
 
 	image, err = jr.repo.Image().Create(image)
