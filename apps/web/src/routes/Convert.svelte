@@ -7,6 +7,10 @@
   import { handleValidation } from "../lib/forms/handlers";
   import { create } from "../lib/controllers/job";
   import { numberValidator } from "../lib/forms/validators";
+  import {
+    calculateScaledHeight,
+    calculateScaledWidth,
+  } from "../lib/forms/dimensions";
 
   /** @type {{id: string}}*/
   let { id } = $props();
@@ -163,6 +167,16 @@
             const validationMessage = e.target.validationMessage;
             if (validationMessage.length > 0) {
               heightErrors = [validationMessage];
+              return;
+            }
+
+            if (keepScale) {
+              console.log("scaling width", e);
+              width = calculateScaledWidth(
+                media?.video?.height ?? 0,
+                media?.video?.width ?? 0,
+                e.target.valueAsNumber,
+              );
             }
           }}
         />
@@ -185,6 +199,15 @@
             const validationMessage = e.target.validationMessage;
             if (validationMessage.length > 0) {
               widthErrors = [validationMessage];
+              return;
+            }
+
+            if (keepScale) {
+              height = calculateScaledHeight(
+                media?.video?.height ?? 0,
+                media?.video?.width ?? 0,
+                e.target.valueAsNumber,
+              );
             }
           }}
         />
