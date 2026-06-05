@@ -22,8 +22,8 @@ func ScaleHeightByWidth(currentHeight, currentWidth, wantedWidth int) int {
 }
 
 type Dimension struct {
-	Height *int
-	Width  *int
+	Height *int `json:"height"`
+	Width  *int `json:"width"`
 }
 
 func DetermineDimensions(wanted, current Dimension) Dimension {

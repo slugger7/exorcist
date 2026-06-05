@@ -49,20 +49,27 @@ type GenerateChaptersData struct {
 }
 
 type ConvertData struct {
-	MediaId            uuid.UUID        `json:"mediaId" binding:"required"`
-	Dimension          ffmpeg.Dimension `json:"dimension"`
-	Filename           string           `json:"filename" binding:"required"`
-	Path               string           `json:"path" tstype:"-"` // omitted for clients
-	ConstantRateFactor *int             `json:"constantRateFactor"`
-	VariableBitrate    *int             `json:"variableBitrate"`
-	ForcePixelFormat   *string          `json:"forcePixelFormat"`
+	MediaId            uuid.UUID `json:"mediaId" binding:"required"`
+	Dimension          Dimension `json:"dimension"`
+	Filename           string    `json:"filename" binding:"required"`
+	Path               string    `json:"path" tstype:"-"` // omitted for clients
+	ConstantRateFactor *int      `json:"constantRateFactor"`
+	VariableBitrate    *int      `json:"variableBitrate"`
+	ForcePixelFormat   *string   `json:"forcePixelFormat"`
 }
 
 func (d *ConvertData) ToFfmpegDto() *ffmpeg.ConvertDto {
-	return &ffmpeg.ConvertDto{
-		Dimension:          d.Dimension,
+	v := &ffmpeg.ConvertDto{
+		Dimension: ffmpeg.Dimension{
+			Height: new(int),
+			Width:  new(int),
+		},
 		ConstantRateFactor: d.ConstantRateFactor,
 		VariableBitrate:    d.VariableBitrate,
 		ForcePixelFormat:   d.ForcePixelFormat,
 	}
+	*v.Dimension.Height = *d.Dimension.Height
+	*v.Dimension.Width = *d.Dimension.Width
+
+	return v
 }

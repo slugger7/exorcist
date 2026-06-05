@@ -148,9 +148,9 @@ func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
 	*currentDimension.Width = int(media.Video.Width)
 	*currentDimension.Height = int(media.Video.Height)
 
-	dimension := ffmpeg.DetermineDimensions(jobData.Dimension, currentDimension)
+	dimension := ffmpeg.DetermineDimensions(*jobData.Dimension.ToFfmpegDto(), currentDimension)
 
-	jobData.Dimension = dimension
+	jobData.Dimension = *new(dto.Dimension).FromFfmpegDto(&dimension)
 
 	bytes, err := json.Marshal(jobData)
 	if err != nil {
