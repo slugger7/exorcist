@@ -44,12 +44,12 @@ func UnmarshalledProbe(path string) (*Probe, error) {
 	return data, nil
 }
 
-func GetDimensions(streams []Stream) (width, height int, err error) {
+func GetDimensions(streams []Stream) (*Dimension, error) {
 	for _, v := range streams {
 		if v.CodecType == "video" {
-			return *v.Width, *v.Height, nil
+			return &Dimension{Height: v.Height, Width: v.Width}, nil
 		}
 	}
 
-	return 0, 0, errors.New("could not extract the height and with from the probe data streams")
+	return nil, errors.New("could not extract the height and with from the probe data streams")
 }

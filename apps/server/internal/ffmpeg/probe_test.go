@@ -15,7 +15,7 @@ func Test_GetDImensions_NoVideoCodecInStreams_shouldCreateError(t *testing.T) {
 
 	expectedError := "could not extract the height and with from the probe data streams"
 
-	_, _, err := GetDimensions(sterams)
+	_, err := GetDimensions(sterams)
 
 	if err != nil {
 		if err.Error() != expectedError {
@@ -36,15 +36,15 @@ func Test_GetDImensions_WithVideoCodec_shouldReturnHeightAndWidth_withNilError(t
 		},
 	}
 
-	actualWidth, actualHeight, err := GetDimensions(streams)
+	actual, err := GetDimensions(streams)
 	if err != nil {
 		t.Errorf("Could not extract height and width from streams with error %v", err)
 	}
-	if width != actualWidth {
-		t.Errorf("Actual width (%v) does not match expected width (%v)", actualWidth, width)
+	if width != *actual.Width {
+		t.Errorf("Actual width (%v) does not match expected width (%v)", *actual.Width, width)
 	}
-	if height != actualHeight {
-		t.Errorf("Actual height (%v) does not match expected height (%v)", actualHeight, height)
+	if height != *actual.Height {
+		t.Errorf("Actual height (%v) does not match expected height (%v)", *actual.Height, height)
 	}
 }
 

@@ -10,7 +10,7 @@ import (
 	errs "github.com/slugger7/exorcist/apps/server/internal/errors"
 )
 
-func (jr *JobRunner) refreshLibraryMetadata(job *model.Job) error {
+func (jr *jobRunner) refreshLibraryMetadata(job *model.Job) error {
 	var jobData dto.RefreshLibraryMetadata
 	if err := json.Unmarshal([]byte(*job.Data), &jobData); err != nil {
 		return errs.BuildError(err, "error parsing job data for refresh library metadata: %v", job.Data)

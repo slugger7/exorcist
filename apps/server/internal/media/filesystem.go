@@ -113,3 +113,31 @@ func GetFileInformation(p string) (*File, error) {
 	}
 	return &file, nil
 }
+
+func CopyFile(original, destination string) error {
+	fin, err := os.Open(original)
+	if err != nil {
+		return errs.BuildError(err, "colud not open original file: %v", original)
+	}
+	defer fin.Close()
+
+	fout, err := os.Create(destination)
+	if err != nil {
+		return errs.BuildError(err, "could not create destination: %v", destination)
+	}
+	defer fout.Close()
+
+	_, err = io.Copy(fout, fin)
+	if err != nil {
+		currentErr := errs.BuildError(err, "could not copy %v to %v, cleaning up", original, destination)
+
+		err := os.Remove(destination)
+		if err != nil {
+			return errs.BuildError(errors.Join(currentErr, err), "could not remove file at %v", destination)
+		}
+
+		return currentErr
+	}
+
+	return nil
+}

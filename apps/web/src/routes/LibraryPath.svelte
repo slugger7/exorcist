@@ -13,7 +13,7 @@
     creatingScanJob = true;
 
     try {
-      await create("scan_path", { libraryPathId: id });
+      await create({ type: "scan_path", data: { libraryPathId: id } });
     } catch (e) {
       console.error(e);
     } finally {
@@ -42,7 +42,7 @@
         <tr>
           <th>Library ID</th>
           <td
-            ><Link to={routes.libraryFunc(libraryPath.libraryId, name)}
+            ><Link to={routes.libraryFunc(libraryPath.libraryId ?? "", name)}
               >{libraryPath.libraryId}</Link
             ></td
           >

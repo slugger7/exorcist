@@ -18,11 +18,14 @@
 
     submitting = true;
     try {
-      await create("generate_thumbnail", {
-        mediaId,
-        timestamp: timestamp,
-        width: width,
-        relationType: "thumbnail",
+      await create({
+        type: "generate_thumbnail",
+        data: {
+          mediaId,
+          timestamp: timestamp,
+          width: width,
+          relationType: "thumbnail",
+        },
       });
 
       history.back();

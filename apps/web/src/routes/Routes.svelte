@@ -27,6 +27,7 @@
   import VideoAlt from "./VideoAlt.svelte";
   import GenerateThumbnailJob from "./GenerateThumbnailJob.svelte";
   import Relate from "./Relate.svelte";
+  import Convert from "./Convert.svelte";
 </script>
 
 <main>
@@ -83,4 +84,5 @@
     ><GenerateThumbnailJob mediaId={params.id} /></Route
   >
   <Route path={routes.relate} let:params><Relate id={params.id} /></Route>
+  <Route path={routes.convert} let:params><Convert id={params.id} /></Route>
 </main>

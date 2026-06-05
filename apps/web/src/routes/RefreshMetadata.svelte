@@ -15,6 +15,7 @@
   let size = $state(true);
   let checksum = $state(false);
 
+  /** @param {SubmitEvent} e */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -23,18 +24,23 @@
       : libraryId
         ? "refresh_library_metadata"
         : null;
-    submitting = true;
-    try {
-      await create(jobType, {
-        libraryId,
-        mediaId,
-        batchSize: 50,
-        refreshFields: { size, checksum },
-      });
+    if (jobType !== null) {
+      submitting = true;
+      try {
+        await create({
+          type: jobType,
+          data: {
+            libraryId,
+            mediaId: mediaId ?? "",
+            batchSize: 50,
+            refreshFields: { size, checksum },
+          },
+        });
 
-      navigate(redirect);
-    } finally {
-      submitting = false;
+        navigate(redirect);
+      } finally {
+        submitting = false;
+      }
     }
   };
 

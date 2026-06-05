@@ -21,6 +21,7 @@ const (
 	JobTypeEnum_RefreshLibraryMetadata  JobTypeEnum = "refresh_library_metadata"
 	JobTypeEnum_GenerateChapters        JobTypeEnum = "generate_chapters"
 	JobTypeEnum_GenerateLibraryChapters JobTypeEnum = "generate_library_chapters"
+	JobTypeEnum_Convert                 JobTypeEnum = "convert"
 )
 
 var JobTypeEnumAllValues = []JobTypeEnum{
@@ -33,6 +34,7 @@ var JobTypeEnumAllValues = []JobTypeEnum{
 	JobTypeEnum_RefreshLibraryMetadata,
 	JobTypeEnum_GenerateChapters,
 	JobTypeEnum_GenerateLibraryChapters,
+	JobTypeEnum_Convert,
 }
 
 func (e *JobTypeEnum) Scan(value interface{}) error {
@@ -65,6 +67,8 @@ func (e *JobTypeEnum) Scan(value interface{}) error {
 		*e = JobTypeEnum_GenerateChapters
 	case "generate_library_chapters":
 		*e = JobTypeEnum_GenerateLibraryChapters
+	case "convert":
+		*e = JobTypeEnum_Convert
 	default:
 		return errors.New("jet: Invalid scan value '" + enumValue + "' for JobTypeEnum enum")
 	}

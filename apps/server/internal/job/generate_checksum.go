@@ -34,7 +34,7 @@ func CreateGenerateChecksumJob(mediaId uuid.UUID, jobId *uuid.UUID) (*model.Job,
 	return &job, nil
 }
 
-func (jr *JobRunner) GenerateChecksum(job *model.Job) error {
+func (jr *jobRunner) GenerateChecksum(job *model.Job) error {
 	var jobData GenerateChecksumData
 	if err := json.Unmarshal([]byte(*job.Data), &jobData); err != nil {
 		return errs.BuildError(err, "error parsing job data: %v", job.Data)
@@ -42,7 +42,7 @@ func (jr *JobRunner) GenerateChecksum(job *model.Job) error {
 
 	jobMedia, err := jr.repo.Media().GetById(jobData.MediaId)
 	if err != nil {
-		return errs.BuildError(err, "error fetching video with library path by id: %v", jobData.MediaId)
+		return errs.BuildError(err, "error fetching video with library path by id")
 	}
 
 	jr.logger.Infof("Calculating checksum for %v", jobMedia.Path)

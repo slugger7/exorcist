@@ -32,6 +32,7 @@ type EnvironmentVariables struct {
 	Port                       int
 	Secret                     string
 	LogLevel                   string
+	Cache                      string
 	Assets                     string
 	Web                        *string
 	JobRunner                  bool
@@ -58,6 +59,7 @@ const (
 	PORT                         OsEnv = "PORT"
 	SECRET                       OsEnv = "SECRET"
 	LOG_LEVEL                    OsEnv = "LOG_LEVEL"
+	CACHE                        OsEnv = "CACHE"
 	ASSETS                       OsEnv = "ASSETS"
 	WEB                          OsEnv = "WEB"
 	JOB_RUNNER                   OsEnv = "JOB_RUNNER"
@@ -94,6 +96,7 @@ func RefreshEnvironmentVariables() {
 		Port:                       getIntValue(PORT),
 		Secret:                     os.Getenv(SECRET),
 		LogLevel:                   getValueOrDefault(LOG_LEVEL, "debug"),
+		Cache:                      os.Getenv(CACHE),
 		Assets:                     os.Getenv(ASSETS),
 		Web:                        getValueOrNil(WEB),
 		JobRunner:                  getBoolValue(JOB_RUNNER, true),

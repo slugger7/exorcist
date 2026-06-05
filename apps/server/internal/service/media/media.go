@@ -25,6 +25,8 @@ type MediaService interface {
 	LogProgress(id, userId uuid.UUID, progress dto.ProgressUpdateDTO) (*model.MediaProgress, error)
 	GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error)
 	Relate(id uuid.UUID, relateDto dto.PutMediaRelationDto) ([]model.MediaRelation, error)
+	CopyTags(toId, fromId uuid.UUID) error
+	CopyPeople(toId, fromId uuid.UUID) error
 }
 
 func createRelations(id uuid.UUID, relationDto dto.PutMediaRelationDto) []model.MediaRelation {
@@ -86,6 +88,63 @@ type mediaService struct {
 	logger        logger.Logger
 	personService personService.PersonService
 	tagService    tagService.TagService
+}
+
+// CopyPeople implements [MediaService].
+func (s *mediaService) CopyPeople(toId uuid.UUID, fromId uuid.UUID) error {
+	toMedia, err := s.repo.Media().GetById(toId)
+	if err != nil {
+		return errs.BuildError(err, "error getting media to copy people to")
+	}
+	if toMedia == nil {
+		return fmt.Errorf("could not find media to copy people to: %v", toId.String())
+	}
+
+	fromMedia, err := s.repo.Media().GetById(fromId)
+	if err != nil {
+		return errs.BuildError(err, "error getting media to copy people from")
+	}
+	if fromMedia == nil {
+		return fmt.Errorf("could not find media to compy people from: %v", fromId.String())
+	}
+
+	var accErrs error
+	for _, f := range fromMedia.People {
+		if _, err := s.AddPerson(toId, f.ID); err != nil {
+			if accErrs == nil {
+				accErrs = errs.BuildError(err, "could not copy tag from %v", fromId.String())
+			} else {
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// CopyTags implements [MediaService].
+func (s *mediaService) CopyTags(toId uuid.UUID, fromId uuid.UUID) error {
+	toMedia, err := s.repo.Media().GetById(toId)
+	if err != nil {
+		return errs.BuildError(err, "error getting media to copy tags to")
+	}
+	if toMedia == nil {
+		return fmt.Errorf("could not find media to copy tags to: %v", toId.String())
+	}
+
+	fromMedia, err := s.repo.Media().GetById(fromId)
+	if err != nil {
+		return errs.BuildError(err, "error getting media to copy tags from")
+	}
+	if fromMedia == nil {
+		return fmt.Errorf("could not find media to compy tags from: %v", fromId.String())
+	}
+
+	for _, f := range fromMedia.Tags {
+		s.AddTag(toId, f.ID)
+	}
+
+	return nil
 }
 
 func (s *mediaService) GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error) {

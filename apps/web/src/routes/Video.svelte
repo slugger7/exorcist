@@ -33,6 +33,7 @@
   import { wsState } from "../lib/state/wsState.svelte";
   import { PONG } from "../lib/constants/websocket";
   import Relations from "../lib/components/Relations.svelte";
+  import { pageState } from "../lib/state/pageState.svelte";
   /** @type {{id: string}}*/
   let { id } = $props();
   /** @type {HTMLVideoElement | undefined}*/
@@ -354,6 +355,16 @@
             >
           </p>
 
+          <p class="control">
+            <Link
+              class="button"
+              aria-label="convert media"
+              to={routes.convertFn(id)}
+              on:click={() => (pageState.media = mediaEntity)}
+              ><span class="icon"><i class="fas fa-arrows-spin"></i></span
+              ></Link
+            >
+          </p>
           <p class="control">
             <Link
               class="button"

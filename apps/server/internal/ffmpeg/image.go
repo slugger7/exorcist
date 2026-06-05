@@ -21,6 +21,56 @@ func ScaleHeightByWidth(currentHeight, currentWidth, wantedWidth int) int {
 	return int(float32(currentHeight) / float32(currentWidth) * float32(wantedWidth))
 }
 
+type Dimension struct {
+	Height *int `json:"height"`
+	Width  *int `json:"width"`
+}
+
+func DetermineDimensions(wanted, current Dimension) Dimension {
+	if wanted.Height != nil && wanted.Width != nil {
+		return wanted
+	}
+
+	if wanted.Height == nil && wanted.Width == nil {
+		return current
+	}
+
+	if wanted.Height != nil {
+		scaledWidth := ScaleWidthByHeight(*current.Height, *current.Width, *wanted.Height)
+		return Dimension{
+			Height: wanted.Height,
+			Width:  &scaledWidth,
+		}
+	} else {
+		scaledHeight := ScaleHeightByWidth(*current.Height, *current.Width, *wanted.Width)
+		return Dimension{
+			Height: &scaledHeight,
+			Width:  wanted.Width,
+		}
+	}
+}
+
+func ScaleByMaxDimension(maxDimension int, currentDimension Dimension) *Dimension {
+	d := Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*d.Height = *currentDimension.Height
+	*d.Width = *currentDimension.Width
+
+	if *d.Width > maxDimension {
+		*d.Height = ScaleHeightByWidth(*d.Height, *d.Width, maxDimension)
+		*d.Width = maxDimension
+	}
+
+	if *d.Height > maxDimension {
+		*d.Width = ScaleWidthByHeight(*d.Height, *d.Width, maxDimension)
+		*d.Height = maxDimension
+	}
+
+	return &d
+}
+
 func ImageAt(vid string, time float64, img string, width, height int) error {
 	if width <= 0 {
 		return fmt.Errorf(ErrNegativeWidth, width)

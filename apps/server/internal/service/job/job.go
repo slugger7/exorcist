@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -74,6 +75,8 @@ func (s *jobService) Create(m dto.CreateJobDTO) (*model.Job, error) {
 		j, e = s.refreshLibraryMetadata(strData, *m.Priority)
 	case model.JobTypeEnum_GenerateChapters:
 		j, e = s.generateChapters(strData, *m.Priority)
+	case model.JobTypeEnum_Convert:
+		j, e = s.convert(strData, *m.Priority)
 	default:
 		return nil, fmt.Errorf("job type not implemented: %v", m.Type)
 	}
@@ -100,6 +103,65 @@ func (s *jobService) Create(m dto.CreateJobDTO) (*model.Job, error) {
 	go s.StartJobRunner()
 
 	return &jobs[0], nil
+}
+
+func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
+	var jobData dto.ConvertData
+	if err := json.Unmarshal([]byte(data), &jobData); err != nil {
+		return nil, errs.BuildError(err, "unmarshalling data for convert: %v", data)
+	}
+
+	media, err := i.repo.Media().GetById(jobData.MediaId)
+	if err != nil {
+		return nil, errs.BuildError(err, "getting media by id: %v", jobData.MediaId.String())
+	}
+
+	if media == nil {
+		return nil, fmt.Errorf("no media with id: %v", jobData.MediaId.String())
+	}
+
+	if !media.Exists {
+		return nil, fmt.Errorf("media does not exist: %v", jobData.MediaId)
+	}
+
+	if media.Deleted {
+		i.logger.Warningf("Conversion requested on deleted media: %v", jobData.MediaId)
+	}
+
+	// TODO: probably need some more filepath sanitization
+	filePath := filepath.Clean(
+		filepath.Join(
+			filepath.Dir(media.Path),
+			filepath.Base(jobData.Filename),
+		))
+
+	if _, err := os.Stat(filePath); err == nil {
+		return nil, fmt.Errorf("destination for conversion already existst: %v", filePath)
+	}
+
+	jobData.Path = filePath
+
+	currentDimension := ffmpeg.Dimension{
+		Height: new(int),
+		Width:  new(int),
+	}
+	*currentDimension.Width = int(media.Video.Width)
+	*currentDimension.Height = int(media.Video.Height)
+
+	dimension := ffmpeg.DetermineDimensions(*jobData.Dimension.ToFfmpegDto(), currentDimension)
+
+	jobData.Dimension = *new(dto.Dimension).FromFfmpegDto(&dimension)
+
+	bytes, err := json.Marshal(jobData)
+	if err != nil {
+		return nil, errs.BuildError(err, "could not remarshall convert data")
+	}
+
+	data = string(bytes)
+	return &model.Job{
+		Data:     &data,
+		Priority: priority,
+	}, nil
 }
 
 func (i *jobService) generateChapters(data string, priority int16) (*model.Job, error) {
@@ -250,24 +312,22 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 		return nil, errs.BuildError(err, "could not remove existing thumbnail")
 	}
 
-	if generateThumbnailData.Height == 0 && generateThumbnailData.Width == 0 {
-		generateThumbnailData.Height = int(m.Video.Height)
-		generateThumbnailData.Width = int(m.Video.Width)
+	w := ffmpeg.Dimension{
+		Height: generateThumbnailData.Height,
+		Width:  generateThumbnailData.Width,
 	}
 
-	if generateThumbnailData.Height == 0 {
-		generateThumbnailData.Height = ffmpeg.ScaleHeightByWidth(
-			int(m.Video.Height),
-			int(m.Video.Width),
-			generateThumbnailData.Width)
+	c := ffmpeg.Dimension{
+		Height: new(int),
+		Width:  new(int),
 	}
+	*c.Height = int(m.Video.Height)
+	*c.Width = int(m.Video.Width)
 
-	if generateThumbnailData.Width == 0 {
-		generateThumbnailData.Width = ffmpeg.ScaleWidthByHeight(
-			int(m.Video.Height),
-			int(m.Video.Width),
-			generateThumbnailData.Height)
-	}
+	d := ffmpeg.DetermineDimensions(w, c)
+
+	*generateThumbnailData.Height = *d.Height
+	*generateThumbnailData.Width = *d.Width
 
 	generateThumbnailData.Path = filepath.Join(
 		i.env.Assets,

@@ -18,11 +18,13 @@ import (
 func CreateGenerateChaptersJob(mediaId uuid.UUID, jobId *uuid.UUID, interval *float64, height int, width int, maxDimension int, overwite bool) (*model.Job, error) {
 	d := dto.GenerateChaptersData{
 		MediaId:      mediaId,
-		Height:       height,
-		Width:        width,
+		Height:       new(int),
+		Width:        new(int),
 		MaxDimension: maxDimension,
 		Overwrite:    overwite,
 	}
+	*d.Height = height
+	*d.Width = width
 
 	if interval == nil {
 		d.Interval = 60
@@ -45,7 +47,7 @@ func CreateGenerateChaptersJob(mediaId uuid.UUID, jobId *uuid.UUID, interval *fl
 	return job, nil
 }
 
-func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelation) error {
+func (jr *jobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelation) error {
 	var accErr error
 	for _, i := range chapters {
 		if err := jr.service.Media().Delete(i.RelatedTo, true); err != nil {
@@ -75,7 +77,7 @@ func (jr *JobRunner) removeChapters(id uuid.UUID, chapters []models.MediaRelatio
 	return accErr
 }
 
-func (jr *JobRunner) generateChapters(job *model.Job) error {
+func (jr *jobRunner) generateChapters(job *model.Job) error {
 	var jobData dto.GenerateChaptersData
 	if err := json.Unmarshal([]byte(*job.Data), &jobData); err != nil {
 		return errs.BuildError(err, "error parsing job data for generate chapters: %v", job.Data)
@@ -117,23 +119,23 @@ func (jr *JobRunner) generateChapters(job *model.Job) error {
 
 	relationType := model.MediaRelationTypeEnum_Chapter
 
-	if jobData.Height == 0 {
-		jobData.Height = int(media.Video.Height)
+	if *jobData.Height == 0 {
+		*jobData.Height = int(media.Video.Height)
 	}
 
-	if jobData.Width == 0 {
-		jobData.Width = int(media.Video.Width)
+	if *jobData.Width == 0 {
+		*jobData.Width = int(media.Video.Width)
 	}
 
 	if jobData.MaxDimension != 0 {
-		if jobData.Width > jobData.MaxDimension {
-			jobData.Height = ffmpeg.ScaleHeightByWidth(jobData.Height, jobData.Width, jobData.MaxDimension)
-			jobData.Width = jobData.MaxDimension
+		if *jobData.Width > jobData.MaxDimension {
+			*jobData.Height = ffmpeg.ScaleHeightByWidth(*jobData.Height, *jobData.Width, jobData.MaxDimension)
+			*jobData.Width = jobData.MaxDimension
 		}
 
-		if jobData.Height > jobData.MaxDimension {
-			jobData.Width = ffmpeg.ScaleWidthByHeight(jobData.Height, jobData.Width, jobData.MaxDimension)
-			jobData.Height = jobData.MaxDimension
+		if *jobData.Height > jobData.MaxDimension {
+			*jobData.Width = ffmpeg.ScaleWidthByHeight(*jobData.Height, *jobData.Width, jobData.MaxDimension)
+			*jobData.Height = jobData.MaxDimension
 		}
 	}
 
@@ -155,7 +157,7 @@ func (jr *JobRunner) generateChapters(job *model.Job) error {
 				jobData.Width,
 				i,
 			))
-		job, err := CreateGenerateThumbnailJob(media.Media.ID, &job.ID, assetPath, i.Seconds(), jobData.Height, jobData.Width, &relationType, &metadata)
+		job, err := CreateGenerateThumbnailJob(media.Media.ID, &job.ID, assetPath, i.Seconds(), *jobData.Height, *jobData.Width, &relationType, &metadata)
 		if err != nil {
 			accErr = errors.Join(accErr, err)
 			continue

@@ -19,6 +19,7 @@ var JobTypeEnum = &struct {
 	RefreshLibraryMetadata  postgres.StringExpression
 	GenerateChapters        postgres.StringExpression
 	GenerateLibraryChapters postgres.StringExpression
+	Convert                 postgres.StringExpression
 }{
 	UpdateExistingVideos:    postgres.NewEnumValue("update_existing_videos"),
 	ScanPath:                postgres.NewEnumValue("scan_path"),
@@ -29,4 +30,5 @@ var JobTypeEnum = &struct {
 	RefreshLibraryMetadata:  postgres.NewEnumValue("refresh_library_metadata"),
 	GenerateChapters:        postgres.NewEnumValue("generate_chapters"),
 	GenerateLibraryChapters: postgres.NewEnumValue("generate_library_chapters"),
+	Convert:                 postgres.NewEnumValue("convert"),
 }
