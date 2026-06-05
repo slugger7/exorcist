@@ -8,12 +8,16 @@ type Dimension struct {
 }
 
 func (d *Dimension) ToFfmpegDto() *ffmpeg.Dimension {
-	v := ffmpeg.Dimension{
-		Height: new(int),
-		Width:  new(int),
+	v := ffmpeg.Dimension{}
+	if d.Height != nil {
+		v.Height = new(int)
+		*v.Height = *d.Height
 	}
-	*v.Height = *d.Height
-	*v.Width = *d.Width
+
+	if d.Width != nil {
+		v.Width = new(int)
+		*v.Width = *d.Width
+	}
 
 	return &v
 }
