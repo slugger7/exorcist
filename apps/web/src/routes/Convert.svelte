@@ -6,7 +6,6 @@
   import { get } from "../lib/controllers/media";
   import { handleValidation } from "../lib/forms/handlers";
   import { create } from "../lib/controllers/job";
-  import { numberValidator } from "../lib/forms/validators";
   import {
     calculateScaledHeight,
     calculateScaledWidth,
@@ -19,7 +18,7 @@
   let loading = $state(false);
   let submitting = $state(false);
   let filename = $state("");
-  let filenameErrors = $state();
+  let filenameErrors = $state([]);
   let filenameTouched = $state(false);
   let filenameValidators = [
     (value, state) => {
@@ -31,6 +30,7 @@
   let originalFilename = "";
 
   let constantRateFactor = $state(23);
+  let constantRateFactorErrors = $state([]);
   let forcePixelFormat = $state("yuv420p");
   let copyPeople = $state(false);
   let copyTags = $state(false);
@@ -93,6 +93,17 @@
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    filenameTouched = true;
+
+    if (
+      filenameErrors.length ||
+      heightErrors.length ||
+      widthErrors.length ||
+      constantRateFactorErrors.length
+    ) {
+      return;
+    }
+
     if (media?.id) {
       submitting = true;
       try {
@@ -104,8 +115,11 @@
             constantRateFactor,
             forcePixelFormat,
             dimension: {},
+            copyPeople,
+            copyTags,
           },
         });
+        history.back();
       } finally {
         submitting = false;
       }
@@ -168,6 +182,8 @@
             if (validationMessage.length > 0) {
               heightErrors = [validationMessage];
               return;
+            } else {
+              heightErrors = [];
             }
 
             if (keepScale) {
@@ -200,6 +216,8 @@
             if (validationMessage.length > 0) {
               widthErrors = [validationMessage];
               return;
+            } else {
+              widthErrors = [];
             }
 
             if (keepScale) {
@@ -230,13 +248,27 @@
           >Constant Rate Factor</label
         >
         <input
-          class={`input`}
+          class={`input ${constantRateFactorErrors && constantRateFactorErrors.length > 0 ? "is-danger" : ""}`}
           type="number"
           placeholder="Constant Rate Factor"
           name="constantRateFactor"
           bind:value={constantRateFactor}
+          oninput={(e) => {
+            const validationMessage = e.target.validationMessage;
+            if (validationMessage.length > 0) {
+              constantRateFactorErrors = [validationMessage];
+              return;
+            } else {
+              constantRateFactorErrors = [];
+            }
+          }}
         />
       </div>
+      {#if constantRateFactorErrors && constantRateFactorErrors.length > 0}
+        {#each constantRateFactorErrors as error}
+          <p class="help is-danger">{error}</p>
+        {/each}
+      {/if}
 
       <div class="field">
         <label class="label" for="forcePixelFormat">Force Pixel Format</label>

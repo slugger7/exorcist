@@ -2,7 +2,7 @@ export type Validator = (value: any, state: any) => string | undefined
 
 export type ValidationHandler = (
   { value, state, validators }:
-    { value: any, state: any, validators: Validator[] | undefined }) => string[] | undefined
+    { value: any, state: any, validators: Validator[] | undefined }) => string[]
 
 export type Touched<T> = Partial<{
   [K in keyof T]: T[K] extends object ? Touched<T[K]> : boolean
