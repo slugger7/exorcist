@@ -3,10 +3,12 @@ import type { PageDTO } from "../../dto";
 
 export * from "../../dto"
 
+
 // https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html
 export * from "./job"
 export * from "./item"
 export * from "./media"
+export * from "./forms"
 
 export type LoginResult = {
   userId: string;
