@@ -1,32 +1,29 @@
 /** 
- * @import { JobDTO, PageDTO } from "../../dto"
- * @import { JobStatusEnum, JobTypeEnum } from "../../dto/model"
- * @import { JobData } from "../types"
+ * @import { CreateJobDTO, JobDTO, PageDTO } from "../../dto"
+ * @import { JobStatusEnum } from "../../dto/model"
  */
 import { server } from "../env";
 import { fetch } from "./fetch";
 
 /**
- * @param {JobTypeEnum} type 
- * @param {JobData} data 
+ * @param {CreateJobDTO} data 
  * @returns {Promise<JobDTO>}
  */
-export const create = async (type, data) => {
+export const create = async (data) => {
   const res = await fetch(`${server()}/jobs`, {
     method: "POST",
-    body: JSON.stringify({
-      type,
-      data
-    })
+    body: JSON.stringify(data)
   })
 
   return await res.json()
 }
 
 /**
- * 
+ * @param {number} page
+ * @param {number} limit
  * @param {string} parent 
  * @param {JobStatusEnum[]} statuses 
+ * @param {string[]} types
  * @returns {Promise<PageDTO<JobDTO>>}
  */
 export const getAll = async (page, limit, parent, statuses = [], types = []) => {
@@ -41,7 +38,7 @@ export const getAll = async (page, limit, parent, statuses = [], types = []) => 
   types.forEach(type => {
     params.set("type", type)
   })
-  params.set("limit", limit)
+  params.set("limit", limit.toString())
   params.set("skip", (limit * (page - 1)).toString())
 
   const res = await fetch(`${server()}/jobs?${params.toString()}`)

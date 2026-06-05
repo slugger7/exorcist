@@ -19,11 +19,14 @@
 
     submitting = true;
     try {
-      await create("generate_chapters", {
-        mediaId,
-        interval,
-        overwrite,
-        maxDimension,
+      await create({
+        type: "generate_chapters",
+        data: {
+          mediaId,
+          interval,
+          overwrite,
+          maxDimension,
+        },
       });
 
       history.back();
