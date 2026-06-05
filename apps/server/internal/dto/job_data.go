@@ -50,6 +50,8 @@ type ConvertData struct {
 	MediaId            uuid.UUID `json:"mediaId" binding:"required"`
 	Dimension          Dimension `json:"dimension"`
 	Filename           string    `json:"filename" binding:"required"`
+	CopyTags           *bool     `json:"copyTags"`
+	CopyPeople         *bool     `json:"copyPeople"`
 	Path               string    `json:"path" tstype:"-"` // omitted for clients
 	ConstantRateFactor *int      `json:"constantRateFactor"`
 	VariableBitrate    *int      `json:"variableBitrate"`

@@ -81,6 +81,18 @@ func (jr *jobRunner) convert(job *model.Job) error {
 			createdMedia.ID.String(), jobData.MediaId.String(), job.ID.String(), err.Error())
 	}
 
+	if jobData.CopyTags != nil && *jobData.CopyTags {
+		if err := jr.service.Media().CopyTags(createdMedia.ID, jobData.MediaId); err != nil {
+			jr.logger.Errorf("something went wrong copying tags: %v", err.Error())
+		}
+	}
+
+	if jobData.CopyPeople != nil && *jobData.CopyPeople {
+		if err := jr.service.Media().CopyPeople(createdMedia.ID, jobData.MediaId); err != nil {
+			jr.logger.Errorf("something went wrong copying people: %v", err.Error())
+		}
+	}
+
 	jobs := createNewMediaJobs(&job.ID, *createdMedia, *createdVideo, jr.env.Assets)
 
 	_, err = jr.repo.Job().CreateAll(jobs)

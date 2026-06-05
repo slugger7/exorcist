@@ -71,7 +71,9 @@ Content-Type: application/json
   "type": "convert",
   "data": {
     "mediaId": "605b12d5-e335-4d33-b46c-3ef35151ef97",
-    "filename": "convertJob.mp4",
+    "filename": "convertJob1.mp4",
+    "copyTags": true,
+    "copyPeople": true,
     "constantRateFactor": 23,
     "forcePixelFormat": "yuv420p"
   }
