@@ -119,6 +119,13 @@ func (jr *jobRunner) generateChapters(job *model.Job) error {
 
 	relationType := model.MediaRelationTypeEnum_Chapter
 
+	if jobData.Height == nil {
+		jobData.Height = new(int)
+	}
+	if jobData.Width == nil {
+		jobData.Width = new(int)
+	}
+
 	if *jobData.Height == 0 {
 		*jobData.Height = int(media.Video.Height)
 	}
