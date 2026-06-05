@@ -5,6 +5,7 @@
   import { pageState } from "../lib/state/pageState.svelte";
   import { get } from "../lib/controllers/media";
   import { handleValidation } from "../lib/forms/handlers";
+  import { create } from "../lib/controllers/job";
 
   /** @type {{id: string}}*/
   let { id } = $props();
@@ -85,11 +86,22 @@
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    submitting = true;
-    try {
-      // TODO: submit
-    } finally {
-      submitting = false;
+    if (media?.id) {
+      submitting = true;
+      try {
+        await create({
+          type: "convert",
+          data: {
+            mediaId: media.id,
+            filename,
+            constantRateFactor,
+            forcePixelFormat,
+            dimension: {},
+          },
+        });
+      } finally {
+        submitting = false;
+      }
     }
   };
 
