@@ -101,6 +101,8 @@ export interface ConvertData {
   mediaId: string /* UUID */;
   dimension: Dimension;
   filename: string;
+  copyTags?: boolean;
+  copyPeople?: boolean;
   constantRateFactor?: number /* int */;
   variableBitrate?: number /* int */;
   forcePixelFormat?: string;

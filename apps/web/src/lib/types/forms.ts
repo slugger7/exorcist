@@ -16,4 +16,4 @@ export type Validators<T> = Partial<{
   [K in keyof T]: T[K] extends object ? Validators<T[K]> : Validator[]
 }>
 
-export type GetErrorFn<T> = (key: keyof T) => string[] | undefined
+export type GetErrorFn<T> = (key: keyof T, data: T) => string[] | undefined

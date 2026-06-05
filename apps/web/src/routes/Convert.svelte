@@ -6,6 +6,7 @@
   import { get } from "../lib/controllers/media";
   import { handleValidation } from "../lib/forms/handlers";
   import { create } from "../lib/controllers/job";
+  import { numberValidator } from "../lib/forms/validators";
 
   /** @type {{id: string}}*/
   let { id } = $props();
@@ -14,27 +15,26 @@
   let loading = $state(false);
   let submitting = $state(false);
   let filename = $state("");
+  let filenameErrors = $state();
+  let filenameTouched = $state(false);
+  let filenameValidators = [
+    (value, state) => {
+      if (value === state.originalFilename) {
+        return "New file name can't be the same as the previous filename";
+      }
+    },
+  ];
   let originalFilename = "";
 
   let constantRateFactor = $state(23);
   let forcePixelFormat = $state("yuv420p");
-
-  /** @type {Touched<ConvertData>}*/
-  let touched = $state({});
-
-  /** @type {Errors<ConvertData>}*/
-  let errors = $state({});
-
-  /** @type {Validators<ConvertData>}*/
-  const validators = {
-    filename: [
-      (value, state) => {
-        if (value === state.originalFilename) {
-          return "New file name can't be the same as the previous filename";
-        }
-      },
-    ],
-  };
+  let copyPeople = $state(false);
+  let copyTags = $state(false);
+  let height = $state();
+  let heightErrors = $state([]);
+  let width = $state();
+  let widthErrors = $state([]);
+  let keepScale = $state(true);
 
   onDestroy(() => {
     pageState.media = undefined;
@@ -59,28 +59,31 @@
   });
 
   $effect(() => {
-    if (media && filename === "") {
-      filename = media.path.split("/").pop() ?? "";
-      originalFilename = filename;
+    if (media) {
+      if (filename === "") {
+        filename = media.path.split("/").pop() ?? "";
+        originalFilename = filename;
+      }
+
+      if (height === undefined) {
+        height = media.video?.height;
+      }
+
+      if (width === undefined) {
+        width = media.video?.width;
+      }
     }
   });
 
   $effect(() => {
-    errors.filename = handleValidation({
+    filenameErrors = handleValidation({
       value: filename,
       state: {
         originalFilename,
       },
-      validators: validators.filename,
+      validators: filenameValidators,
     });
   });
-
-  /**
-   * @type {GetErrorFn<ConvertData>}
-   */
-  const getError = (key) => {
-    return touched[key] && errors[key] && errors[key].length > 0;
-  };
 
   /** @param {SubmitEvent} e*/
   const handleSubmit = async (e) => {
@@ -118,57 +121,110 @@
     <h1 class="title is-1">Convert {media?.title}</h1>
     <form onsubmit={handleSubmit}>
       <div class="field">
+        <label class="checkbox">
+          <input type="checkbox" bind:checked={copyTags} /> Copy Tags
+        </label>
+      </div>
+
+      <div class="field">
+        <label class="checkbox">
+          <input type="checkbox" bind:checked={copyPeople} /> Copy People
+        </label>
+      </div>
+
+      <div class="field">
         <label class="label" for="filename">Filename</label>
         <input
-          class={`input ${getError("filename") ? "is-danger" : ""}`}
+          class={`input ${filenameTouched && filenameErrors && filenameErrors.length > 0 ? "is-danger" : ""}`}
           type="text"
           placeholder="Filename"
           name="filename"
           bind:value={filename}
-          onfocus={() => (touched.filename = true)}
+          onfocus={() => (filenameTouched = true)}
         />
       </div>
-      {#if getError("filename")}
-        {#each errors.filename as error}
+      {#if filenameTouched && filenameErrors && filenameErrors.length > 0}
+        {#each filenameErrors as error}
           <p class="help is-danger">{error}</p>
         {/each}
       {/if}
+
+      <div class="field">
+        <label class="label" for="height">Height</label>
+        <input
+          class={`input ${
+            heightErrors && heightErrors.length > 0 ? "is-danger" : ""
+          }`}
+          type="number"
+          name="height"
+          value={height}
+          placeholder="Height"
+          oninput={(e) => {
+            const validationMessage = e.target.validationMessage;
+            if (validationMessage.length > 0) {
+              heightErrors = [validationMessage];
+            }
+          }}
+        />
+      </div>
+      {#if heightErrors && heightErrors.length > 0}
+        {#each heightErrors as error}
+          <p class="help is-danger">{error}</p>
+        {/each}
+      {/if}
+
+      <div class="field">
+        <label class="label" for="width">Width</label>
+        <input
+          class={`input ${widthErrors && widthErrors.length > 0 ? "is-danger" : ""}`}
+          type="number"
+          name="width"
+          bind:value={width}
+          placeholder="Width"
+          oninput={(e) => {
+            const validationMessage = e.target.validationMessage;
+            if (validationMessage.length > 0) {
+              widthErrors = [validationMessage];
+            }
+          }}
+        />
+      </div>
+      {#if widthErrors && widthErrors.length > 0}
+        {#each widthErrors as error}
+          <p class="help is-danger">{error}</p>
+        {/each}
+      {/if}
+
+      <div class="field">
+        <label class="label checkbox">
+          <input class="checkbox" type="checkbox" bind:checked={keepScale} /> Keep
+          scale
+        </label>
+      </div>
 
       <div class="field">
         <label class="label" for="constantRateFactor"
           >Constant Rate Factor</label
         >
         <input
-          class={`input ${getError("constantRateFactor") ? "is-danger" : ""}`}
+          class={`input`}
           type="number"
           placeholder="Constant Rate Factor"
           name="constantRateFactor"
           bind:value={constantRateFactor}
-          onfocus={() => (touched.constantRateFactor = true)}
         />
       </div>
-      {#if getError("constantRateFactor")}
-        {#each errors.constantRateFactor as error}
-          <p class="help is-danger">{error}</p>
-        {/each}
-      {/if}
 
       <div class="field">
         <label class="label" for="forcePixelFormat">Force Pixel Format</label>
         <input
-          class={`input ${getError("forcePixelFormat") ? "is-danger" : ""}`}
+          class={`input`}
           type="text"
           placeholder="Force Pixel Format"
           name="constantRateFactor"
           bind:value={forcePixelFormat}
-          onfocus={() => (touched.forcePixelFormat = true)}
         />
       </div>
-      {#if getError("forcePixelFormat")}
-        {#each errors.forcePixelFormat as error}
-          <p class="help is-danger">{error}</p>
-        {/each}
-      {/if}
 
       <div class="field is-grouped">
         <p class="control">
