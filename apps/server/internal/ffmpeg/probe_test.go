@@ -13,7 +13,7 @@ func Test_GetDImensions_NoVideoCodecInStreams_shouldCreateError(t *testing.T) {
 		},
 	}
 
-	expectedError := "could not extract the height and with from the probe data streams"
+	expectedError := "could not extract the height and width from the probe data streams"
 
 	_, err := GetDimensions(sterams)
 
