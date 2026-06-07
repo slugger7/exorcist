@@ -160,8 +160,8 @@ func (jr *jobRunner) generateChapters(job *model.Job) error {
 				"%v.%v.%vx%v.%v.webp",
 				filepath.Base(media.Media.Path),
 				relationType.String(),
-				jobData.Height,
-				jobData.Width,
+				*jobData.Height,
+				*jobData.Width,
 				i,
 			))
 		job, err := CreateGenerateThumbnailJob(media.Media.ID, &job.ID, assetPath, i.Seconds(), *jobData.Height, *jobData.Width, &relationType, &metadata)
