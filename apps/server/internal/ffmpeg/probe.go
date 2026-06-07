@@ -51,5 +51,5 @@ func GetDimensions(streams []Stream) (*Dimension, error) {
 		}
 	}
 
-	return nil, errors.New("could not extract the height and with from the probe data streams")
+	return nil, errors.New("could not extract the height and width from the probe data streams")
 }

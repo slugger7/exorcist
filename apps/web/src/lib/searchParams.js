@@ -75,13 +75,18 @@ export const getBoolParamOrDefault = (param, def) => {
  * @param {{replace?: boolean, preserveScroll?: boolean}} [options]
  */
 export const setValueAndNavigate = (key, val, route, options) => {
-  const params = new URLSearchParams(window.location.search);
+  const url = new URL(window.location.href)
   if (val === "") {
-    params.delete(key);
+    url.searchParams.delete(key);
   } else {
-    params.set(key, val.toString());
+    url.searchParams.set(key, val.toString());
   }
-  navigate(`${route}?${params.toString()}`, options);
+
+  if (!options?.replace) {
+    navigate(`${route}?${url.searchParams.toString()}`, options);
+  } else {
+    window.history.replaceState({}, '', url)
+  }
 };
 
 /**
@@ -91,12 +96,17 @@ export const setValueAndNavigate = (key, val, route, options) => {
  * @param {{replace?: boolean, preserveScroll?: boolean}} [options]
  */
 export const setValuesAndNavigate = (key, values, route, options) => {
-  const params = new URLSearchParams(window.location.search)
-  params.delete(key)
+  const url = new URL(window.location.href)
+  url.searchParams.delete(key)
 
   values.forEach(v => {
-    params.append(key, v)
+    url.searchParams.append(key, v)
   })
 
-  navigate(`${route}?${params.toString()}`, options)
+
+  if (!options?.replace) {
+    navigate(`${route}?${url.searchParams.toString()}`, options)
+  } else {
+    window.history.replaceState({}, '', url)
+  }
 }
