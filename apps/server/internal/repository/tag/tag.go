@@ -32,6 +32,7 @@ type TagRepository interface {
 	GetById(id uuid.UUID) (*model.Tag, error)
 	GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
 	Update(m model.Tag) (*model.Tag, error)
+	Delete(id uuid.UUID) error
 }
 
 type tagRepository struct {
@@ -39,6 +40,17 @@ type tagRepository struct {
 	db     *sql.DB
 	logger logger.Logger
 	ctx    context.Context
+}
+
+func (r *tagRepository) Delete(id uuid.UUID) error {
+	statement := table.Tag.DELETE().
+		WHERE(table.Tag.ID.EQ(postgres.UUID(id)))
+
+	if _, err := statement.ExecContext(r.ctx, r.db); err != nil {
+		return errs.BuildError(err, "error deleting tag by id: %v", id.String())
+	}
+
+	return nil
 }
 
 // Update implements TagRepository.

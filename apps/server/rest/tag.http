@@ -11,3 +11,6 @@ Content-Type: application/json
 
 ### Get Media for tag
 GET {{host}}:{{port}}/api/tags/fbcbb87b-0791-4c35-a654-078f7be0f1c8/media
+
+### Delete tag
+DELETE {{host}}:{{port}}/api/tags/af2e1aa3-93d9-4b94-8a29-2c5dfd600d33

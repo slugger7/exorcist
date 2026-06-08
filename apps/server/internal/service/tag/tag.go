@@ -16,12 +16,29 @@ import (
 type TagService interface {
 	Upsert(name string) (*model.Tag, error)
 	GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
+	Delete(id uuid.UUID) error
 }
 
 type tagService struct {
 	env    *environment.EnvironmentVariables
 	repo   repository.Repository
 	logger logger.Logger
+}
+
+func (p *tagService) Delete(id uuid.UUID) error {
+	tag, err := p.repo.Tag().GetById(id)
+	if err != nil {
+		return errs.BuildError(err, "could not get tag by id")
+	}
+	if tag == nil {
+		return fmt.Errorf("tag with id %v does not exist", id.String())
+	}
+
+	if err := p.repo.Tag().Delete(id); err != nil {
+		return errs.BuildError(err, "could not successfully delete tag")
+	}
+
+	return nil
 }
 
 // GetMedia implements TagService.

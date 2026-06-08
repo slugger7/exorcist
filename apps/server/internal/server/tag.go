@@ -32,6 +32,26 @@ func (s *server) withTagPut(r *gin.RouterGroup, route Route) *server {
 	return s
 }
 
+func (s *server) withTagDelete(r *gin.RouterGroup, route Route) *server {
+	r.DELETE(fmt.Sprintf("%v/:%v", route, idKey), s.deleteTag)
+	return s
+}
+
+func (s *server) deleteTag(c *gin.Context) {
+	id, err := uuid.Parse(c.Param(idKey))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "could not parse tag id"})
+		return
+	}
+
+	if err := s.service.Tag().Delete(id); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "could not delete tag"})
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
 func (s *server) putTag(c *gin.Context) {
 	id, err := uuid.Parse(c.Param(idKey))
 	if err != nil {
