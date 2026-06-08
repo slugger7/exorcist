@@ -32,6 +32,7 @@ type PersonRepository interface {
 	GetAll(search dto.PersonSearchDTO) ([]model.Person, error)
 	GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
 	Update(m model.Person) (*model.Person, error)
+	Delete(id uuid.UUID) error
 }
 
 type personRepository struct {
@@ -39,6 +40,17 @@ type personRepository struct {
 	db     *sql.DB
 	logger logger.Logger
 	ctx    context.Context
+}
+
+func (r *personRepository) Delete(id uuid.UUID) error {
+	statement := table.Person.DELETE().
+		WHERE(table.Person.ID.EQ(postgres.UUID(id)))
+
+	if _, err := statement.ExecContext(r.ctx, r.db); err != nil {
+		return errs.BuildError(err, "could not successfully delete person by id %v", id.String())
+	}
+
+	return nil
 }
 
 // Update implements PersonRepository.
