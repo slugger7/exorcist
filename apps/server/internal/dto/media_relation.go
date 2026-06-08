@@ -15,6 +15,7 @@ type MediaRelationDto struct {
 	MediaID      uuid.UUID                   `json:"mediaId"`
 	RelatedToID  uuid.UUID                   `json:"relatedToId"`
 	RelationType model.MediaRelationTypeEnum `json:"relationType"`
+	RelatedMedia MediaDTO                    `json:"relatedMedia"`
 	// Needs to be any as we do not know what type the metadata is at this point
 	// however the Relation type does tell us and can be used to cast the data
 	// to the correct type if needed.
@@ -24,10 +25,12 @@ type MediaRelationDto struct {
 }
 
 func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
-	d.ID = m.ID
+	d.ID = m.MediaRelation.ID
 	d.MediaID = m.MediaID
 	d.RelatedToID = m.RelatedTo
 	d.RelationType = m.RelationType
+
+	d.RelatedMedia = *new(MediaDTO).FromDBModel(m.RelatedMedia)
 
 	if m.Metadata != nil {
 		switch d.RelationType {

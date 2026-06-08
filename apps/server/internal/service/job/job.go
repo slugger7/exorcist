@@ -258,23 +258,24 @@ func (i *jobService) refreshMetadata(data string, priority int16) (*model.Job, e
 }
 
 func (i *jobService) removeExistingThumbnail(mediaId uuid.UUID) error {
-	thumbnailType := model.MediaRelationTypeEnum_Thumbnail
-	thumbnails, err := i.repo.Media().GetRelationsFor(mediaId, &thumbnailType)
+	media, err := i.repo.Media().GetById(mediaId)
 	if err != nil {
 		return errs.BuildError(err, "could not get assets for media id %v", mediaId)
 	}
 
-	for _, m := range thumbnails {
-		if err := i.mediaService.Delete(m.MediaRelation.RelatedTo, true); err != nil {
-			return errs.BuildError(err, "could not remove thumbnail information")
-		}
+	for _, m := range media.MediaRelations {
+		if m.MediaRelation.RelationType == model.MediaRelationTypeEnum_Thumbnail {
+			if err := i.mediaService.Delete(m.MediaRelation.RelatedTo, true); err != nil {
+				return errs.BuildError(err, "could not remove thumbnail information")
+			}
 
-		if err := i.repo.Media().RemoveRelation(m.MediaRelation.MediaID, m.MediaRelation.RelatedTo); err != nil {
-			return errs.BuildError(
-				err,
-				"could not remove thumbnail relation: %v related to %v",
-				m.MediaRelation.MediaID,
-				m.MediaRelation.RelatedTo)
+			if err := i.repo.Media().RemoveRelation(m.MediaRelation.MediaID, m.MediaRelation.RelatedTo); err != nil {
+				return errs.BuildError(
+					err,
+					"could not remove thumbnail relation: %v related to %v",
+					m.MediaRelation.MediaID,
+					m.MediaRelation.RelatedTo)
+			}
 		}
 	}
 

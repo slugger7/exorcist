@@ -222,21 +222,6 @@ func (mr *MockMediaRepositoryMockRecorder) GetProgressForUser(id, userId any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProgressForUser", reflect.TypeOf((*MockMediaRepository)(nil).GetProgressForUser), id, userId)
 }
 
-// GetRelationsFor mocks base method.
-func (m *MockMediaRepository) GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRelationsFor", id, relationType)
-	ret0, _ := ret[0].([]models.MediaRelation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetRelationsFor indicates an expected call of GetRelationsFor.
-func (mr *MockMediaRepositoryMockRecorder) GetRelationsFor(id, relationType any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRelationsFor", reflect.TypeOf((*MockMediaRepository)(nil).GetRelationsFor), id, relationType)
-}
-
 // GetThumbnailFor mocks base method.
 func (m *MockMediaRepository) GetThumbnailFor(id uuid.UUID) (*model.Media, error) {
 	m.ctrl.T.Helper()

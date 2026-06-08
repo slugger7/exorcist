@@ -34,7 +34,6 @@ type MediaRepository interface {
 	GetAllInPath(p string) ([]model.Media, error)
 	GetAssetsFor(id uuid.UUID) ([]models.MediaRelation, error)
 	GetProgressForUser(id, userId uuid.UUID) (*model.MediaProgress, error)
-	GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error)
 	GetThumbnailFor(id uuid.UUID) (*model.Media, error)
 
 	UpsertProgress(prog model.MediaProgress) (*model.MediaProgress, error)
@@ -92,28 +91,6 @@ func (r *mediaRepository) GetThumbnailFor(id uuid.UUID) (*model.Media, error) {
 	}
 
 	return &entities[0], nil
-}
-
-// GetRelationsFor implements MediaRepository.
-func (r *mediaRepository) GetRelationsFor(id uuid.UUID, relationType *model.MediaRelationTypeEnum) ([]models.MediaRelation, error) {
-	joinPredicate := media.ID.EQ(table.MediaRelation.MediaID)
-
-	if relationType != nil {
-		joinPredicate.AND(table.MediaRelation.RelationType.EQ(postgres.NewEnumValue(relationType.String())))
-	}
-
-	statement := media.SELECT(media.AllColumns, table.MediaRelation.AllColumns).
-		FROM(media.INNER_JOIN(table.MediaRelation, joinPredicate)).
-		WHERE(media.ID.EQ(postgres.UUID(id)))
-
-	var entities []models.MediaRelation
-	if err := statement.QueryContext(r.ctx, r.db, &entities); err != nil {
-		return nil, errs.BuildError(err, "could not fetch related media for id (%v) and relationType (%v)", id.String(), relationType.String())
-	}
-
-	util.DebugCheck(r.env, statement)
-
-	return entities, nil
 }
 
 // GetAllInPath implements MediaRepository.
@@ -433,6 +410,7 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 	person := table.Person
 	mediaTag := table.MediaTag
 	tag := table.Tag
+	relatedMedia := table.Media.AS("related_media")
 
 	statement := media.SELECT(
 		media.AllColumns,
@@ -443,10 +421,14 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		mediaRelation.AllColumns,
 		table.MediaProgress.Timestamp,
 		table.FavouriteMedia.ID,
+		relatedMedia.AllColumns,
 	).FROM(media.
 		LEFT_JOIN(image, image.MediaID.EQ(media.ID)).
 		LEFT_JOIN(video, video.MediaID.EQ(media.ID)).
 		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID)).
+		LEFT_JOIN(relatedMedia, mediaRelation.RelatedTo.EQ(relatedMedia.ID).
+			AND(relatedMedia.Deleted.IS_FALSE()).
+			AND(relatedMedia.Exists.IS_TRUE())).
 		LEFT_JOIN(mediaPerson, mediaPerson.MediaID.EQ(media.ID)).
 		LEFT_JOIN(person, person.ID.EQ(mediaPerson.PersonID)).
 		LEFT_JOIN(mediaTag, mediaTag.MediaID.EQ(media.ID)).

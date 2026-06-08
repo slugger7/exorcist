@@ -11,6 +11,7 @@ type MediaVideo struct {
 
 type MediaRelation struct {
 	model.MediaRelation
+	RelatedMedia *model.Media
 }
 
 type MediaOverviewModel struct {

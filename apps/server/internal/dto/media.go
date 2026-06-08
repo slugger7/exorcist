@@ -146,6 +146,22 @@ type MediaDTO struct {
 	Relations     []MediaRelationDto `json:"relations"`
 }
 
+func (d *MediaDTO) FromDBModel(m *model.Media) *MediaDTO {
+	d.ID = m.ID
+	d.LibraryPathID = m.LibraryPathID
+	d.Path = m.Path
+	d.Title = m.Title
+	d.Size = m.Size
+	d.Checksum = m.Checksum
+	d.Deleted = m.Deleted
+	d.Exists = m.Exists
+	d.Added = m.Added
+	d.Created = m.Created
+	d.Modified = m.Modified
+
+	return d
+}
+
 func (d *MediaDTO) FromModel(m models.Media) *MediaDTO {
 	d.ID = m.Media.ID
 	d.LibraryPathID = m.LibraryPathID
