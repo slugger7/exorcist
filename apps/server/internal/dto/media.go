@@ -198,8 +198,8 @@ func (d *MediaDTO) FromModel(m models.Media) *MediaDTO {
 		}
 	}
 
+	d.Relations = make([]MediaRelationDto, len(m.MediaRelations))
 	if len(m.MediaRelations) > 0 {
-		d.Relations = make([]MediaRelationDto, len(m.MediaRelations))
 		for i, r := range m.MediaRelations {
 			d.Relations[i] = new(MediaRelationDto).FromModel(r)
 		}
