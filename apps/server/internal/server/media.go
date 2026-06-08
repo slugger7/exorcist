@@ -59,10 +59,36 @@ func (s *server) withMediaThumbnailGet(r *gin.RouterGroup, route Route) *server 
 	return s
 }
 
-func (s *server) withMediaRelate(r *gin.RouterGroup, route Route) *server {
+func (s *server) withMediaRelatePut(r *gin.RouterGroup, route Route) *server {
 	r.PUT(fmt.Sprintf("%v/:%v/relate", route, idKey), s.putMediaRelate)
 
 	return s
+}
+
+func (s *server) withMediaRelateDelete(r *gin.RouterGroup, route Route) *server {
+	r.DELETE(fmt.Sprintf("%v/:%v/relate", route, idKey), s.deleteMediaRelate)
+	return s
+}
+
+func (s *server) deleteMediaRelate(c *gin.Context) {
+	id, err := uuid.Parse(c.Param(idKey))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "could not parse media id"})
+		return
+	}
+
+	var deleteDto dto.DeleteMediaRelationsDto
+	if err := c.ShouldBindBodyWithJSON(&deleteDto); err != nil {
+		c.AbortWithError(http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	if err := s.service.Media().DeleteRelations(id, deleteDto); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "something went wrong removing relationships"})
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func (s *server) getMediaThumbnail(c *gin.Context) {

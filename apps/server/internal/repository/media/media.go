@@ -44,6 +44,7 @@ type MediaRepository interface {
 
 	RemoveRelation(id, relatedTo uuid.UUID) error
 	Delete(m model.Media) error
+	DeleteRelations(id uuid.UUID, deleteDto dto.DeleteMediaRelationsDto) error
 }
 
 type mediaRepository struct {
@@ -51,6 +52,23 @@ type mediaRepository struct {
 	env    *environment.EnvironmentVariables
 	logger logger.Logger
 	ctx    context.Context
+}
+
+func (r *mediaRepository) DeleteRelations(id uuid.UUID, deleteDto dto.DeleteMediaRelationsDto) error {
+	relateToIds := make([]postgres.Expression, len(deleteDto.RelatedToIDs))
+	for i, relatedTo := range deleteDto.RelatedToIDs {
+		relateToIds[i] = postgres.UUID(relatedTo)
+	}
+
+	statement := table.MediaRelation.DELETE().
+		WHERE(table.MediaRelation.MediaID.EQ(postgres.UUID(id)).
+			AND(table.MediaRelation.RelatedTo.IN(relateToIds...)))
+
+	if _, err := statement.ExecContext(r.ctx, r.db); err != nil {
+		return errs.BuildError(err, "something went wrong removing relations from %v", id.String())
+	}
+
+	return nil
 }
 
 // GetThumbnailFor implements [MediaRepository].
@@ -305,23 +323,6 @@ func (r *mediaRepository) Delete(m model.Media) error {
 	return err
 }
 
-var mediaRepositoryInstance *mediaRepository
-
-func New(db *sql.DB, env *environment.EnvironmentVariables, context context.Context) MediaRepository {
-	if mediaRepositoryInstance != nil {
-		return mediaRepositoryInstance
-	}
-
-	mediaRepositoryInstance = &mediaRepository{
-		db:     db,
-		env:    env,
-		ctx:    context,
-		logger: logger.New(env),
-	}
-
-	return mediaRepositoryInstance
-}
-
 func (r *mediaRepository) Create(ms []model.Media) ([]model.Media, error) {
 	if len(ms) == 0 {
 		return nil, nil
@@ -486,4 +487,21 @@ func (r *mediaRepository) Relate(m []model.MediaRelation) ([]model.MediaRelation
 	}
 
 	return results, nil
+}
+
+var mediaRepositoryInstance *mediaRepository
+
+func New(db *sql.DB, env *environment.EnvironmentVariables, context context.Context) MediaRepository {
+	if mediaRepositoryInstance != nil {
+		return mediaRepositoryInstance
+	}
+
+	mediaRepositoryInstance = &mediaRepository{
+		db:     db,
+		env:    env,
+		ctx:    context,
+		logger: logger.New(env),
+	}
+
+	return mediaRepositoryInstance
 }
