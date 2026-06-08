@@ -73,6 +73,14 @@ export const updateTag = async (id, name) => {
   return res.json()
 }
 
+export const deleteTag = async (id) => {
+  const res = await fetch(`${server()}/tags/${id}`, { method: "DELETE" })
+
+  if (!res.ok) {
+    throw new Error(`deleting tag with id ${id}`)
+  }
+}
+
 /** @type {Ordinal[]} */
 export const ordinals = [
   {
