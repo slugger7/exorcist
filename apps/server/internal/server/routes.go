@@ -101,7 +101,8 @@ func (s *server) RegisterRoutes() http.Handler {
 	s.withTagGetAll(authenticated, tags).
 		withTagCreate(authenticated, tags).
 		withTagGetMedia(authenticated, tags).
-		withTagPut(authenticated, tags)
+		withTagPut(authenticated, tags).
+		withTagDelete(authenticated, tags)
 
 	// Register playlist controller routes
 	s.withPlaylistsGetAll(authenticated, playlists).

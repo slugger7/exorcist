@@ -8,6 +8,7 @@
     updatePlaylist,
   } from "../lib/controllers/playlists";
   import { navigate } from "svelte-routing";
+  import DeleteAddons from "../lib/components/DeleteAddons.svelte";
 
   let { id, name } = $props();
   let title = $state(name);
@@ -48,34 +49,12 @@
 </script>
 
 {#snippet headerAddons()}
-  {#if !deleteConfirmation}
-    <p class="control">
-      <button
-        class="button"
-        aria-label="delete playlist"
-        onclick={() => (deleteConfirmation = true)}
-        ><span class="icon"><i class="fas fa-trash"></i></span></button
-      >
-    </p>
-  {/if}
-  {#if deleteConfirmation}
-    <p class="control">
-      <button
-        class="button"
-        aria-label="cancel delete"
-        onclick={() => (deleteConfirmation = false)}
-        ><span class="icon"><i class="fas fa-xmark"></i></span></button
-      >
-    </p>
-    <p class="control">
-      <button
-        class="button is-danger"
-        aria-label="confirm delete"
-        onclick={handleDelete}
-        ><span class="icon"><i class="fas fa-check"></i></span></button
-      >
-    </p>
-  {/if}
+  <DeleteAddons
+    context="playlist"
+    bind:deleteConfirmation
+    {deleting}
+    {handleDelete}
+  />
 {/snippet}
 
 <MediaView
