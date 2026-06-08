@@ -73,6 +73,34 @@ func (mr *MockMediaServiceMockRecorder) AddTag(id, tagId any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTag", reflect.TypeOf((*MockMediaService)(nil).AddTag), id, tagId)
 }
 
+// CopyPeople mocks base method.
+func (m *MockMediaService) CopyPeople(toId, fromId uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CopyPeople", toId, fromId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CopyPeople indicates an expected call of CopyPeople.
+func (mr *MockMediaServiceMockRecorder) CopyPeople(toId, fromId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CopyPeople", reflect.TypeOf((*MockMediaService)(nil).CopyPeople), toId, fromId)
+}
+
+// CopyTags mocks base method.
+func (m *MockMediaService) CopyTags(toId, fromId uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CopyTags", toId, fromId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CopyTags indicates an expected call of CopyTags.
+func (mr *MockMediaServiceMockRecorder) CopyTags(toId, fromId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CopyTags", reflect.TypeOf((*MockMediaService)(nil).CopyTags), toId, fromId)
+}
+
 // Delete mocks base method.
 func (m *MockMediaService) Delete(id uuid.UUID, physical bool) error {
 	m.ctrl.T.Helper()

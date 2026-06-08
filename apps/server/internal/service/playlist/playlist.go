@@ -17,12 +17,29 @@ type PlaylistService interface {
 	CreateAll(userId uuid.UUID, playlists []dto.CreatePlaylistDTO) ([]model.Playlist, error)
 	GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
 	AddMedia(id uuid.UUID, playlistMedia []dto.CreatePlaylistMediaDTO) ([]model.PlaylistMedia, error)
+	Delete(id uuid.UUID) error
 }
 
 type playlistService struct {
 	env    *environment.EnvironmentVariables
 	repo   repository.Repository
 	logger logger.Logger
+}
+
+func (p *playlistService) Delete(id uuid.UUID) error {
+	playlist, err := p.repo.Playlist().GetById(id)
+	if err != nil {
+		return errs.BuildError(err, "could not get playlist by id")
+	}
+	if playlist == nil {
+		return fmt.Errorf("playlist with id %v does not exist", id.String())
+	}
+
+	if err := p.repo.Playlist().Delete(id); err != nil {
+		return errs.BuildError(err, "could not delete playlist")
+	}
+
+	return nil
 }
 
 // AddMedia implements PlaylistService.

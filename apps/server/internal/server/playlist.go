@@ -35,6 +35,27 @@ func (s *server) withPlaylistPut(r *gin.RouterGroup, route Route) *server {
 	return s
 }
 
+func (s *server) withPlaylistDelete(r *gin.RouterGroup, route Route) *server {
+	r.DELETE(fmt.Sprintf("%v/:%v", route, idKey), s.deletePlaylist)
+	return s
+}
+
+func (s *server) deletePlaylist(c *gin.Context) {
+	id, err := uuid.Parse((c.Param(idKey)))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "could not parse playlist id"})
+		return
+	}
+
+	if err := s.service.Playlist().Delete(id); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "error deleting playlist"})
+		s.logger.Errorf("Error deleting playlist by id %v: %v", id.String(), err.Error())
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
 func (s *server) putPlaylist(c *gin.Context) {
 	id, err := uuid.Parse(c.Param(idKey))
 	if err != nil {

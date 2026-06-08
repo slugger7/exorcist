@@ -21,15 +21,30 @@ type PlaylistRepository interface {
 	GetById(id uuid.UUID) (*model.Playlist, error)
 	GetAll() ([]model.Playlist, error)
 	GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
+
 	CreateAll(playlists []model.Playlist) ([]model.Playlist, error)
+
 	AddMedia(playlistMedia []model.PlaylistMedia) ([]model.PlaylistMedia, error)
 	Update(m model.Playlist) (*model.Playlist, error)
+
+	Delete(id uuid.UUID) error
 }
 
 type playlistRepository struct {
 	env *environment.EnvironmentVariables
 	db  *sql.DB
 	ctx context.Context
+}
+
+func (p *playlistRepository) Delete(id uuid.UUID) error {
+	statement := table.Playlist.DELETE().
+		WHERE(table.Playlist.ID.EQ(postgres.UUID(id)))
+
+	if _, err := statement.ExecContext(p.ctx, p.db); err != nil {
+		return errs.BuildError(err, "could not delete playlist by id: %v", id.String())
+	}
+
+	return nil
 }
 
 // Update implements PlaylistRepository.

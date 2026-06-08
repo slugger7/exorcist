@@ -15,7 +15,10 @@ Content-Type: application/json
 GET {{host}}:{{port}}/api/playlists/66824bba-5efc-49cb-9818-7d4792de9404/media
 
 ### Add media to playlist
-PUT {{host}}:{{port}}/api/playlists/66824bba-5efc-49cb-9818-7d4792de9404/media
+PUT {{host}}:{{port}}/api/playlists/f3eacff9-b536-4ff8-8e67-d814c1569071/media
 Content-Type: application/json
 
-[{"mediaId": "ea635b3d-1610-4553-bada-da2faacef673"}]
+[{"mediaId": "32f81139-368f-437a-885f-065a4e1b70c8"}]
+
+### Delete playlist
+DELETE {{host}}:{{port}}/api/playlists/f3eacff9-b536-4ff8-8e67-d814c1569071
