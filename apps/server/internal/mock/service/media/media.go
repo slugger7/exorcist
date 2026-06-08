@@ -115,6 +115,20 @@ func (mr *MockMediaServiceMockRecorder) Delete(id, physical any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockMediaService)(nil).Delete), id, physical)
 }
 
+// DeleteRelations mocks base method.
+func (m *MockMediaService) DeleteRelations(id uuid.UUID, deleteDto dto.DeleteMediaRelationsDto) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRelations", id, deleteDto)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRelations indicates an expected call of DeleteRelations.
+func (mr *MockMediaServiceMockRecorder) DeleteRelations(id, deleteDto any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRelations", reflect.TypeOf((*MockMediaService)(nil).DeleteRelations), id, deleteDto)
+}
+
 // GetByIdAndUserIdWithRelations mocks base method.
 func (m *MockMediaService) GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error) {
 	m.ctrl.T.Helper()

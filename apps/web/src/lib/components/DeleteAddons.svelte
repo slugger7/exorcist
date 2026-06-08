@@ -2,10 +2,11 @@
   /**
    * @typedef props
    * @type {object}
-   * @property {boolean} deleteConfirmation
+   * @property {boolean} [deleteConfirmation]
    * @property {boolean} deleting
    * @property {() => void} handleDelete
    * @property {string} [context]
+   * @property {boolean} [disabled]
    */
   /** @type {props}*/
   let {
@@ -13,6 +14,7 @@
     deleting,
     handleDelete,
     context,
+    disabled = false,
   } = $props();
 </script>
 
@@ -21,6 +23,7 @@
     <button
       class="button"
       aria-label={`delete ${context}`}
+      {disabled}
       onclick={() => (deleteConfirmation = true)}
       ><span class="icon"><i class="fas fa-trash"></i></span></button
     >

@@ -18,6 +18,14 @@ import (
 	tagService "github.com/slugger7/exorcist/apps/server/internal/service/tag"
 )
 
+type mediaService struct {
+	env           *environment.EnvironmentVariables
+	repo          repository.Repository
+	logger        logger.Logger
+	personService personService.PersonService
+	tagService    tagService.TagService
+}
+
 type MediaService interface {
 	AddTag(id uuid.UUID, tagId uuid.UUID) (*model.MediaTag, error)
 	AddPerson(id uuid.UUID, personId uuid.UUID) (*model.MediaPerson, error)
@@ -27,6 +35,7 @@ type MediaService interface {
 	Relate(id uuid.UUID, relateDto dto.PutMediaRelationDto) ([]model.MediaRelation, error)
 	CopyTags(toId, fromId uuid.UUID) error
 	CopyPeople(toId, fromId uuid.UUID) error
+	DeleteRelations(id uuid.UUID, deleteDto dto.DeleteMediaRelationsDto) error
 }
 
 func createRelations(id uuid.UUID, relationDto dto.PutMediaRelationDto) []model.MediaRelation {
@@ -82,12 +91,21 @@ func (s *mediaService) Relate(id uuid.UUID, relateDto dto.PutMediaRelationDto) (
 	return relationModels, nil
 }
 
-type mediaService struct {
-	env           *environment.EnvironmentVariables
-	repo          repository.Repository
-	logger        logger.Logger
-	personService personService.PersonService
-	tagService    tagService.TagService
+// DeleteRelations implements [MediaService].
+func (s *mediaService) DeleteRelations(id uuid.UUID, deleteDto dto.DeleteMediaRelationsDto) error {
+	media, err := s.repo.Media().GetById(id)
+	if err != nil {
+		return errs.BuildError(err, "could not get media by id")
+	}
+	if media == nil {
+		return fmt.Errorf("could not find media by id: %v", id.String())
+	}
+
+	if err := s.repo.Media().DeleteRelations(id, deleteDto); err != nil {
+		return errs.BuildError(err, "could not delete relations")
+	}
+
+	return nil
 }
 
 // CopyPeople implements [MediaService].

@@ -60,3 +60,7 @@ type PutMediaRelationDto struct {
 	Backrelate   bool        `json:"backrelate"`
 	Interrelate  bool        `json:"interrelate"`
 }
+
+type DeleteMediaRelationsDto struct {
+	RelatedToIDs []uuid.UUID `json:"relatedToIds"`
+}

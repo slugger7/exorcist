@@ -29,6 +29,7 @@ type key = string
 const (
 	nameKey     key = "name"
 	idKey       key = "id"
+	idKey1      key = "id1"
 	tagIdKey    key = "tagIdKey"
 	personIdKey key = "personIdKey"
 )
@@ -80,7 +81,8 @@ func (s *server) RegisterRoutes() http.Handler {
 		withMediaDelete(authenticated, mediaRoute).
 		withMediaPut(authenticated, mediaRoute).
 		withMediaThumbnailGet(authenticated, mediaRoute).
-		withMediaRelate(authenticated, mediaRoute)
+		withMediaRelatePut(authenticated, mediaRoute).
+		withMediaRelateDelete(authenticated, mediaRoute)
 
 	s.withImageGet(authenticated, images).
 		withVideoGet(authenticated, videos).

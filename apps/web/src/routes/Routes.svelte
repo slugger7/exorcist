@@ -24,7 +24,6 @@
   import PlaylistAdd from "./PlaylistAdd.svelte";
   import RefreshMetadata from "./RefreshMetadata.svelte";
   import GenerateChaptersJob from "./GenerateChaptersJob.svelte";
-  import VideoAlt from "./VideoAlt.svelte";
   import GenerateThumbnailJob from "./GenerateThumbnailJob.svelte";
   import Relate from "./Relate.svelte";
   import Convert from "./Convert.svelte";
@@ -64,7 +63,6 @@
     ><DeleteMedia id={params.mediaId} /></Route
   >
   <Route path={routes.video} let:params><Video id={params.id} /></Route>
-  <Route path={routes.videoAlt} let:params><VideoAlt id={params.id} /></Route>
   <Route path={routes.playlists}><Playlists /></Route>
   <Route path={routes.playlist} let:params
     ><Playlist id={params.id} name={params.name} /></Route

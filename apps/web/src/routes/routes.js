@@ -20,7 +20,6 @@ const routes = {
     video: "/videos/:id",
     /** @param {string} id */
     videoFunc: (id) => (`/videos/${id}`),
-    videoAlt: "/videos-alt/:id",
     login: "/login",
     logout: "/logout",
     jobs: "/jobs",
