@@ -405,30 +405,35 @@ func (r *mediaRepository) GetById(id uuid.UUID) (*models.Media, error) {
 func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media, error) {
 	image := table.Image
 	video := table.Video
-	mediaRelation := table.MediaRelation
 	mediaPerson := table.MediaPerson
 	person := table.Person
 	mediaTag := table.MediaTag
 	tag := table.Tag
-	relatedMedia := table.Media.AS("related_media")
 
-	statement := media.SELECT(
+	existingRelations := postgres.CTE("relations")
+	existingRelationMediaId := table.MediaRelation.MediaID.From(existingRelations)
+
+	statement := postgres.WITH(existingRelations.AS(
+		table.MediaRelation.SELECT(table.MediaRelation.AllColumns).
+			FROM(table.MediaRelation.
+				INNER_JOIN(table.Media, table.MediaRelation.RelatedTo.EQ(table.Media.ID)),
+			).
+			WHERE(table.MediaRelation.MediaID.EQ(postgres.UUID(id)).
+				AND(table.Media.Deleted.IS_FALSE()).
+				AND(table.Media.Exists.IS_TRUE())),
+	))(media.SELECT(
 		media.AllColumns,
 		image.AllColumns,
 		video.AllColumns,
 		person.AllColumns,
 		tag.AllColumns,
-		mediaRelation.AllColumns,
 		table.MediaProgress.Timestamp,
 		table.FavouriteMedia.ID,
-		relatedMedia.AllColumns,
+		existingRelations.AllColumns(),
 	).FROM(media.
 		LEFT_JOIN(image, image.MediaID.EQ(media.ID)).
 		LEFT_JOIN(video, video.MediaID.EQ(media.ID)).
-		LEFT_JOIN(mediaRelation, mediaRelation.MediaID.EQ(media.ID)).
-		LEFT_JOIN(relatedMedia, mediaRelation.RelatedTo.EQ(relatedMedia.ID).
-			AND(relatedMedia.Deleted.IS_FALSE()).
-			AND(relatedMedia.Exists.IS_TRUE())).
+		LEFT_JOIN(existingRelations, existingRelationMediaId.EQ(media.ID)).
 		LEFT_JOIN(mediaPerson, mediaPerson.MediaID.EQ(media.ID)).
 		LEFT_JOIN(person, person.ID.EQ(mediaPerson.PersonID)).
 		LEFT_JOIN(mediaTag, mediaTag.MediaID.EQ(media.ID)).
@@ -436,8 +441,8 @@ func (r *mediaRepository) GetByIdAndUserId(id, userId uuid.UUID) (*models.Media,
 		LEFT_JOIN(table.MediaProgress, table.MediaProgress.MediaID.EQ(media.ID).AND(table.MediaProgress.UserID.EQ(postgres.UUID(userId)))).
 		LEFT_JOIN(table.FavouriteMedia, table.FavouriteMedia.MediaID.EQ(media.ID).AND(table.FavouriteMedia.UserID.EQ(postgres.UUID(userId)))),
 	).
-		WHERE(media.ID.EQ(postgres.UUID(id))).
-		ORDER_BY(mediaRelation.Created)
+		WHERE(media.ID.EQ(postgres.UUID(id))),
+	)
 
 	util.DebugCheck(r.env, statement)
 
