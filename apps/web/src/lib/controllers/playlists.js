@@ -34,7 +34,7 @@ export const create = async (name) => {
 /**
  * @param {string[]} playlists
  * @param {string[]} media
- * @returns {Promise}
+ * @returns {Promise<void>}
  */
 export const addMedia = async (playlists, media) => {
   await Promise.all(playlists.map(async p => {
@@ -52,4 +52,16 @@ export const updatePlaylist = async (id, name) => {
   const res = await fetch(`${server()}/playlists/${id}`, { method: "PUT", body: JSON.stringify({ name }) })
 
   return await res.json()
+}
+
+/**
+ * @param {string} id 
+ * @returns {Promise<void>}
+ */
+export const deletePlaylist = async (id) => {
+  const res = await fetch(`${server()}/playlists/${id}`, { method: "DELETE" })
+
+  if (!res.ok) {
+    throw new Error(`error happened while deleting playlist ${id}`)
+  }
 }
