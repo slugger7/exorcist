@@ -82,3 +82,15 @@ export const updatePerson = async (id, name) => {
 
   return await res.json()
 }
+
+/**
+ * @param {string} id 
+ * @returns {Promise<void>}
+ */
+export const deletePerson = async (id) => {
+  const res = await fetch(`${server()}/people/${id}`, { method: "DELETE" })
+
+  if (!res.ok) {
+    throw new Error(`could not successfully delete person by id ${id}`)
+  }
+}
