@@ -24,7 +24,7 @@ type MediaRelationDto struct {
 }
 
 func (d *MediaRelationDto) FromModel(m models.MediaRelation) MediaRelationDto {
-	d.ID = m.ID
+	d.ID = m.MediaRelation.ID
 	d.MediaID = m.MediaID
 	d.RelatedToID = m.RelatedTo
 	d.RelationType = m.RelationType

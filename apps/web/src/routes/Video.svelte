@@ -53,7 +53,7 @@
       : 0,
   );
   let thumbnailRelation = $derived(
-    mediaEntity?.relations.find(
+    mediaEntity?.relations?.find(
       (relation) => relation.relationType === "thumbnail",
     ),
   );
@@ -106,13 +106,13 @@
   /** @type {WSTopicMap<MediaDTO>}*/
   const topicMap = {
     media_update: (updatedMedia) => {
-      if (mediaEntity && updatedMedia.relations.length > 0) {
+      if (mediaEntity && updatedMedia.relations?.length > 0) {
         mediaEntity.relations = [
           ...(mediaEntity.relations || []),
           ...updatedMedia.relations,
         ];
       }
-      if (mediaEntity && updatedMedia.relations.length == 0) {
+      if (mediaEntity && updatedMedia.relations?.length == 0) {
         mediaEntity.relations = [];
       }
     },
@@ -135,7 +135,7 @@
   const createTagHandler = async (tagName) => {
     const createdTags = await createTags([tagName]);
 
-    if (createdTags.length > 0) {
+    if (createdTags?.length > 0) {
       return createdTags[0];
     }
 
@@ -148,7 +148,7 @@
   const createPersonHandler = async (personName) => {
     const createdPeople = await createPeople([personName]);
 
-    if (createdPeople.length > 0) {
+    if (createdPeople?.length > 0) {
       return createdPeople[0];
     }
 
@@ -459,12 +459,12 @@
       />
     </div>
 
-    {#if mediaEntity.relations.find((r) => r.relationType === "chapter")}
+    {#if mediaEntity.relations?.find((r) => r.relationType === "chapter")}
       <br />
       <div class="container">
         <Chapters
           chapters={mediaEntity.relations
-            .filter((relation) => relation.relationType === "chapter")
+            ?.filter((relation) => relation.relationType === "chapter")
             .sort((a, b) => a.metadata.timestamp - b.metadata.timestamp)}
           onclick={handleChapterClick}
         />
@@ -475,7 +475,7 @@
     <div class="container">
       <Relations
         {id}
-        relations={mediaEntity.relations.filter(
+        relations={mediaEntity.relations?.filter(
           (r) => r.relationType === "media",
         )}
       />

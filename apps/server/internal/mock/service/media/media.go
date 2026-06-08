@@ -15,7 +15,6 @@ import (
 	uuid "github.com/google/uuid"
 	model "github.com/slugger7/exorcist/apps/server/internal/db/exorcist/public/model"
 	dto "github.com/slugger7/exorcist/apps/server/internal/dto"
-	models "github.com/slugger7/exorcist/apps/server/internal/models"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -127,21 +126,6 @@ func (m *MockMediaService) DeleteRelations(id uuid.UUID, deleteDto dto.DeleteMed
 func (mr *MockMediaServiceMockRecorder) DeleteRelations(id, deleteDto any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRelations", reflect.TypeOf((*MockMediaService)(nil).DeleteRelations), id, deleteDto)
-}
-
-// GetByIdAndUserIdWithRelations mocks base method.
-func (m *MockMediaService) GetByIdAndUserIdWithRelations(id, userId uuid.UUID, relationType *model.MediaRelationTypeEnum) (*models.Media, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIdAndUserIdWithRelations", id, userId, relationType)
-	ret0, _ := ret[0].(*models.Media)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIdAndUserIdWithRelations indicates an expected call of GetByIdAndUserIdWithRelations.
-func (mr *MockMediaServiceMockRecorder) GetByIdAndUserIdWithRelations(id, userId, relationType any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIdAndUserIdWithRelations", reflect.TypeOf((*MockMediaService)(nil).GetByIdAndUserIdWithRelations), id, userId, relationType)
 }
 
 // LogProgress mocks base method.
