@@ -1,4 +1,4 @@
-/** @import { PageDTO, MediaDTO, MediaOverviewDTO, ProgressDTO, MediaUpdateDTO, MediaUpdatedDTO, PutMediaRelationDto, MediaRelationDto } from "../../dto" */
+/** @import { PageDTO, MediaDTO, MediaOverviewDTO, ProgressDTO, MediaUpdateDTO, MediaUpdatedDTO, PutMediaRelationDto, MediaRelationDto, DeleteMediaRelationsDto } from "../../dto" */
 /** @import {Ordinal} from "../types" */
 import { server } from '../env.js'
 import { fetch } from './fetch.js'
@@ -109,6 +109,21 @@ export const relateMedia = async (id, relations) => {
   const res = await fetch(`${server()}/media/${id}/relate`, { method: "PUT", body: JSON.stringify(relations) })
 
   return await res.json()
+}
+
+/**
+ * 
+ * @param {string} id 
+ * @param {DeleteMediaRelationsDto} deleteDto 
+ * @returns {Promise<void>}
+ */
+export const deleteRelations = async (id, deleteDto) => {
+  const res = await fetch(`${server()}/media/${id}/relate`,
+    { method: "DELETE", body: JSON.stringify(deleteDto) })
+
+  if (!res.ok) {
+    throw new Error(`could not successfully remove relations for ${id}`)
+  }
 }
 
 

@@ -251,6 +251,9 @@ export interface PutMediaRelationDto {
   backrelate: boolean;
   interrelate: boolean;
 }
+export interface DeleteMediaRelationsDto {
+  relatedToIds: string /* UUID */[];
+}
 
 //////////
 // source: media_relation_metadata.go
