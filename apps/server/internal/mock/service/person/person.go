@@ -43,6 +43,20 @@ func (m *MockPersonService) EXPECT() *MockPersonServiceMockRecorder {
 	return m.recorder
 }
 
+// Delete mocks base method.
+func (m *MockPersonService) Delete(id uuid.UUID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Delete", id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Delete indicates an expected call of Delete.
+func (mr *MockPersonServiceMockRecorder) Delete(id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockPersonService)(nil).Delete), id)
+}
+
 // GetMedia mocks base method.
 func (m *MockPersonService) GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error) {
 	m.ctrl.T.Helper()

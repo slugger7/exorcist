@@ -1,5 +1,5 @@
 ### Get All People
-GET {{host}}:{{port}}/api/people?search=kev
+GET {{host}}:{{port}}/api/people?search=
 
 ### Create people
 POST {{host}}:{{port}}/api/people
@@ -12,3 +12,6 @@ Content-Type: application/json
 
 ### Get Persons media
 GET {{host}}:{{port}}/api/people/6635eea7-0b14-47d9-b50e-fecc41e1c2b1/media
+
+### Delete Person
+DELETE {{host}}:{{port}}/api/people/6f822e6e-6070-45d6-a3e1-506a94e43033

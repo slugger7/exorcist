@@ -32,6 +32,24 @@ func (s *server) withPersonPut(r *gin.RouterGroup, route Route) *server {
 	return s
 }
 
+func (s *server) withPersonDelete(r *gin.RouterGroup, route Route) *server {
+	r.DELETE(fmt.Sprintf("%v/:%v", route, idKey), s.deletePerson)
+	return s
+}
+
+func (s *server) deletePerson(c *gin.Context) {
+	id, err := uuid.Parse(c.Param(idKey))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"error": "could not parse person id"})
+		return
+	}
+
+	if err := s.service.Person().Delete(id); err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "could not successfully delete person by id"})
+		return
+	}
+}
+
 func (s *server) putPerson(c *gin.Context) {
 	id, err := uuid.Parse(c.Param(idKey))
 	if err != nil {

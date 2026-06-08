@@ -16,6 +16,7 @@ import (
 type PersonService interface {
 	Upsert(name string) (*model.Person, error)
 	GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error)
+	Delete(id uuid.UUID) error
 }
 
 type personService struct {
@@ -24,7 +25,22 @@ type personService struct {
 	logger logger.Logger
 }
 
-// GetMedia implements IPersonService.
+func (p *personService) Delete(id uuid.UUID) error {
+	person, err := p.repo.Person().GetById(id)
+	if err != nil {
+		return errs.BuildError(err, "could not find person by id")
+	}
+	if person == nil {
+		return fmt.Errorf("person with id %v does not exist", id.String())
+	}
+
+	if err := p.repo.Person().Delete(id); err != nil {
+		return errs.BuildError(err, "error deleting person by id")
+	}
+
+	return nil
+}
+
 func (p *personService) GetMedia(id, userId uuid.UUID, search dto.MediaSearchDTO) (*dto.PageDTO[models.MediaOverviewModel], error) {
 	person, err := p.repo.Person().GetById(id)
 	if err != nil {
