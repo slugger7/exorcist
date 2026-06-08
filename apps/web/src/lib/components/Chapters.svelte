@@ -20,7 +20,7 @@
           <img
             class="image chapter"
             src={imageUrlById(chapter.relatedToId)}
-            alt={`chapter for ${chapter.metadata.timestamp} milliseconds`}
+            alt={`chapter for ${chapter.metadata?.timestamp} milliseconds`}
           />
         </button>
       </figure>

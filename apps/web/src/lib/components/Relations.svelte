@@ -12,7 +12,7 @@
    * @typedef props
    * @type {object}
    * @property {string} id
-   * @property {MediaRelationDto[]} relations
+   * @property {MediaRelationDto[]} [relations]
    */
   /** @type {props}*/
   let { relations, id } = $props();
@@ -43,7 +43,7 @@
     try {
       await deleteRelations(id, { relatedToIds: selected });
 
-      relations = relations.filter(
+      relations = relations?.filter(
         (rel) => !selected.includes(rel.relatedToId),
       );
 
@@ -82,10 +82,10 @@
     </div>
   {/if}
   <div class="grid">
-    {#if relations.length === 0}
+    {#if relations?.length === 0}
       <span>No relations</span>
     {/if}
-    {#each relations as relation}
+    {#each relations as relation (relation.id)}
       <div class="cell">
         <VideoCard
           video={{ id: relation.relatedToId, title: "" }}
