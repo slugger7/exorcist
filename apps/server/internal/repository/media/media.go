@@ -478,7 +478,7 @@ func (r *mediaRepository) Relate(m []model.MediaRelation) ([]model.MediaRelation
 
 var mediaRepositoryInstance *mediaRepository
 
-func New(db *sql.DB, env *environment.EnvironmentVariables, context context.Context) MediaRepository {
+func New(db *sql.DB, env *environment.EnvironmentVariables, context context.Context) *mediaRepository {
 	if mediaRepositoryInstance != nil {
 		return mediaRepositoryInstance
 	}
