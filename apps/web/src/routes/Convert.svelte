@@ -114,7 +114,7 @@
             filename,
             constantRateFactor,
             forcePixelFormat,
-            dimension: {},
+            dimension: { height, width },
             copyPeople,
             copyTags,
           },
@@ -175,7 +175,7 @@
           }`}
           type="number"
           name="height"
-          value={height}
+          bind:value={height}
           placeholder="Height"
           oninput={(e) => {
             const validationMessage = e.target.validationMessage;
@@ -187,7 +187,6 @@
             }
 
             if (keepScale) {
-              console.log("scaling width", e);
               width = calculateScaledWidth(
                 media?.video?.height ?? 0,
                 media?.video?.width ?? 0,
