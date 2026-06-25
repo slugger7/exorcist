@@ -142,6 +142,22 @@
       );
     }
   };
+
+  /**
+   * @param {string} currentFilename
+   * @param {string} ext
+   */
+  const changeExtension = (currentFilename, ext) => {
+    const lastDotIndex = currentFilename.lastIndexOf(".");
+    const baseFilename =
+      lastDotIndex !== -1
+        ? currentFilename.slice(0, lastDotIndex)
+        : currentFilename;
+
+    const normalizedExtension = ext.startsWith(".") ? ext : `.${ext}`;
+
+    return `${baseFilename}${normalizedExtension}`;
+  };
 </script>
 
 <div class="container">
@@ -160,16 +176,28 @@
         </label>
       </div>
 
-      <div class="field">
-        <label class="label" for="filename">Filename</label>
-        <input
-          class={`input ${filenameTouched && filenameErrors && filenameErrors.length > 0 ? "is-danger" : ""}`}
-          type="text"
-          placeholder="Filename"
-          name="filename"
-          bind:value={filename}
-          onfocus={() => (filenameTouched = true)}
-        />
+      <label class="label" for="filename">Filename</label>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input
+            class={`input ${filenameTouched && filenameErrors && filenameErrors.length > 0 ? "is-danger" : ""}`}
+            type="text"
+            placeholder="Filename"
+            name="filename"
+            bind:value={filename}
+            onfocus={() => (filenameTouched = true)}
+          />
+        </div>
+        <div class="control">
+          <button
+            class="button"
+            onclick={(e) => {
+              e.preventDefault();
+
+              filename = changeExtension(filename, ".mp4");
+            }}>.mp4</button
+          >
+        </div>
       </div>
       {#if filenameTouched && filenameErrors && filenameErrors.length > 0}
         {#each filenameErrors as error}
