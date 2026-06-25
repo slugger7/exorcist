@@ -111,6 +111,8 @@ func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
 		return nil, errs.BuildError(err, "unmarshalling data for convert: %v", data)
 	}
 
+	priority = dto.JobPriority_Lowest
+
 	media, err := i.repo.Media().GetById(jobData.MediaId)
 	if err != nil {
 		return nil, errs.BuildError(err, "getting media by id: %v", jobData.MediaId.String())
@@ -327,6 +329,12 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 
 	d := ffmpeg.DetermineDimensions(w, c)
 
+	if generateThumbnailData.Height == nil {
+		generateThumbnailData.Height = new(int)
+	}
+	if generateThumbnailData.Width == nil {
+		generateThumbnailData.Width = new(int)
+	}
 	*generateThumbnailData.Height = *d.Height
 	*generateThumbnailData.Width = *d.Width
 
@@ -337,8 +345,8 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 			`%v.%v.%vx%v.webp`,
 			f.FileName,
 			generateThumbnailData.RelationType.String(),
-			generateThumbnailData.Height,
-			generateThumbnailData.Width,
+			*generateThumbnailData.Height,
+			*generateThumbnailData.Width,
 		))
 
 	bytes, err := json.Marshal(generateThumbnailData)
