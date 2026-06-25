@@ -111,6 +111,8 @@ func (i *jobService) convert(data string, priority int16) (*model.Job, error) {
 		return nil, errs.BuildError(err, "unmarshalling data for convert: %v", data)
 	}
 
+	priority = dto.JobPriority_Lowest
+
 	media, err := i.repo.Media().GetById(jobData.MediaId)
 	if err != nil {
 		return nil, errs.BuildError(err, "getting media by id: %v", jobData.MediaId.String())
