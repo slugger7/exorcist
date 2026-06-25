@@ -132,6 +132,16 @@
 
     history.back();
   };
+
+  const scaleWidth = (h) => {
+    if (keepScale) {
+      width = calculateScaledWidth(
+        media?.video?.height ?? 0,
+        media?.video?.width ?? 0,
+        h,
+      );
+    }
+  };
 </script>
 
 <div class="container">
@@ -167,34 +177,60 @@
         {/each}
       {/if}
 
-      <div class="field">
-        <label class="label" for="height">Height</label>
-        <input
-          class={`input ${
-            heightErrors && heightErrors.length > 0 ? "is-danger" : ""
-          }`}
-          type="number"
-          name="height"
-          bind:value={height}
-          placeholder="Height"
-          oninput={(e) => {
-            const validationMessage = e.target.validationMessage;
-            if (validationMessage.length > 0) {
-              heightErrors = [validationMessage];
-              return;
-            } else {
-              heightErrors = [];
-            }
+      <label class="label" for="height">Height</label>
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input
+            class={`input ${
+              heightErrors && heightErrors.length > 0 ? "is-danger" : ""
+            }`}
+            type="number"
+            name="height"
+            bind:value={height}
+            placeholder="Height"
+            oninput={(e) => {
+              const validationMessage = e.target.validationMessage;
+              if (validationMessage.length > 0) {
+                heightErrors = [validationMessage];
+                return;
+              } else {
+                heightErrors = [];
+              }
 
-            if (keepScale) {
-              width = calculateScaledWidth(
-                media?.video?.height ?? 0,
-                media?.video?.width ?? 0,
-                e.target.valueAsNumber,
-              );
-            }
-          }}
-        />
+              scaleWidth(e.target.valueAsNumber);
+            }}
+          />
+        </div>
+        <div class="control">
+          <button
+            class={`button ${height === 1080 ? "is-primary" : ""}`}
+            onclick={(e) => {
+              e.preventDefault();
+              height = 1080;
+              scaleWidth(height);
+            }}>1080p</button
+          >
+        </div>
+        <div class="control">
+          <button
+            class={`button ${height === 720 ? "is-primary" : ""}`}
+            onclick={(e) => {
+              e.preventDefault();
+              height = 720;
+              scaleWidth(height);
+            }}>720p</button
+          >
+        </div>
+        <div class="control">
+          <button
+            class={`button ${height === 480 ? "is-primary" : ""}`}
+            onclick={(e) => {
+              e.preventDefault();
+              height = 480;
+              scaleWidth(height);
+            }}>480p</button
+          >
+        </div>
       </div>
       {#if heightErrors && heightErrors.length > 0}
         {#each heightErrors as error}
