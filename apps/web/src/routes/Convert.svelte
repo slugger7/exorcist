@@ -32,8 +32,8 @@
   let constantRateFactor = $state(23);
   let constantRateFactorErrors = $state([]);
   let forcePixelFormat = $state("yuv420p");
-  let copyPeople = $state(false);
-  let copyTags = $state(false);
+  let copyPeople = $state(true);
+  let copyTags = $state(true);
   let height = $state();
   let heightErrors = $state([]);
   let width = $state();
