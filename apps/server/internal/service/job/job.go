@@ -329,6 +329,12 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 
 	d := ffmpeg.DetermineDimensions(w, c)
 
+	if generateThumbnailData.Height == nil {
+		generateThumbnailData.Height = new(int)
+	}
+	if generateThumbnailData.Width == nil {
+		generateThumbnailData.Width = new(int)
+	}
 	*generateThumbnailData.Height = *d.Height
 	*generateThumbnailData.Width = *d.Width
 
@@ -339,8 +345,8 @@ func (i *jobService) generateThumbnail(data string, priority int16) (*model.Job,
 			`%v.%v.%vx%v.webp`,
 			f.FileName,
 			generateThumbnailData.RelationType.String(),
-			generateThumbnailData.Height,
-			generateThumbnailData.Width,
+			*generateThumbnailData.Height,
+			*generateThumbnailData.Width,
 		))
 
 	bytes, err := json.Marshal(generateThumbnailData)
