@@ -121,6 +121,7 @@
       nextFocusState.node.focus();
       nextFocusState.node = inputNode;
     }
+    reset()
   };
 
   const onKeyDown = (e) => {
